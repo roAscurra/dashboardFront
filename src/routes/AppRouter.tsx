@@ -8,8 +8,9 @@ export const AppRouter = () => {
       <SideBar />
       {/* Definición de las rutas */}
       <Routes>
+
         {/* Ruta para la pantalla de personas */}
-        <Route path="/" element={<ListaProductos />} />
+        <Route path="/productos/lista" element={<><SideBar /><ListaProductos /></>} />
       </Routes>
     </>
   )
