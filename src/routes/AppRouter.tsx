@@ -1,16 +1,16 @@
-import { SideBar } from '../components/Sider/SideBar'
+import Sidebar from '../components/Sider/SideBar'
 import { Route, Routes } from 'react-router-dom'
 import { ListaProductos } from '../components/Productos/ListaProductos'
 
 export const AppRouter = () => {
   return (
     <>
-      <SideBar />
+      <Sidebar />
       {/* Definición de las rutas */}
       <Routes>
 
         {/* Ruta para la pantalla de personas */}
-        <Route path="/productos/lista" element={<><SideBar /><ListaProductos /></>} />
+        <Route path="/productos/lista" element={<><Sidebar /><ListaProductos /></>} />
       </Routes>
     </>
   )
