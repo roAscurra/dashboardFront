@@ -2,6 +2,7 @@ import Sidebar from '../components/Sider/SideBar'
 import { Route, Routes } from 'react-router-dom'
 import { ListaProductos } from '../components/Productos/ListaProductos'
 import { CContainer, CRow, CCol } from "@coreui/react"; // Importa los componentes de diseño de CoreUI
+import Inicio from '../components/Inicio/Inicio';
 
 export const AppRouter = () => {
   return (
@@ -15,6 +16,7 @@ export const AppRouter = () => {
         {/* Contenido principal */}
         <CCol>
           <Routes>
+            <Route path ="/" element={<Inicio/>}/>
             <Route path="/productos/lista" element={<ListaProductos />} />
             {/* Agrega más rutas aquí */}
           </Routes>
