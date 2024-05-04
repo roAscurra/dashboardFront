@@ -3,22 +3,22 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import Cupones from '../../types/Cupones';
 
 interface IInitialState {
-  cupones: { [key: number]: Cupones[] }; // Cambia el tipo del estado a un objeto de Cupones[]
+  cupones: Cupones[]; // Cambia el tipo del estado a una matriz de Cupones
 }
 
 const initialState: IInitialState = {
-    cupones: {},
+    cupones: [],
 }
 
 export const cuponesSlice = createSlice({
   name: 'cuponesState',
   initialState,
   reducers: {
-    setCupones: (state, action: PayloadAction<{ [key: number]: Cupones[] }>) => {
+    setCupones: (state, action: PayloadAction<Cupones[]>) => {
       state.cupones = action.payload;
     },
     resetCupones: (state) => {
-      state.cupones = {};
+      state.cupones = [];
     }
   },
 })

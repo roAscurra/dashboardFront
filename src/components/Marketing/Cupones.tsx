@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { useAppDispatch } from "../../hooks/redux";
 import TableComponent from "../Table/Table";
 import SearchBar from "../SearchBar/SearchBar";
-// import CuponesService from "../../services/CuponesService";
 import { setCupones } from "../../redux/slices/Cupones";
 import SucursalService from "../../services/SucursalService";
 import Cupones from "../../types/Cupones";
-// import ModalGeneric from "../Modal/ModalGeneric";
+import ModalCupon from "../Modal/ModalCupon";
+import { toggleModal } from "../../redux/slices/Modal";
+import CuponesService from "../../services/CuponesService";
 
 interface Row {
   [key: string]: any;
@@ -23,55 +24,37 @@ interface Column {
 export const ListaCupones = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
-  const sucursalService = new SucursalService();
-  // Estado global de Redux
-//   const globalCupones = useAppSelector(
-//     (state) => state.cupo
-//   );
-
+  const cuponesService = new CuponesService();
   const [filterData, setFilterData] = useState<Row[]>([]);
 
-  useEffect(() => {
-    // Función para obtener los artículos manufacturados
-    const fetchCupones = async () => {
-        try {
-          const sucursales = await sucursalService.getAll(url + 'sucursales');
-          const allCupones: { [key: number]: Cupones[] } = {};
-      
-          // Itera sobre cada sucursal
-          sucursales.forEach(sucursal => {
-            // Obtiene los cupones de la sucursal actual
-            const sucursalCupones = sucursal.cupones;
-            
-            // Asigna los cupones de la sucursal al objeto allCupones
-            allCupones[sucursal.id] = sucursalCupones;
-          });
-          
-          // Envía los cupones al store de Redux
-          dispatch(setCupones(allCupones));
-          
-          // Selecciona y muestra los cupones de la primera sucursal por defecto
-          if (sucursales.length > 0) {
-            setFilterData(allCupones[sucursales[0].id]);
-          }
-        } catch (error) {
-          console.error("Error al obtener los cupones:", error);
-        }
-      };
-      
-    fetchCupones();
-  }, [dispatch]);
+  // Definiendo fetchCupones con useCallback
+  const fetchCupones = useCallback(async () => {
+    try {
+      const sucursales = await cuponesService.getAll(url + 'cupones');
+      dispatch(setCupones(sucursales));
+      setFilterData(sucursales);
 
-  // Función para manejar la búsqueda de cupones
-    const handleSearch = (query: string) => {
-        const filtered = filterData.filter((item) =>
-        item.descripcion.toLowerCase().includes(query.toLowerCase())
-        );
-        setFilterData(filtered);
-    };
-  
-  
-  // Definición de las columnas para la tabla de artículos manufacturados
+    } catch (error) {
+      console.error("Error al obtener los cupones:", error);
+    }
+  }, [dispatch, cuponesService, url]);
+
+  useEffect(() => {
+    // Llamando a fetchCupones dentro de useEffect
+    fetchCupones();
+  }, [fetchCupones]); // fetchCupones se pasa como dependencia
+
+  const handleAddCupon = () => {
+    dispatch(toggleModal({ modalName: "modal" }));
+  };
+
+  const handleSearch = (query: string) => {
+    const filtered = filterData.filter((item) =>
+      item.descripcion.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilterData(filtered);
+  };
+
   const columns: Column[] = [
     { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
@@ -105,24 +88,25 @@ export const ListaCupones = () => {
             Cupones
           </Typography>
           <Button
-             sx={{
-              bgcolor: "#cc5533", // Terracota
+            sx={{
+              bgcolor: "#cc5533",
               "&:hover": {
-                bgcolor: "#b23e1f", // Terracota más oscuro al pasar el mouse
+                bgcolor: "#b23e1f",
               },
             }}
             variant="contained"
             startIcon={<Add />}
+            onClick={handleAddCupon}
           >
             Cupon
           </Button>
         </Box>
-        {/* Barra de búsqueda */}
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={handleSearch} />
         </Box> 
-        {/* Componente de tabla para mostrar los artículos manufacturados */}
         <TableComponent data={filterData} columns={columns} />
+        {/* Llamando a ModalCupon con la prop fetchCupones */}
+        <ModalCupon getCupones={fetchCupones} />
       </Container>
     </Box>
   );
