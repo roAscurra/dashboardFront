@@ -2,12 +2,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import TablaReducer from "./slices/TablaReducer"; // Importamos el reducer del slice TablaReducer
 import articuloManufacturadoSlice from "./slices/ArticuloManufacturado";
+import modal from "./slices/Modal";
 
 // Configuración de la tienda de Redux
 export const store = configureStore({
   reducer: {
     tablaReducer: TablaReducer, // Agregamos el reducer del slice TablaReducer al estado global con la clave tablaReducer
-    articuloManufacturado: articuloManufacturadoSlice
+    articuloManufacturado: articuloManufacturadoSlice,
+    modal: modal,
   },
 });
 

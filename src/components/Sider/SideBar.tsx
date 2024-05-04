@@ -32,6 +32,12 @@ const Sidebar: React.FC = () => {
               Inicio
             </Link>
           </CNavItem>
+          <CNavItem>
+            <Link to="/estadisticas" className="nav-link">
+              <CIcon customClassName="nav-icon" icon={icon.cilChartPie} />
+              Estadísticas
+            </Link>
+          </CNavItem>
           <CNavGroup
             toggler={
               <>
