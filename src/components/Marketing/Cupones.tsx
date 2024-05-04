@@ -5,8 +5,6 @@ import { useAppDispatch } from "../../hooks/redux";
 import TableComponent from "../Table/Table";
 import SearchBar from "../SearchBar/SearchBar";
 import { setCupones } from "../../redux/slices/Cupones";
-import SucursalService from "../../services/SucursalService";
-import Cupones from "../../types/Cupones";
 import ModalCupon from "../Modal/ModalCupon";
 import { toggleModal } from "../../redux/slices/Modal";
 import CuponesService from "../../services/CuponesService";
