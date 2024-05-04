@@ -1,64 +1,78 @@
-import React, { useState } from 'react';
-import { IconButton, Box, TextField } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import React, { useEffect, useState } from "react";
+import { Box, Container, Typography, CircularProgress } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+import TableComponent from "../Table/Table";
+import SearchBar from "../SearchBar/SearchBar";
+import usuarioService from "../../services/UsuarioService";
+import { setUsuarios } from "../../redux/slices/Usuario";
 
-const Usuarios: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+const Usuarios = () => {
+  const url = import.meta.env.VITE_API_URL;
+  const dispatch = useAppDispatch();
+  const globalUsuarios = useAppSelector((state) => state.usuarios.usuarios);
+  const [loading, setLoading] = useState(true);
+  const [filteredData, setFilteredData] = useState(globalUsuarios);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
+  useEffect(() => {
+    const fetchUsuarios = async () => {
+      try {
+        const usuarios = await usuarioService.getAll(url + 'usuarios');
+        dispatch(setUsuarios(usuarios));
+        setFilteredData(usuarios);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error al obtener los usuarios:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchUsuarios();
+  }, [dispatch]);
+
+  const handleSearch = (query: string) => {
+    const filtered = globalUsuarios.filter((usuario) =>
+      usuario.nombre.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredData(filtered);
   };
 
-  // Aquí iría la lógica para obtener y mostrar los usuarios en la tabla
+  const columns = [
+    { id: 'nombre', label: 'Nombre' },
+    { id: 'apellido', label: 'Apellido' },
+    { id: 'email', label: 'Correo Electrónico' },
+    { id: 'rol', label: 'Rol' },
+  ];
 
   return (
-    <div className="usuarios">
-      <div className="contendor-titulo">
-        <h2 className="titulo">Usuarios</h2>
-      </div>
-      <div className="busqueda">
-        <TextField
-          label="Buscar"
-          variant="outlined"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          sx={{ mb: 2 }}
-        />
-      </div>
-      <table className="table">
-        <thead>
-          <tr>
-            <th scope="col">Nombre</th>
-            <th scope="col">Apellido</th>
-            <th scope="col">Correo electrónico</th>
-            <th scope="col">Rol</th>
-            <th scope="col">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Aquí iría la lógica para mapear y mostrar los usuarios en la tabla */}
-          <tr>
-            <td>Juan</td>
-            <td>Pérez</td>
-            <td>juan@example.com</td>
-            <td><span className="badge bg-primary rounded-pill">Administrador</span></td>
-            <td>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <IconButton aria-label="editar">
-                  <EditIcon />
-                </IconButton>
-                <IconButton aria-label="eliminar">
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-            </td>
-          </tr>
-          {/* Otros usuarios */}
-        </tbody>
-      </table>
-      {/* Modales de Modificación y Eliminación */}
-    </div>
+    <Box
+      component="main"
+      sx={{
+        flexGrow: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        my: 2,
+      }}
+    >
+      <Container maxWidth="lg">
+        <Typography variant="h5" gutterBottom>
+          Usuarios
+        </Typography>
+        {/* Barra de búsqueda */}
+        <Box sx={{ mb: 2 }}>
+          <SearchBar onSearch={handleSearch} />
+        </Box> 
+        {/* Tabla de usuarios */}
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <TableComponent data={filteredData} columns={columns} />
+        )}
+      </Container>
+    </Box>
   );
 }
 
