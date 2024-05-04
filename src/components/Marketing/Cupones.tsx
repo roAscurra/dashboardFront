@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+import { useAppDispatch } from "../../hooks/redux";
 import TableComponent from "../Table/Table";
 import SearchBar from "../SearchBar/SearchBar";
 // import CuponesService from "../../services/CuponesService";
 import { setCupones } from "../../redux/slices/Cupones";
 import SucursalService from "../../services/SucursalService";
 import Cupones from "../../types/Cupones";
+// import ModalGeneric from "../Modal/ModalGeneric";
 
 interface Row {
   [key: string]: any;
@@ -20,16 +21,15 @@ interface Column {
 }
 
 export const ListaCupones = () => {
-
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   const sucursalService = new SucursalService();
   // Estado global de Redux
-  const globalCupones = useAppSelector(
-    (state) => state.articuloManufacturado.articuloManufacturado
-  );
+//   const globalCupones = useAppSelector(
+//     (state) => state.cupo
+//   );
 
-  const [filteredData, setFilteredData] = useState<Row[]>([]);
+  const [filterData, setFilterData] = useState<Row[]>([]);
 
   useEffect(() => {
     // Función para obtener los artículos manufacturados
@@ -52,7 +52,7 @@ export const ListaCupones = () => {
           
           // Selecciona y muestra los cupones de la primera sucursal por defecto
           if (sucursales.length > 0) {
-            setFilteredData(allCupones[sucursales[0].id]);
+            setFilterData(allCupones[sucursales[0].id]);
           }
         } catch (error) {
           console.error("Error al obtener los cupones:", error);
@@ -62,14 +62,15 @@ export const ListaCupones = () => {
     fetchCupones();
   }, [dispatch]);
 
-  // Función para manejar la búsqueda de artículos manufacturados
-  const handleSearch = (query: string) => {
-    const filtered = globalCupones.filter((item) =>
-      item.denominacion.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredData(filtered);
-  };
-
+  // Función para manejar la búsqueda de cupones
+    const handleSearch = (query: string) => {
+        const filtered = filterData.filter((item) =>
+        item.descripcion.toLowerCase().includes(query.toLowerCase())
+        );
+        setFilterData(filtered);
+    };
+  
+  
   // Definición de las columnas para la tabla de artículos manufacturados
   const columns: Column[] = [
     { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
@@ -121,7 +122,7 @@ export const ListaCupones = () => {
           <SearchBar onSearch={handleSearch} />
         </Box> 
         {/* Componente de tabla para mostrar los artículos manufacturados */}
-        <TableComponent data={filteredData} columns={columns} />
+        <TableComponent data={filterData} columns={columns} />
       </Container>
     </Box>
   );

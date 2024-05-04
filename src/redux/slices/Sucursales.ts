@@ -14,7 +14,7 @@ export const cuponesSlice = createSlice({
   name: 'sucursalesState',
   initialState,
   reducers: {
-    setCupones: (state, action: PayloadAction<Cupones[]>) => {
+    setSucursal: (state, action: PayloadAction<Cupones[]>) => {
       state.cupones = action.payload;
     },
     resetCupones: (state) => {
@@ -23,6 +23,6 @@ export const cuponesSlice = createSlice({
   },
 })
 
-export const { setCupones, resetCupones } = cuponesSlice.actions;
+export const { setSucursal, resetCupones } = cuponesSlice.actions;
 
 export default cuponesSlice.reducer;

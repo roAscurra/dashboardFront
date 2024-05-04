@@ -7,7 +7,7 @@ import articuloManufacturadoSlice from "./slices/ArticuloManufacturado";
 export const store = configureStore({
   reducer: {
     tablaReducer: TablaReducer, // Agregamos el reducer del slice TablaReducer al estado global con la clave tablaReducer
-    articuloManufacturado: articuloManufacturadoSlice
+    articuloManufacturado: articuloManufacturadoSlice,
   },
 });
 
