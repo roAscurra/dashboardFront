@@ -9,6 +9,7 @@ import ModalCupon from "../Modal/ModalCupon";
 import { toggleModal } from "../../redux/slices/Modal";
 import CuponesService from "../../services/CuponesService";
 import Cupones from "../../types/Cupones";
+import ModalEliminarCupon from "../Modal/ModalEliminarCupon";
 
 interface Row {
   [key: string]: any;
@@ -26,6 +27,37 @@ export const ListaCupones = () => {
   const cuponesService = new CuponesService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [cuponToEdit, setCuponToEdit] = useState<Cupones | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  // Función para abrir la modal de eliminación
+  const handleOpenDeleteModal = (rowData: Row) => {
+    setCuponToEdit({
+      id: rowData.id,
+      denominacion: rowData.denominacion,
+      fechaDesde: rowData.fechaDesde,
+      fechaHasta: rowData.fechaHasta,
+      descripcion: rowData.descripcion
+    });
+    setDeleteModalOpen(true); // Utiliza el estado directamente para abrir la modal de eliminación
+  };
+  const handleDelete = async () => {
+    try {
+      if (cuponToEdit && cuponToEdit.id) {
+        await cuponesService.delete(url + 'cupones', cuponToEdit.id.toString());
+        console.log('Se ha eliminado correctamente.');
+        handleCloseDeleteModal(); // Cerrar el modal de eliminación
+        fetchCupones(); // Actualizar la lista de cupones después de la eliminación
+      } else {
+        console.error('No se puede eliminar el cupón porque no se proporcionó un ID válido.');
+      }
+    } catch (error) {
+      console.error('Error al eliminar el cupón:', error);
+    }
+  };
+  
+  const handleCloseDeleteModal = () => {
+    setDeleteModalOpen(false); // Utiliza el estado directamente para cerrar la modal de eliminación
+  };
 
   // Definiendo fetchCupones con useCallback
   const fetchCupones = useCallback(async () => {
@@ -49,6 +81,7 @@ export const ListaCupones = () => {
     setCuponToEdit(null);
     dispatch(toggleModal({ modalName: "modal" }));
   };
+
   
 
   // Función para abrir la modal de edición
@@ -80,13 +113,10 @@ const handleOpenEditModal = (rowData: Row) => {
     { id: "descripcion", label: "Descripción", renderCell: (rowData) => <>{rowData.descripcion}</> },
     // Agregar columna de acciones para editar
     { id: "acciones", label: "Acciones", renderCell: (rowData) => (
-<Button onClick={() => handleOpenEditModal({
-  id: rowData.id,
-  denominacion: rowData.denominacion,
-  fechaDesde: rowData.fechaDesde,
-  fechaHasta: rowData.fechaHasta,
-  descripcion: rowData.descripcion
-})}>Editar</Button>
+      <div>
+        <Button onClick={() => handleOpenEditModal(rowData)}>Editar</Button>
+      </div>
+
     )},
   ];
 
@@ -131,7 +161,15 @@ const handleOpenEditModal = (rowData: Row) => {
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={handleSearch} />
         </Box> 
-        <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} />
+        <TableComponent
+          data={filterData}
+          columns={columns}
+          handleOpenEditModal={handleOpenEditModal}
+          handleOpenDeleteModal={handleOpenDeleteModal} // Pasa la función para abrir la modal de eliminación
+        />
+        <ModalEliminarCupon show={deleteModalOpen} onHide={handleCloseDeleteModal} cupon={cuponToEdit} onDelete={handleDelete} />
+
+
         {/* Llamando a ModalCupon con la prop fetchCupones y cuponToEdit */}
         <ModalCupon getCupones={fetchCupones} cuponToEdit={cuponToEdit !== null ? cuponToEdit : undefined} />
       </Container>
