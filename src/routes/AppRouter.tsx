@@ -5,7 +5,7 @@ import { CContainer, CRow, CCol } from "@coreui/react"; // Importa los component
 import Inicio from '../components/Inicio/Inicio';
 import Usuario from '../components/Usuario/Usuario';
 import { ListaCupones } from '../components/Marketing/Cupones';
-import { Estadisticas } from '../components/Estadisticas/Estadisticas';
+import Estadisticas from '../components/Estadisticas/Estadisticas';
 
 export const AppRouter = () => {
   return (
@@ -21,7 +21,7 @@ export const AppRouter = () => {
           <Routes>
             <Route path ="/" element={<Inicio/>}/>
             <Route path ="/usuario" element={<Usuario/>}/>
-            <Route path ="/estadisticas" element={<Estadisticas/>}/>
+            <Route path ="/estadisticas" element={<Estadisticas />}/>
             <Route path="/productos/lista" element={<ListaProductos />} />
             <Route path="/cupones/lista" element={<ListaCupones />} />
             {/* Agrega más rutas aquí */}
