@@ -45,8 +45,11 @@ export const ListaCupones = () => {
   }, [fetchCupones]); // fetchCupones se pasa como dependencia
 
   const handleAddCupon = () => {
+    // Reset cuponToEdit to null when adding a new cupon
+    setCuponToEdit(null);
     dispatch(toggleModal({ modalName: "modal" }));
   };
+  
 
   // Función para abrir la modal de edición
 // Definición de handleOpenEditModal
