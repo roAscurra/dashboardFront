@@ -7,6 +7,9 @@ import SearchBar from "../SearchBar/SearchBar";
 import { setPromocion } from "../../redux/slices/Promocion";
 import PromocionType from "../../types/Promocion";
 import PromocionService from "../../services/PromocionService";
+import { toggleModal } from "../../redux/slices/Modal";
+import ModalPromocion from "../Modal/ModalPromociones";
+import { useCallback } from 'react';
 
 interface Row {
   [key: string]: any;
@@ -23,56 +26,51 @@ export const Promocion: React.FC = () => {
   const dispatch = useAppDispatch();
   // Obtiene el estado global de Redux relacionado con las promociones.
   const globalPromociones = useAppSelector(
-    (state) => state.promocion
-  );
-
+    (state) => state.promocion);
   const url = import.meta.env.VITE_API_URL;
   const promocionService = new PromocionService();
 
   // Estado local para almacenar los datos filtrados.
   const [filteredData, setFilteredData] = useState<Row[]>([]);
 
-  // Efecto que se ejecuta al cargar el componente para obtener las promociones.
-  useEffect(() => {
-    const fetchPromociones = async () => {
-      try {
-        // Obtiene todas las promociones.
-        const promociones = await promocionService.getAll(url + 'promociones')       
-         // Envía las promociones al estado global de Redux.
-        dispatch(setPromocion(promociones)); 
-        // Establece los datos filtrados para su visualización.
-        setFilteredData(promociones); 
-      } catch (error) {
-        console.error("Error al obtener las promociones:", error);
-      }
-    };
-
-    fetchPromociones();
-  }, [dispatch]);
-
-  // Función para manejar la búsqueda de promociones.
-  const handleSearch = (query: string) => {
-    // Filtra las promociones globales según la consulta de búsqueda.
-    const filtered = globalPromociones.filter((promocion: PromocionType) =>
-      promocion.denominacion.toLowerCase().includes(query.toLowerCase())
-    );
-    // Establece los datos filtrados para su visualización.
-    setFilteredData(filtered);
+  // Efecto que se ejecuta al cargar el componente o al cambiar el término de búsqueda.
+useEffect(() => {
+  const fetchPromociones = async () => {
+    try {
+      // Obtiene todas las promociones.
+      const promociones = await promocionService.getAll(url + 'promociones')       
+      // Establece los datos filtrados para su visualización.
+      setFilteredData(promociones); 
+      // Envía las promociones al estado global de Redux.
+      dispatch(setPromocion(promociones)); 
+    } catch (error) {
+      console.error("Error al obtener las promociones:", error);
+    }
   };
 
+  fetchPromociones();
+}, [dispatch, promocionService, url]);
+
+ // Función para manejar la búsqueda de promociones.
+ const handleSearch = (query: string) => {
+  // Filtra las promociones globales según la consulta de búsqueda.
+  const filtered = globalPromociones.promocion.filter((promociones:any) =>
+    promociones.denominacion.toLowerCase().includes(query.toLowerCase())
+  );
+
+  console.log("hola")
+
+  // Establece los datos filtrados para su visualización.
+  setFilteredData(filtered);
+};
+
+  const handleAddPromocion = () => {
+    dispatch(toggleModal({ modalName: "modal" }));
+  };
+
+  
   // Columnas de la tabla de promociones.
   const columns: Column[] = [
-    {
-      id: "imagen",
-      label: "Imagen",
-      renderCell: (rowData) => (
-        <img
-          src={rowData.imagenes.length > 0 ? rowData.imagenes[0].url : ""}
-          alt="Imagen"
-          style={{ width: 50, height: 50 }}
-        />
-      ),
-    },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
     { id: "fechaDesde", label: "Desde", renderCell: (rowData) => <>{rowData.fechaDesde}</> },
     { id: "fechaHasta", label: "Hasta", renderCell: (rowData) => <>{rowData.fechaHasta}</> },
@@ -96,6 +94,7 @@ export const Promocion: React.FC = () => {
             }}
             variant="contained"
             startIcon={<Add />}
+            onClick={handleAddPromocion}
           >
             Promoción
           </Button>
@@ -104,6 +103,8 @@ export const Promocion: React.FC = () => {
           <SearchBar onSearch={handleSearch} />
         </Box>
         <TableComponent data={filteredData} columns={columns} />
+           {/* Llamando a ModalCupon con la prop fetchCupones */}
+           <ModalPromocion getPromociones={setPromocion} />
       </Container>
     </Box>
   );

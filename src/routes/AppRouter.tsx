@@ -5,10 +5,11 @@ import Sidebar from '../components/Sider/SideBar';
 import Inicio from '../components/Inicio/Inicio';
 import Usuario from '../components/Usuario/Usuario';
 import { ListaCupones } from '../components/Marketing/Cupones';
-import { Promocion } from '../components/Marketing/Promocion';
+import { Promocion } from '../components/Marketing/Promociones';
 import { Estadisticas } from '../components/Estadisticas/Estadisticas';
 import { ListaProductos } from '../components/Productos/ListaProductos';
 import BaseNavBar from '../components/common/BaseNavBar';
+import Promociones from '../types/Promocion';
 
 
 const AppRouter: React.FC = () => {
@@ -18,7 +19,7 @@ const AppRouter: React.FC = () => {
     { title: 'Estadísticas', to: '/estadisticas' },
     { title: 'Productos', to: '/productos/lista' },
     { title: 'Cupones', to: '/cupones/lista' },
-    { title: 'Promociones', to: '/promociones/lista' },
+    { title: 'Promocion', to: '/promociones/lista' },
 
   ];
 
