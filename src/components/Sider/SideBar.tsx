@@ -81,7 +81,7 @@ const Sidebar: React.FC = () => {
               </Link>
             </CNavItem>
             <CNavItem>
-              <Link to="/roles" className="nav-link">
+              <Link to="/promociones/lista" className="nav-link">
                 <span className="nav-icon">
                   <span className="nav-icon-bullet"></span>
                 </span>
