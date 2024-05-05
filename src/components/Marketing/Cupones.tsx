@@ -8,6 +8,7 @@ import { setCupones } from "../../redux/slices/Cupones";
 import ModalCupon from "../Modal/ModalCupon";
 import { toggleModal } from "../../redux/slices/Modal";
 import CuponesService from "../../services/CuponesService";
+import Cupones from "../../types/Cupones";
 
 interface Row {
   [key: string]: any;
@@ -24,6 +25,7 @@ export const ListaCupones = () => {
   const dispatch = useAppDispatch();
   const cuponesService = new CuponesService();
   const [filterData, setFilterData] = useState<Row[]>([]);
+  const [cuponToEdit, setCuponToEdit] = useState<Cupones | null>(null);
 
   // Definiendo fetchCupones con useCallback
   const fetchCupones = useCallback(async () => {
@@ -43,8 +45,25 @@ export const ListaCupones = () => {
   }, [fetchCupones]); // fetchCupones se pasa como dependencia
 
   const handleAddCupon = () => {
+    // Reset cuponToEdit to null when adding a new cupon
+    setCuponToEdit(null);
     dispatch(toggleModal({ modalName: "modal" }));
   };
+  
+
+  // Función para abrir la modal de edición
+// Definición de handleOpenEditModal
+const handleOpenEditModal = (rowData: Row) => {
+  setCuponToEdit({
+    id: rowData.id,
+    denominacion: rowData.denominacion,
+    fechaDesde: rowData.fechaDesde,
+    fechaHasta: rowData.fechaHasta,
+    descripcion: rowData.descripcion
+  });
+  dispatch(toggleModal({ modalName: 'modal' }));
+};
+
 
   const handleSearch = (query: string) => {
     const filtered = filterData.filter((item) =>
@@ -59,6 +78,16 @@ export const ListaCupones = () => {
     { id: "fechaDesde", label: "Fecha Desde", renderCell: (rowData) => <>{rowData.fechaDesde}</> },
     { id: "fechaHasta", label: "Fecha Hasta", renderCell: (rowData) => <>{rowData.fechaHasta}</> },
     { id: "descripcion", label: "Descripción", renderCell: (rowData) => <>{rowData.descripcion}</> },
+    // Agregar columna de acciones para editar
+    { id: "acciones", label: "Acciones", renderCell: (rowData) => (
+<Button onClick={() => handleOpenEditModal({
+  id: rowData.id,
+  denominacion: rowData.denominacion,
+  fechaDesde: rowData.fechaDesde,
+  fechaHasta: rowData.fechaHasta,
+  descripcion: rowData.descripcion
+})}>Editar</Button>
+    )},
   ];
 
   return (
@@ -102,9 +131,9 @@ export const ListaCupones = () => {
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={handleSearch} />
         </Box> 
-        <TableComponent data={filterData} columns={columns} />
-        {/* Llamando a ModalCupon con la prop fetchCupones */}
-        <ModalCupon getCupones={fetchCupones} />
+        <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} />
+        {/* Llamando a ModalCupon con la prop fetchCupones y cuponToEdit */}
+        <ModalCupon getCupones={fetchCupones} cuponToEdit={cuponToEdit !== null ? cuponToEdit : undefined} />
       </Container>
     </Box>
   );
