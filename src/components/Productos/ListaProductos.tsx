@@ -1,11 +1,15 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { setArticuloManufacturado } from "../../redux/slices/ArticuloManufacturado";
+import { toggleModal } from "../../redux/slices/Modal";
 import TableComponent from "../Table/Table";
 import ProductoService from "../../services/ProductoService";
 import SearchBar from "../SearchBar/SearchBar";
+import AManufacturado from "../../types/ArticuloManufacturado";
+import ModalProducto from "../Modal/ModalProducto";
+import ModalEliminarProducto from "../Modal/ModalEliminarProducto";
 
 interface Row {
   [key: string]: any;
@@ -26,23 +30,80 @@ export const ListaProductos = () => {
   const globalArticulosManufacturados = useAppSelector(
     (state) => state.articuloManufacturado.articuloManufacturado
   );
-
   const [filteredData, setFilteredData] = useState<Row[]>([]);
+  const [productToEdit, setProductToEdit] = useState<AManufacturado | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const handleOpenDeleteModal = (rowData: Row) => {
+    setProductToEdit({
+      id: rowData.id,
+      denominacion: rowData.denominacion,
+      precioVenta: rowData.precioVenta,
+      imagenes: rowData.imagenes,
+      unidadMedida: rowData.unidadMedida,
+      descripcion: rowData.descripcion,
+      tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
+      preparacion: rowData.preparacion,
+      articuloManufacturadoDetalles: rowData.articuloManufacturado
+    });
+    setDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModalOpen(false); // Utiliza el estado directamente para cerrar la modal de eliminación
+  };
+
+  const handleDelete = async () => {
+    try {
+      if (productToEdit && productToEdit.id) {
+        await productoService.delete(url + 'productos', productToEdit.id.toString());
+        console.log('Se ha eliminado correctamente.');
+        handleCloseDeleteModal(); // Cerrar el modal de eliminación
+        fetchProductos(); // Actualizar la lista de cupones después de la eliminación
+      } else {
+        console.error('No se puede eliminar el producto porque no se proporcionó un ID válido.');
+      }
+    } catch (error) {
+      console.error('Error al eliminar el producto:', error);
+    }
+  };
+
+
+  const fetchProductos = useCallback(async () => {
+    try {
+      const productos = await productoService.getAll(url + 'articulosManufacturados');
+      dispatch(setArticuloManufacturado(productos));
+      setFilteredData(productos);
+    } catch (error) {
+      console.error("Error al obtener los productos:", error);
+    }
+  }, [dispatch, productoService, url]);
 
   useEffect(() => {
-    // Función para obtener los artículos manufacturados
-    const fetchArticulosManufacturados = async () => {
-      try {
-        const articulosManufacturados = await productoService.getAll(url + 'articulosManufacturados');
-        dispatch(setArticuloManufacturado(articulosManufacturados));
-        setFilteredData(articulosManufacturados);
-      } catch (error) {
-        console.error("Error al obtener los artículos manufacturados:", error);
-      }
-    };
+    fetchProductos();
+  }, [fetchProductos]);
 
-    fetchArticulosManufacturados();
-  }, [dispatch]);
+  const handleAddProduct = () => {
+    // Reset cuponToEdit to null when adding a new cupon
+    setProductToEdit(null);
+    dispatch(toggleModal({ modalName: "modal" }));
+  };
+
+  const handleOpenEditModal = (rowData: Row) => {
+    setProductToEdit({
+      id: rowData.id,
+      denominacion: rowData.denominacion,
+      precioVenta: rowData.precioVenta,
+      imagenes: rowData.imagenes,
+      unidadMedida: rowData.unidadMedida,
+      descripcion: rowData.descripcion,
+      tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
+      preparacion: rowData.preparacion,
+      articuloManufacturadoDetalles: rowData.articuloManufacturado
+    });
+    dispatch(toggleModal({ modalName: 'modal' }));
+  };
+
 
   // Función para manejar la búsqueda de artículos manufacturados
   const handleSearch = (query: string) => {
@@ -100,7 +161,7 @@ export const ListaProductos = () => {
             Productos
           </Typography>
           <Button
-             sx={{
+            sx={{
               bgcolor: "#cc5533", // Terracota
               "&:hover": {
                 bgcolor: "#b23e1f", // Terracota más oscuro al pasar el mouse
@@ -108,6 +169,7 @@ export const ListaProductos = () => {
             }}
             variant="contained"
             startIcon={<Add />}
+            onClick={handleAddProduct}
           >
             Producto
           </Button>
@@ -115,9 +177,14 @@ export const ListaProductos = () => {
         {/* Barra de búsqueda */}
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={handleSearch} />
-        </Box> 
+        </Box>
         {/* Componente de tabla para mostrar los artículos manufacturados */}
-        <TableComponent data={filteredData} columns={columns} />
+        <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />
+
+        {/* Llamando a ModalCupon con la prop fetchCupones y cuponToEdit */}
+        <ModalProducto getProducts={fetchProductos} productToEdit={productToEdit !== null ? productToEdit : undefined} />
+
+        <ModalEliminarProducto show={deleteModalOpen} onHide={handleCloseDeleteModal} product={productToEdit} onDelete={handleDelete} />
       </Container>
     </Box>
   );
