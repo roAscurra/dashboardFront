@@ -10,7 +10,7 @@ interface ModalEliminarUsuarioProps {
   onDelete: (usuarioId: string) => void; // Modifica la firma de onDelete para aceptar un parámetro de tipo string
 }
 
-const ModalEliminarUsuario: React.FC<ModalEliminarUsuarioProps> = ({ show, onHide, usuario, onDelete }) => {
+const ModalEliminarUsuario: React.FC<ModalEliminarUsuarioProps> = ({ show, onHide, usuario }) => {
   const usuarioService = new UsuarioService();
   const url = import.meta.env.VITE_API_URL;
 
@@ -20,7 +20,6 @@ const ModalEliminarUsuario: React.FC<ModalEliminarUsuarioProps> = ({ show, onHid
         await usuarioService.delete(url + 'usuarios', usuario.id.toString());
         console.log('Se ha eliminado el usuario correctamente.');
         onHide(); // Cerramos el modal
-        onDelete(usuario.id.toString()); // Llama a la función onDelete con el ID del usuario como argumento
       } else {
         console.error('No se puede eliminar el usuario porque no se proporcionó un ID válido.');
       }
@@ -35,7 +34,7 @@ const ModalEliminarUsuario: React.FC<ModalEliminarUsuarioProps> = ({ show, onHid
         <Modal.Title>Eliminar Usuario</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>¿Estás seguro de que deseas eliminar al usuario "{usuario?.nombre}"?</p>
+        <p>¿Estás seguro de que deseas eliminar al usuario "{usuario?.username}"?</p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>
