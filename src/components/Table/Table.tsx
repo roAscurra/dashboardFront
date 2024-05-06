@@ -15,9 +15,11 @@ interface Column {
 interface Props {
   data: Row[];
   columns: Column[];
+  handleOpenEditModal: (rowData: Row) => void;
+  handleOpenDeleteModal: (rowData: Row) => void; // Nueva prop para manejar la apertura de la modal de eliminación
 }
 
-const TableComponent: React.FC<Props> = ({ data, columns }) => {
+const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, handleOpenDeleteModal }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -49,12 +51,13 @@ const TableComponent: React.FC<Props> = ({ data, columns }) => {
               ))}
               <TableCell>
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton aria-label="editar">
+                  <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton aria-label="eliminar">
+                  <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
                     <DeleteIcon />
                   </IconButton>
+
                 </Box>
               </TableCell>
             </TableRow>
