@@ -8,6 +8,7 @@ import Usuario from '../components/Usuario/Usuario';
 import { ListaCupones } from '../components/Marketing/Cupones';
 import Estadisticas from '../components/Estadisticas/Estadisticas';
 import BaseNavBar from '../components/common/BaseNavBar';
+import Promocion from '../components/Marketing/Promociones';
 import Categoria from '../components/Categoria/Categoria';
 
 export const AppRouter = () => {
@@ -28,10 +29,12 @@ export const AppRouter = () => {
               <Route path="/usuario" element={<Usuario />} />
               <Route path="/estadisticas" element={<Estadisticas />} />
               <Route path="/productos/lista" element={<ListaProductos />} />
-              <Route path="/cupones/lista" element={<ListaCupones />} />
-              {/* Agrega más rutas aquí */}
               <Route path="/categorias" element={<Categoria />} />
-          </Routes>
+              <Route path="/cupones/lista" element={<ListaCupones />} />
+              <Route path="/promociones/lista" element={<Promocion />} />
+
+              {/* Agrega más rutas aquí */}
+            </Routes>
           </CCol>
         </CRow>
       </CContainer>
