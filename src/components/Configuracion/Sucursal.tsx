@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import TableComponent from "../Table/Table";
+import TableComponent from '../Table/Table';
 import SearchBar from "../SearchBar/SearchBar";
-import { setPromocion } from "../../redux/slices/Promocion";
-import PromocionType from "../../types/Promocion";
-import PromocionService from "../../services/PromocionService";
+import Sucursal, { setSucursal } from "../../redux/slices/Sucursal";
+import SucursalType from "../../types/Sucursal";
+import SucursalesService from "../../services/SucursalService";
 import { toggleModal } from "../../redux/slices/Modal";
-import ModalPromocion from "../Modal/ModalPromociones";
 import { useCallback } from 'react';
+import ModalSucursal from "../Modal/ModalSucursal";
 
 interface Row {
   [key: string]: any;
@@ -21,61 +21,60 @@ interface Column {
   renderCell: (rowData: Row) => JSX.Element;
 }
 
-export const Promocion: React.FC = () => {
+export const Sucursales: React.FC = () => {
   // Obtiene la función de despacho de acciones de Redux.
   const dispatch = useAppDispatch();
-  // Obtiene el estado global de Redux relacionado con las promociones.
-  const globalPromociones = useAppSelector(
-    (state) => state.promocion);
+  // Obtiene el estado global de Redux relacionado con las sucursales.
+  const globalSucursales = useAppSelector(
+    (state) => state.sucursales);
   const url = import.meta.env.VITE_API_URL;
-  const promocionService = new PromocionService();
+  const sucursalesService = new SucursalesService();
 
   // Estado local para almacenar los datos filtrados.
   const [filteredData, setFilteredData] = useState<Row[]>([]);
 
   // Efecto que se ejecuta al cargar el componente o al cambiar el término de búsqueda.
 useEffect(() => {
-  const fetchPromociones = async () => {
+  const fetchSucursales = async () => {
     try {
-      // Obtiene todas las promociones.
-      const promociones = await promocionService.getAll(url + 'promociones')       
+      // Obtiene todas las sucursales.
+      const sucursales = await sucursalesService.getAll(url + 'sucursales')       
       // Establece los datos filtrados para su visualización.
-      setFilteredData(promociones); 
-      // Envía las promociones al estado global de Redux.
-      dispatch(setPromocion(promociones)); 
+      setFilteredData(sucursales); 
+      // Envía las sucursales al estado global de Redux.
+      dispatch(setSucursal(sucursales)); 
     } catch (error) {
-      console.error("Error al obtener las promociones:", error);
+      console.error("Error al obtener las sucursales:", error);
     }
   };
 
-  fetchPromociones();
-}, [dispatch, promocionService, url]);
+  fetchSucursales();
+}, [dispatch, sucursalesService, url]);
 
- // Función para manejar la búsqueda de promociones.
+ // Función para manejar la búsqueda de sucursales.
  const handleSearch = (query: string) => {
-  // Filtra las promociones globales según la consulta de búsqueda.
-  const filtered = globalPromociones.promocion.filter((promociones:any) =>
-    promociones.denominacion.toLowerCase().includes(query.toLowerCase())
+  // Filtra las sucursales globales según la consulta de búsqueda.
+  const filtered = globalSucursales.sucursal.filter((sucursales:any) =>
+    sucursales.denominacion.toLowerCase().includes(query.toLowerCase())
   );
 
-  console.log("hola")
+  console.log("hola conii")
 
   // Establece los datos filtrados para su visualización.
   setFilteredData(filtered);
 };
 
-  const handleAddPromocion = () => {
+  const handleAddSucursal = () => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
   
-  // Columnas de la tabla de promociones.
+  // Columnas de la tabla de sucursales.
   const columns: Column[] = [
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
-    { id: "fechaDesde", label: "Desde", renderCell: (rowData) => <>{rowData.fechaDesde}</> },
-    { id: "fechaHasta", label: "Hasta", renderCell: (rowData) => <>{rowData.fechaHasta}</> },
-    { id: "descripcionDescuento", label: "Descripción Descuento", renderCell: (rowData) => <>{rowData.descripcionDescuento}</> },
-    { id: "precioPromocional", label: "Precio Promocional", renderCell: (rowData) => <>{rowData.precioPromocional}</> },
+    { id: "horarioApertura", label: "Horario apertura", renderCell: (rowData) => <>{rowData.fechaDesde}</> },
+    { id: "horarioCierre", label: "Horario cierre", renderCell: (rowData) => <>{rowData.fechaHasta}</> },
+    { id: "sucursal", label: "Sucursal", renderCell: (rowData) => <>{rowData.descripcionDescuento}</> },
   ];
 
   return (
@@ -83,7 +82,7 @@ useEffect(() => {
       <Container>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", my: 1 }}>
           <Typography variant="h5" gutterBottom>
-            Promociones
+            Sucursales
           </Typography>
           <Button
             sx={{
@@ -94,21 +93,21 @@ useEffect(() => {
             }}
             variant="contained"
             startIcon={<Add />}
-            onClick={handleAddPromocion}
+            onClick={handleAddSucursal}
           >
-            Promoción
+            Sucursales
           </Button>
         </Box>
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={handleSearch} />
         </Box>
         <TableComponent data={filteredData} columns={columns} />
-           {/* Llamando a ModalPromociones con la prop fetchPromociones */}
-           <ModalPromocion getPromociones={setPromocion} />
+           {/* Llamando a ModalSucursal con la prop fetchSucursales */}
+           <ModalSucursal getSucursales={setSucursal} />
       </Container>
     </Box>
   );
 };
 
 
-export default Promocion;
+export default Sucursal;

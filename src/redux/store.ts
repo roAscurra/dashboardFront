@@ -6,6 +6,7 @@ import modalReducer from "./slices/Modal"; // Renombramos el slice y su reducer
 import categoriaReducer from "./slices/Categoria";
 import usuarioReducer from "./slices/Usuario";
 import { PromocionSlice } from './slices/Promocion';
+import { SucursalSlice } from './slices/Sucursal';
 
 
 // Configuración de la tienda de Redux
@@ -17,6 +18,7 @@ export const store = configureStore({
     categoria: categoriaReducer,
     usuario: usuarioReducer,
     promocion: PromocionSlice.reducer,
+    sucursales: SucursalSlice.reducer,
   },
 });
 
