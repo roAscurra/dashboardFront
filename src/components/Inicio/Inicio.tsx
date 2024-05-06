@@ -45,7 +45,7 @@ const EstadisticaContent = {
 const cardStyle = {
     width: "100%",
     height: "100%",
-    backgroundColor: "#D6A8FF", 
+    backgroundColor: "#b23e1f", 
 };
 
 //Renderización del componente

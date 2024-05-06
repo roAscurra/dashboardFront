@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -30,7 +30,7 @@ export default function PrimarySearchAppBar() {
 
   return (
     <Box sx={{ marginBottom: 1 }}>
-      <AppBar position="static" sx={{ bgcolor: '#B19CD9', height: 80, marginBottom: 1 }}>
+      <AppBar position="static" sx={{ bgcolor: "#b23e1f", height: 80, marginBottom: 1 }}>
         <Toolbar>
           <Typography
             variant="h6"

@@ -90,9 +90,9 @@ const Categoria = () => {
                     </Typography>
                     <Button
                         sx={{
-                            bgcolor: '#fb6376',
+                            bgcolor: "#cc5533",
                             '&:hover': {
-                                bgcolor: '#d73754',
+                                bgcolor: "#b23e1f",
                             },
                         }}
                         variant="contained"
