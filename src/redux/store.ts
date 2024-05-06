@@ -5,6 +5,8 @@ import articuloManufacturadoReducer from "./slices/ArticuloManufacturado"; // Re
 import modalReducer from "./slices/Modal"; // Renombramos el slice y su reducer
 import categoriaReducer from "./slices/Categoria";
 import usuarioReducer from "./slices/Usuario";
+import { PromocionSlice } from './slices/Promocion';
+
 
 // Configuración de la tienda de Redux
 export const store = configureStore({
@@ -13,7 +15,8 @@ export const store = configureStore({
     articuloManufacturado: articuloManufacturadoReducer, // Cambiamos el nombre de la clave para que coincida con el nombre del slice
     modal: modalReducer, // Cambiamos el nombre de la clave para que coincida con el nombre del slice
     categoria: categoriaReducer,
-    usuario: usuarioReducer
+    usuario: usuarioReducer,
+    promocion: PromocionSlice.reducer,
   },
 });
 
