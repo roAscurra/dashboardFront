@@ -6,6 +6,7 @@ import Inicio from '../components/Inicio/Inicio';
 import Usuario from '../components/Usuario/Usuario';
 import { ListaCupones } from '../components/Marketing/Cupones';
 import Estadisticas from '../components/Estadisticas/Estadisticas';
+import Categoria from '../components/Categoria/Categoria';
 
 export const AppRouter = () => {
   return (
@@ -25,6 +26,7 @@ export const AppRouter = () => {
             <Route path="/productos/lista" element={<ListaProductos />} />
             <Route path="/cupones/lista" element={<ListaCupones />} />
             {/* Agrega más rutas aquí */}
+            <Route path="/categorias" element={<Categoria />} />
           </Routes>
         </CCol>
       </CRow>
