@@ -1,35 +1,28 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import Usuario from '../../types/UsuarioTypes';
 
-interface Usuario {
-  id: string;
-  nombre: string;
-  apellido: string;
-  email: string;
-  rol: string;
-  // Agrega otras propiedades del usuario si las tienes
+interface InitialState {
+  usuario: Usuario[]; // Cambia el tipo del estado a una matriz de Usuario
 }
 
-interface UsuariosState {
-  usuarios: Usuario[];
-  // Agrega otros estados relacionados con los usuarios si los tienes
+const initialState: InitialState = {
+  usuario: [],
 }
 
-const initialState: UsuariosState = {
-  usuarios: [],
-  // Inicializa otros estados relacionados con los usuarios si los tienes
-};
-
-const usuariosSlice = createSlice({
-  name: 'usuarios',
+export const usuariosSlice = createSlice({
+  name: 'usuarioState',
   initialState,
   reducers: {
-    setUsuarios(state, action: PayloadAction<Usuario[]>) {
-      state.usuarios = action.payload;
+    setUsuario: (state, action: PayloadAction<Usuario[]>) => {
+      state.usuario = action.payload;
     },
-    // Agrega otras reducers si es necesario
+    resetUsuario: (state) => {
+      state.usuario = [];
+    }
   },
-});
+})
 
-export const { setUsuarios } = usuariosSlice.actions;
+export const { setUsuario, resetUsuario } = usuariosSlice.actions;
 
 export default usuariosSlice.reducer;

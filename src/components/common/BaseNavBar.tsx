@@ -1,79 +1,50 @@
-import React from 'react';
+import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
+import LunchDiningOutlinedIcon from '@mui/icons-material/LunchDiningOutlined';
 import Divider from '@mui/material/Divider';
-import { Link } from 'react-router-dom';
 
-interface LinkItem {
-  title: string;
-  to: string;
-}
+export default function PrimarySearchAppBar() {
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-interface BaseNavBarProps {
-  links: LinkItem[];
-}
-
-const BaseNavBar: React.FC<BaseNavBarProps> = ({ links }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  const isMenuOpen = Boolean(anchorEl);
-
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleProfileMenuOpen = () => {
+    setDialogOpen(true);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+  const handleDialogClose = () => {
+    setDialogOpen(false);
   };
-
-  const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      {links.map((link, index) => (
-        <MenuItem key={index} onClick={handleMenuClose}>
-          <Link to={link.to}>{link.title}</Link>
-        </MenuItem>
-      ))}
-      <Divider />
-      <MenuItem onClick={handleMenuClose}>
-        <Link to="/logout">Cerrar Sesión</Link>
-      </MenuItem>
-    </Menu>
-  );
 
   return (
-    <Box sx={{ marginBottom: 2 }}> {/* Ajusta el margen inferior */}
-      <AppBar position="static" sx={{ bgcolor: '#B19CD9', height: 80, marginBottom: 1 }}> {/* Ajusta la altura y el margen inferior */}
+    <Box sx={{ marginBottom: 1 }}>
+      <AppBar position="static" sx={{ bgcolor: "#b23e1f", height: 80, marginBottom: 1 }}>
         <Toolbar>
-          <Typography variant="h6" noWrap sx={{ flexGrow: 1, fontSize: '2rem' }}>
-            <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>Buen Sabor</Link>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1, justifyContent: 'center' ,fontSize: '1.7rem' }}
+          >
+            <LunchDiningOutlinedIcon sx={{mr: 2}}/>
+            Buen Sabor
           </Typography>
           <IconButton
-            size="small"
+            size="large"
             edge="end"
             aria-label="account of current user"
-            aria-controls={menuId}
-            aria-haspopup="true"
             onClick={handleProfileMenuOpen}
             color="inherit"
           >
@@ -81,9 +52,30 @@ const BaseNavBar: React.FC<BaseNavBarProps> = ({ links }) => {
           </IconButton>
         </Toolbar>
       </AppBar>
-      {renderMenu}
+      <Dialog onClose={handleDialogClose} open={dialogOpen}>
+        <DialogTitle>Opciones de Usuario</DialogTitle>
+        <List>
+          <ListItem button>
+            <ListItemIcon>
+              <Person2OutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Perfil" />
+          </ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <SettingsOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Ajustes" />
+          </ListItem>
+          <Divider />
+          <ListItem button>
+            <ListItemIcon>
+              <LoginOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Cerrar Sesión" />
+          </ListItem>
+        </List>
+      </Dialog>
     </Box>
   );
-};
-
-export default BaseNavBar;
+}
