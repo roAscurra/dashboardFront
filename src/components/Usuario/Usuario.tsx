@@ -5,8 +5,10 @@ import { useAppDispatch } from "../../hooks/redux";
 import TableComponent from "../Table/Table";
 import SearchBar from "../SearchBar/SearchBar";
 import UsuarioService from "../../services/UsuarioService";
-import Usuario, { setUsuarios } from "../../redux/slices/Usuario";
+import  { setUsuarios } from "../../redux/slices/Usuario";
 import ModalUsuario from "../Modal/ModalUsuario";
+import ModalEliminarUsuario from "../Modal/ModalEliminarUsuario";
+import Usuario from "../../types/UsuarioTypes";
 
 interface Row {
   [key: string]: any;
@@ -25,6 +27,8 @@ export const ListaUsuarios = () => {
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false); // Estado para controlar la apertura y cierre del modal
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false); // Estado para controlar la apertura y cierre del modal de eliminar
+  const [usuarioToDelete, setUsuarioToDelete] = useState<Usuario | null>(null); // Estado para el usuario seleccionado para eliminar
 
   // Definiendo fetchUsuarios con useCallback
   const fetchUsuarios = useCallback(async () => {
@@ -59,6 +63,40 @@ export const ListaUsuarios = () => {
   const handleCloseModal = () => {
     // Cierra el modal
     setModalOpen(false);
+  };
+
+  // Función para abrir el modal de eliminar usuario
+  const handleOpenDeleteModal = (rowData: Row) => {
+    // Establecer el usuario seleccionado para eliminar
+    setUsuarioToDelete(rowData as Usuario);
+    // Abrir el modal de eliminar
+    setDeleteModalOpen(true);
+  };
+
+  // Función para cerrar el modal de eliminar usuario
+  const handleCloseDeleteModal = () => {
+    // Resetear el usuario seleccionado para eliminar
+    setUsuarioToDelete(null);
+    // Cerrar el modal de eliminar
+    setDeleteModalOpen(false);
+  };
+
+  // Función para eliminar el usuario
+  const handleDeleteUsuario = async () => {
+    try {
+      if (usuarioToDelete && usuarioToDelete.id) {
+        await usuarioService.delete(url + 'usuarios', usuarioToDelete.id.toString());
+        console.log('Usuario eliminado correctamente.');
+        // Actualizar la lista de usuarios después de la eliminación
+        fetchUsuarios();
+        // Cerrar el modal de eliminar
+        setDeleteModalOpen(false);
+      } else {
+        console.error('No se puede eliminar el usuario porque no se proporcionó un ID válido.');
+      }
+    } catch (error) {
+      console.error('Error al eliminar el usuario:', error);
+    }
   };
 
   const columns: Column[] = [
@@ -119,11 +157,16 @@ export const ListaUsuarios = () => {
             <CircularProgress />
           </Box>
         ) : (
-          <TableComponent data={filterData} columns={columns} />
+          <TableComponent data={filterData} columns={columns} handleOpenEditModal={function (rowData: Row): void {
+              throw new Error("Function not implemented.");
+            }} handleOpenDeleteModal={handleOpenDeleteModal} />
         )}
 
         {/* Modal de Usuario */}
         <ModalUsuario open={modalOpen} onClose={handleCloseModal} getUsuarios={fetchUsuarios} />
+
+        {/* Modal de Eliminar Usuario */}
+        <ModalEliminarUsuario show={deleteModalOpen} onHide={handleCloseDeleteModal} usuario={usuarioToDelete} onDelete={handleDeleteUsuario} />
       </Container>
     </Box>
   );
