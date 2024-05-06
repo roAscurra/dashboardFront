@@ -5,48 +5,43 @@ import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import UsuarioService from "../../services/UsuarioService";
 import Usuario from "../../types/UsuarioTypes";
+import { toggleModal } from "../../redux/slices/Modal";
 
 interface ModalUsuarioProps {
-  open: boolean;
-  onClose: () => void; // Asegúrate de incluir esta propiedad
   getUsuarios: () => void;
   usuarioToEdit?: Usuario;
 }
 
-const ModalUsuario: React.FC<ModalUsuarioProps> = ({ open, onClose, getUsuarios, usuarioToEdit }) => {
+const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, usuarioToEdit }) => {
   const usuarioService = new UsuarioService();
   const url = import.meta.env.VITE_API_URL;
 
   // Definir las reglas de validación para el formulario usando Yup
   const validationSchema = Yup.object({
-    nombre: Yup.string().required("Campo requerido"),
-    apellido: Yup.string().required("Campo requerido"),
-    email: Yup.string().email("Email inválido").required("Campo requerido"),
-    rol: Yup.string().required("Campo requerido"),
+    username: Yup.string().required("Campo requerido"),
+    auth0Id: Yup.string().required("Campo requerido"),
   });
 
   // Valores iniciales del formulario, si hay un usuario para editar, se usan esos valores
   const initialValues: Usuario = usuarioToEdit
     ? usuarioToEdit
     : {
-        id: 0,
-        nombre: "",
-        apellido: "",
-        email: "",
-        rol: "",
-      };
+      id: 0,
+      auth0Id: "",
+      username: ""
+    };
 
   const modal = useAppSelector((state) => state.modal.modal);
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
-    onClose(); // Llama a la función onClose proporcionada por props
+    dispatch(toggleModal({ modalName: "modal" }));
   };
 
   return (
     <Modal
       id={"modal"}
-      show={open}
+      show={modal}
       onHide={handleClose}
       size={"lg"}
       backdrop="static"
@@ -81,24 +76,14 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ open, onClose, getUsuarios,
           {() => (
             <Form autoComplete="off">
               <div className="mb-4">
-                <label htmlFor="nombre">Nombre:</label>
-                <Field name="nombre" type="text" className="form-control mt-2" />
-                <ErrorMessage name="nombre" className="error-message" component="div" />
+                <label htmlFor="username">Usuario:</label>
+                <Field name="username" type="text" className="form-control mt-2" />
+                <ErrorMessage name="username" className="error-message" component="div" />
               </div>
               <div className="mb-4">
-                <label htmlFor="apellido">Apellido:</label>
-                <Field name="apellido" type="text" className="form-control mt-2" />
-                <ErrorMessage name="apellido" className="error-message" component="div" />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="email">Email:</label>
-                <Field name="email" type="email" className="form-control mt-2" />
-                <ErrorMessage name="email" className="error-message" component="div" />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="rol">Rol:</label>
-                <Field name="rol" type="text" className="form-control mt-2" />
-                <ErrorMessage name="rol" className="error-message" component="div" />
+                <label htmlFor="auth0Id">Auth0Id:</label>
+                <Field name="auth0Id" type="text" className="form-control mt-2" />
+                <ErrorMessage name="auth0Id" className="error-message" component="div" />
               </div>
               <div className="d-flex justify-content-end">
                 <Button variant="outline-success" type="submit" className="custom-button">
