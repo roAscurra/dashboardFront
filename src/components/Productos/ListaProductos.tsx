@@ -59,7 +59,7 @@ export const ListaProductos = () => {
         await productoService.delete(url + 'productos', productToEdit.id.toString());
         console.log('Se ha eliminado correctamente.');
         handleCloseDeleteModal(); // Cerrar el modal de eliminación
-        fetchProductos(); // Actualizar la lista de cupones después de la eliminación
+        fetchProductos(); 
       } else {
         console.error('No se puede eliminar el producto porque no se proporcionó un ID válido.');
       }
