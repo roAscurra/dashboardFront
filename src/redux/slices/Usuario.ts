@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import Usuario from '../../types/Usuario';
+import Usuario from '../../types/UsuarioTypes';
 
 interface InitialState {
   usuarios: Usuario[]; // Cambia el tipo del estado a una matriz de Usuario

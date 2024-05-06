@@ -3,9 +3,8 @@ import { Button, Modal } from "react-bootstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { toggleModal } from "../../redux/slices/Modal";
 import UsuarioService from "../../services/UsuarioService";
-import Usuario from "../../types/Usuario";
+import Usuario from "../../types/UsuarioTypes";
 
 interface ModalUsuarioProps {
   open: boolean;
