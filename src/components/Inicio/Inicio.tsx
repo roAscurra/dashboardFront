@@ -16,14 +16,14 @@ const promocionesContent = {
     url: 'https://img.freepik.com/foto-gratis/venta-caliente-al-menor-moneda-megafono_23-2149656621.jpg?t=st=1714776543~exp=1714780143~hmac=54a4194d80d89624e947db99cc430118ddc6fc3d874ade9a13db5551051106c7&w=740',
     title: 'Promociones',
     content: 'Aquí puedes mostrar las promociones y ofertas especiales disponibles. Personaliza tus ofertas para atraer a tus clientes y hacer que vuelvan por más.',
-    verMasUrl: '/productos/lista',
+    verMasUrl: '/promociones/lista',
 };
 
 const sucursalesContent = {
     url: 'https://img.freepik.com/foto-gratis/vista-3d-mapa_23-2150471709.jpg?t=st=1714849042~exp=1714852642~hmac=216f13961f62fdd99a602c405c84ee1a48441c83fa2133179c9b1ec9f5760ed6&w=740',
     title: 'Sucursales',
     content: 'Muestra información sobre las diferentes sucursales de tu negocio. Puedes incluir direcciones, horarios de atención y cualquier otra información relevante.',
-    verMasUrl: '/productos/lista',
+    verMasUrl: '/sucursales/lista',
 };
 
 const CuponesContent = {
