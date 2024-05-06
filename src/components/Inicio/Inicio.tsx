@@ -33,6 +33,13 @@ const CuponesContent = {
     verMasUrl: '/cupones/lista',
 };
 
+const EstadisticaContent = {
+    url: 'https://img.freepik.com/foto-gratis/grafico-barras-crecimiento-marketing-flecha-icono-compras-linea-signo-o-simbolo-concepto-comercio-electronico-sobre-fondo-azul-ilustracion-3d_56104-1787.jpg?t=st=1714963640~exp=1714967240~hmac=8552b84f75da0abe3845183fa21489047a486ef00e1df37dc51d6223cc008841&w=740',
+    title: 'Estadistica',
+    content: 'En esta sección encontraras la información general de tu empresa',
+    verMasUrl: '/estadisticas',
+};
+
 
 // Estilo para las tarjetas
 const cardStyle = {
@@ -80,6 +87,13 @@ const Inicio: React.FC = () => {
                     <Grid item xs={12} md={4}>
                         <Box sx={cardStyle}>
                             <InicioCard content={CuponesContent} />
+
+                        </Box>
+                    </Grid>
+
+                    <Grid item xs={12} md={4}>
+                        <Box sx={cardStyle}>
+                            <InicioCard content={EstadisticaContent} />
 
                         </Box>
                     </Grid>
