@@ -5,11 +5,24 @@ import BaseBar from "./BaseBar";
 import BasePie from "./BasePie";
 
 // Contenido para las tarjetas de inicio
+
+const EstadisticaContent = {
+    url: 'https://img.freepik.com/foto-gratis/grafico-barras-crecimiento-marketing-flecha-icono-compras-linea-signo-o-simbolo-concepto-comercio-electronico-sobre-fondo-azul-ilustracion-3d_56104-1787.jpg?t=st=1714963640~exp=1714967240~hmac=8552b84f75da0abe3845183fa21489047a486ef00e1df37dc51d6223cc008841&w=740',
+    title: 'Estadistica',
+    content: 'En esta sección encontraras la información general de tu empresa',
+    verMasUrl: '/estadisticas',
+};
 const productosContent = {
     url: 'https://img.freepik.com/foto-gratis/vista-superior-arreglo-comida-sobre-fondo-madera_23-2148308806.jpg?t=st=1714776756~exp=1714780356~hmac=6821528b900e5639c07b467f61d32dc6bcc068450f060df2e988f5914990cbe6&w=740',
     title: 'Productos',
     content: 'Muestra los productos disponibles en tu tienda. Agrega nuevos productos o actualiza los existentes para mejorar la experiencia de compra de tus clientes.',
     verMasUrl: '/productos/lista',
+};
+const categoriaContent = {
+    url: 'https://img.freepik.com/foto-gratis/concepto-icono-tecnologia-aplicacion-gadget_53876-120053.jpg?t=st=1715115510~exp=1715119110~hmac=cc41b90c7fb9a39adee577b1e9b724f88dd37766aa85494ae06bff537d9d7cf6&w=740                                                                                              ',
+    title: 'Categoria',
+    content: '                                 Descubre nuestra selección de productos por categoría.',
+    verMasUrl: '/categorias',
 };
 
 const promocionesContent = {
@@ -33,12 +46,7 @@ const CuponesContent = {
     verMasUrl: '/cupones/lista',
 };
 
-const EstadisticaContent = {
-    url: 'https://img.freepik.com/foto-gratis/grafico-barras-crecimiento-marketing-flecha-icono-compras-linea-signo-o-simbolo-concepto-comercio-electronico-sobre-fondo-azul-ilustracion-3d_56104-1787.jpg?t=st=1714963640~exp=1714967240~hmac=8552b84f75da0abe3845183fa21489047a486ef00e1df37dc51d6223cc008841&w=740',
-    title: 'Estadistica',
-    content: 'En esta sección encontraras la información general de tu empresa',
-    verMasUrl: '/estadisticas',
-};
+
 
 
 // Estilo para las tarjetas
@@ -68,9 +76,27 @@ const Inicio: React.FC = () => {
                     </Grid>
                 </Grid>
                 <Grid container spacing={3} sx={{ alignContent: 'center' , justifyContent: 'center'}}>
+                <Grid item xs={12} md={4}>
+                        <Box sx={cardStyle}>
+                            <InicioCard content={EstadisticaContent} />
+
+                        </Box>
+                    </Grid>
                     <Grid item xs={12} md={4}>
                         <Box sx={cardStyle}>
                             <InicioCard content={productosContent} />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <Box sx={cardStyle}>
+                            <InicioCard content={categoriaContent} />
+
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <Box sx={cardStyle}>
+                            <InicioCard content={CuponesContent} />
+
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={4}>
@@ -84,19 +110,9 @@ const Inicio: React.FC = () => {
                         </Box>
                     </Grid>
 
-                    <Grid item xs={12} md={4}>
-                        <Box sx={cardStyle}>
-                            <InicioCard content={CuponesContent} />
+                    
 
-                        </Box>
-                    </Grid>
-
-                    <Grid item xs={12} md={4}>
-                        <Box sx={cardStyle}>
-                            <InicioCard content={EstadisticaContent} />
-
-                        </Box>
-                    </Grid>
+                    
                 </Grid>
             </Container>
         </Box>
