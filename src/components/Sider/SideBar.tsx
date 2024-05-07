@@ -18,14 +18,24 @@ const Sidebar: React.FC = () => {
         className="border-end d-flex flex-column"
         style={{ height: "100vh" }}
       >
-        <CSidebarNav>
-          <CNavTitle>Dashboard</CNavTitle>
-          <CNavItem>
-            <Link to="/usuario" className="nav-link">
-              <CIcon customClassName="nav-icon" icon={icon.cilPeople} />
-              Usuarios
-            </Link>
-          </CNavItem>
+        <CSidebarNav style={{ display: "flex", flexDirection: "column" }}>
+          <CNavTitle style={{ marginBottom: "10px" }}>Dashboard</CNavTitle>
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            backgroundColor: "#ffeeba",
+            color: "#856404",
+            padding: "5px",
+            fontWeight: "bold",
+            borderRadius: "5px",
+          }}>
+            <CNavItem>
+              <Link to="/usuario" className="nav-link" style={{ color: "#856404" }}>
+                <CIcon customClassName="nav-icon" icon={icon.cilPeople} />
+                Usuarios
+              </Link>
+            </CNavItem>
+          </div>
           <CNavItem>
             <Link to="/" className="nav-link">
               <CIcon customClassName="nav-icon" icon={icon.cilHamburgerMenu} />
