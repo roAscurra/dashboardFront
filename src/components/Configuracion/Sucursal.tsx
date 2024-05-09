@@ -29,7 +29,7 @@ export const Sucursales: React.FC = () => {
 
   // Estado local para almacenar los datos filtrados.
   const [filteredData, setFilteredData] = useState<Row[]>([]);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  //const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // Efecto que se ejecuta al cargar el componente o al cambiar el término de búsqueda.
   useEffect(() => {
@@ -68,7 +68,7 @@ export const Sucursales: React.FC = () => {
 
   const handleOpenDeleteModal = () => {
 
-    setDeleteModalOpen(true);
+   // setDeleteModalOpen(true);
   };
 
   const handleOpenEditModal = () => {
