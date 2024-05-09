@@ -8,7 +8,7 @@ import Promociones from "../../types/Promocion";
 import Promocion from "../../types/Promocion";
 
 interface ModalPromocionProps {
-  getPromociones: (arg: any) => void;
+  getPromociones: () => void;
   promocionToEdit?: Promociones;
 }
 
