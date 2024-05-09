@@ -59,7 +59,7 @@ export const ListaProductos = () => {
         await productoService.delete(url + 'productos', productToEdit.id.toString());
         console.log('Se ha eliminado correctamente.');
         handleCloseDeleteModal(); // Cerrar el modal de eliminación
-        fetchProductos(); 
+        fetchProductos();
       } else {
         console.error('No se puede eliminar el producto porque no se proporcionó un ID válido.');
       }
@@ -115,17 +115,7 @@ export const ListaProductos = () => {
 
   // Definición de las columnas para la tabla de artículos manufacturados
   const columns: Column[] = [
-    {
-      id: "imagen",
-      label: "Imagen",
-      renderCell: (rowData) => (
-        <img
-          src={rowData.imagenes.length > 0 ? rowData.imagenes[0].url : ""}
-          alt="Imagen"
-          style={{ width: 50, height: 50 }}
-        />
-      ),
-    },
+    { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
     { id: "precioVenta", label: "Precio", renderCell: (rowData) => <>{rowData.precioVenta}</> },
     { id: "descripcion", label: "Descripción", renderCell: (rowData) => <>{rowData.descripcion}</> },
