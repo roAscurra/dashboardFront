@@ -3,6 +3,7 @@ import Imagen from "./Imagen";
 import UnidadMedida from "./UnidadMedida";
 
 interface IArticuloInsumo extends DataModel<IArticuloInsumo>{
+    id: number;
     denominacion: string;
     precioVenta: number;
     imagenes: Imagen [];

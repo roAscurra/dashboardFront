@@ -47,8 +47,6 @@ const CuponesContent = {
 };
 
 
-
-
 // Estilo para las tarjetas
 const cardStyle = {
     width: "100%",
@@ -109,10 +107,6 @@ const Inicio: React.FC = () => {
                             <InicioCard content={sucursalesContent} />
                         </Box>
                     </Grid>
-
-                    
-
-                    
                 </Grid>
             </Container>
         </Box>
