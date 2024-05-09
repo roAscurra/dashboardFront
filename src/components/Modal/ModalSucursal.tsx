@@ -7,7 +7,7 @@ import SucursalService from "../../services/SucursalService";
 import Sucursal from "../../types/Sucursal";
 
 interface ModalSucursalProps {
-  getSucursal: () => void;
+  getSucursal: (arg:any) => void;
   sucursalToEdit?: Sucursal;
 }
 

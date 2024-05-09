@@ -103,7 +103,7 @@ useEffect(() => {
         </Box>
         <TableComponent data={filteredData} columns={columns} />
            {/* Llamando a ModalSucursal con la prop fetchSucursales */}
-           <ModalSucursal getSucursales={setSucursal} />
+           <ModalSucursal getSucursal={setSucursal} />
       </Container>
     </Box>
   );
