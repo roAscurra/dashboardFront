@@ -7,7 +7,6 @@ import SearchBar from "../SearchBar/SearchBar";
 import Sucursal, { setSucursal } from "../../redux/slices/Sucursal";
 import SucursalesService from "../../services/SucursalService";
 import { toggleModal } from "../../redux/slices/Modal";
-import ModalSucursal from "../Modal/ModalSucursal";
 
 interface Row {
   [key: string]: any;
@@ -112,7 +111,6 @@ export const Sucursales: React.FC = () => {
         </Box>
         <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />
         {/* Llamando a ModalSucursal con la prop fetchSucursales */}
-        <ModalSucursal getSucursal={setSucursal} />
       </Container>
     </Box>
   );

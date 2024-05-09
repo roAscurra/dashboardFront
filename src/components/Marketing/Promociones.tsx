@@ -5,11 +5,8 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import TableComponent from "../Table/Table";
 import SearchBar from "../SearchBar/SearchBar";
 import { setPromocion } from "../../redux/slices/Promocion";
-import PromocionType from "../../types/Promocion";
 import PromocionService from "../../services/PromocionService";
 import { toggleModal } from "../../redux/slices/Modal";
-import ModalPromocion from "../Modal/ModalPromociones";
-import { useCallback } from 'react';
 
 interface Row {
   [key: string]: any;
@@ -32,6 +29,7 @@ export const Promocion: React.FC = () => {
 
   // Estado local para almacenar los datos filtrados.
   const [filteredData, setFilteredData] = useState<Row[]>([]);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // Efecto que se ejecuta al cargar el componente o al cambiar el término de búsqueda.
 useEffect(() => {
@@ -68,6 +66,17 @@ useEffect(() => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
+  const handleOpenDeleteModal = () => {
+
+    setDeleteModalOpen(true);
+  };
+
+  const handleOpenEditModal = () => {
+
+    dispatch(toggleModal({ modalName: 'modal' }));
+  };
+
+
   
   // Columnas de la tabla de promociones.
   const columns: Column[] = [
@@ -102,9 +111,7 @@ useEffect(() => {
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={handleSearch} />
         </Box>
-        <TableComponent data={filteredData} columns={columns} />
-           {/* Llamando a ModalPromociones con la prop fetchPromociones */}
-           <ModalPromocion getPromociones={setPromocion} />
+        <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />
       </Container>
     </Box>
   );
