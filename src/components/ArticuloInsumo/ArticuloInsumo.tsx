@@ -37,11 +37,11 @@ export const ListaArticulosInsumo = () => {
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
-      unidadMedida: rowData.unidadMedida,
       precioCompra: rowData.precioCompra,
       stockActual: rowData.stockActual,
       stockMaximo: rowData.stockMaximo,
       esParaElaborar: rowData.esParaElaborar,
+      unidadMedida: rowData.unidadMedida?.denominacion,
     });
     setDeleteModalOpen(true);
   };
@@ -73,8 +73,9 @@ export const ListaArticulosInsumo = () => {
   const fetchArticulosInsumo = useCallback(async () => {
     try {
       const articulosInsumo = await articuloInsumoService.getAll(
-        url + "articulos-insumo"
+        url + "articulosInsumos"
       );
+      console.log(articulosInsumo)
       dispatch(setArticuloInsumo(articulosInsumo));
       setFilterData(articulosInsumo);
     } catch (error) {
@@ -97,11 +98,11 @@ export const ListaArticulosInsumo = () => {
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
-      unidadMedida: rowData.unidadMedida,
       precioCompra: rowData.precioCompra,
       stockActual: rowData.stockActual,
       stockMaximo: rowData.stockMaximo,
       esParaElaborar: rowData.esParaElaborar,
+      unidadMedida: rowData.unidadMedida?.denominacion,
     });
     dispatch(toggleModal({ modalName: "modal" }));
   };
@@ -113,66 +114,82 @@ export const ListaArticulosInsumo = () => {
     setFilterData(filtered);
   };
 
+  // const columns: Column[] = [
+  //   { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
+  //   {
+  //     id: "denominacion",
+  //     label: "Nombre",
+  //     renderCell: (rowData) => <>{rowData.denominacion}</>,
+  //   },
+  //   {
+  //     id: "precioVenta",
+  //     label: "Precio de Venta",
+  //     renderCell: (rowData) => <>{rowData.precioVenta}</>,
+  //   },
+  //   {
+  //     id: "imagenes",
+  //     label: "Imágenes",
+  //     renderCell: (rowData) => (
+  //       <>
+  //         {rowData.imagenes.map((imagen: string, index: number) => (
+  //           <img key={index} src={imagen} alt={`Imagen ${index}`} />
+  //         ))}
+  //       </>
+  //     ),
+  //   },
+  //   {
+  //     id: "unidadMedida",
+  //     label: "Unidad de Medida",
+  //     renderCell: (rowData) => <>{rowData.unidadMedida.nombre}</>,
+  //   },
+  //   {
+  //     id: "precioCompra",
+  //     label: "Precio de Compra",
+  //     renderCell: (rowData) => <>{rowData.precioCompra}</>,
+  //   },
+  //   {
+  //     id: "stockActual",
+  //     label: "Stock Actual",
+  //     renderCell: (rowData) => <>{rowData.stockActual}</>,
+  //   },
+  //   {
+  //     id: "stockMaximo",
+  //     label: "Stock Máximo",
+  //     renderCell: (rowData) => <>{rowData.stockMaximo}</>,
+  //   },
+  //   {
+  //     id: "esParaElaborar",
+  //     label: "¿Es para Elaborar?",
+  //     renderCell: (rowData) => <>{rowData.esParaElaborar ? "Sí" : "No"}</>,
+  //   },
+  //   {
+  //     id: "acciones",
+  //     label: "Acciones",
+  //     renderCell: (rowData) => (
+  //       <div>
+  //         <Button onClick={() => handleOpenEditModal(rowData)}>Editar</Button>
+  //       </div>
+  //     ),
+  //   },
+  // ];
   const columns: Column[] = [
     { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
-    {
-      id: "denominacion",
-      label: "Nombre",
-      renderCell: (rowData) => <>{rowData.denominacion}</>,
-    },
-    {
-      id: "precioVenta",
-      label: "Precio de Venta",
-      renderCell: (rowData) => <>{rowData.precioVenta}</>,
-    },
-    {
-      id: "imagenes",
-      label: "Imágenes",
-      renderCell: (rowData) => (
-        <>
-          {rowData.imagenes.map((imagen: string, index: number) => (
-            <img key={index} src={imagen} alt={`Imagen ${index}`} />
-          ))}
-        </>
-      ),
-    },
-    {
-      id: "unidadMedida",
-      label: "Unidad de Medida",
-      renderCell: (rowData) => <>{rowData.unidadMedida.nombre}</>,
-    },
-    {
-      id: "precioCompra",
-      label: "Precio de Compra",
-      renderCell: (rowData) => <>{rowData.precioCompra}</>,
-    },
-    {
-      id: "stockActual",
-      label: "Stock Actual",
-      renderCell: (rowData) => <>{rowData.stockActual}</>,
-    },
-    {
-      id: "stockMaximo",
-      label: "Stock Máximo",
-      renderCell: (rowData) => <>{rowData.stockMaximo}</>,
-    },
-    {
-      id: "esParaElaborar",
-      label: "¿Es para Elaborar?",
-      renderCell: (rowData) => <>{rowData.esParaElaborar ? "Sí" : "No"}</>,
-    },
-    {
-      id: "acciones",
-      label: "Acciones",
-      renderCell: (rowData) => (
-        <div>
-          <Button onClick={() => handleOpenEditModal(rowData)}>Editar</Button>
-        </div>
-      ),
-    },
-  ];
+    { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
+    { id: "precioVenta", label: "Precio Venta", renderCell: (rowData) => <>{rowData.precioVenta}</> },
+    { id: "precioCompra", label: "Precio Compra", renderCell: (rowData) => <>{rowData.precioCompra}</> },
+    { id: "stockActual", label: "Stock Actual", renderCell: (rowData) => <>{rowData.stockActual}</> },
+    { id: "stockMaximo", label: "Stock Maximo", renderCell: (rowData) => <>{rowData.stockMaximo}</> },
+    // { id: "unidadMedida", label: "Unidad de Medida", renderCell: (rowData) => <>{rowData.unidadMedida ? rowData.unidadMedida.denominacion : ""}</> },
 
-  return (
+    // Agregar columna de acciones para editar
+    // { id: "acciones", label: "Acciones", renderCell: (rowData) => (
+    //   <div>
+    //     <Button onClick={() => handleOpenEditModal(rowData)}>Editar</Button>
+    //   </div>
+
+    // )},
+  ];
+  return (  
     <Box
       component="main"
       sx={{
