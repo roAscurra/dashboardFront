@@ -20,17 +20,23 @@ const Sidebar: React.FC = () => {
       >
         <CSidebarNav style={{ display: "flex", flexDirection: "column" }}>
           <CNavTitle style={{ marginBottom: "10px" }}>Dashboard</CNavTitle>
-          <div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            backgroundColor: "#ffeeba",
-            color: "#856404",
-            padding: "5px",
-            fontWeight: "bold",
-            borderRadius: "5px",
-          }}>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              backgroundColor: "#ffeeba",
+              color: "#856404",
+              padding: "5px",
+              fontWeight: "bold",
+              borderRadius: "5px",
+            }}
+          >
             <CNavItem>
-              <Link to="/usuario" className="nav-link" style={{ color: "#856404" }}>
+              <Link
+                to="/usuario"
+                className="nav-link"
+                style={{ color: "#856404" }}
+              >
                 <CIcon customClassName="nav-icon" icon={icon.cilPeople} />
                 Usuarios
               </Link>
@@ -73,7 +79,13 @@ const Sidebar: React.FC = () => {
               </Link>
             </CNavItem>
           </CNavGroup>
-
+          <CNavItem>
+              <Link
+                to="/ArticuloInsumo/Lista"className="nav-link">
+                <CIcon customClassName="nav-icon" icon={icon.cilClipboard} />
+                Articulo Insumo
+              </Link>
+          </CNavItem>
           <CNavGroup
             toggler={
               <>

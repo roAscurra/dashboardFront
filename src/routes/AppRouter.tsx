@@ -11,6 +11,7 @@ import BaseNavBar from '../components/common/BaseNavBar';
 import Promocion from '../components/Marketing/Promociones';
 import Categoria from '../components/Categoria/Categoria';
 import  { Sucursales } from '../components/Configuracion/Sucursal';
+import { ListaArticulosInsumo } from '../components/ArticuloInsumo/ArticuloInsumo';
 
 export const AppRouter = () => {
   return (
@@ -26,6 +27,7 @@ export const AppRouter = () => {
           {/* Contenido principal */}
           <CCol>
             <Routes>
+              <Route path='/ArticuloInsumo/Lista' element={< ListaArticulosInsumo/>}></Route>
               <Route path="/" element={<Inicio />} />
               <Route path="/usuario" element={<Usuario />} />
               <Route path="/estadisticas" element={<Estadisticas />} />

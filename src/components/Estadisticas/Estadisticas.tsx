@@ -5,11 +5,12 @@ import { Card, CardContent, Typography, Grid } from '@mui/material';
 import * as icon from "@coreui/icons";
 import CIcon from '@coreui/icons-react';
 
+
 const productoService = new ProductoService();
 const cuponesService = new CuponesService();
 
 const Estadisticas = () => {
-  const heig = { height: '24px', paddingRight: '10px' }; // Define el estilo de altura con el padding-right ajustado
+  const heig = { height: '24px', paddingRight: '10px' };
   const url = import.meta.env.VITE_API_URL;
   const [totalProductos, setTotalProductos] = useState<number>(0);
   const [denominacionesProductos, setDenominacionesProductos] = useState<string[]>([]);
@@ -23,13 +24,9 @@ const Estadisticas = () => {
   useEffect(() => {
     const obtenerDatosProductos = async () => {
       try {
-        // Obtener la lista de productos
         const productos = await productoService.getAll(url + 'articulosManufacturados');
-        // Calcular el total de productos
         const totalProductos = productos.length;
-        // Obtener las denominaciones de los productos
         const nombresProductos = productos.map(producto => producto.denominacion);
-        // Establecer el estado del total de productos y las denominaciones de productos
         setTotalProductos(totalProductos);
         setDenominacionesProductos(nombresProductos);
       } catch (error) {
@@ -37,58 +34,50 @@ const Estadisticas = () => {
       }
     };
 
-    const obtenerDatosCupones = async () => {
+     const obtenerDatosCupones = async () => {
       try {
-        // Obtener la lista de cupones
         const cupones = await cuponesService.getAll(url + 'cupones');
-        // Calcular el total de cupones
         const totalCupones = cupones.length;
-        // Obtener las denominaciones de los cupones
         const nombresCupones = cupones.map(cupon => cupon.denominacion);
-        // Establecer el estado de las denominaciones de cupones
         setTotalCupones(totalCupones);
         setDenominacionesCupones(nombresCupones);
       } catch (error) {
         console.error("Error al obtener los cupones:", error);
       }
     };
-    const obtenerArticulosInsumos = async () => {
+
+     const obtenerArticulosInsumos = async () => {
       try {
-        // Obtener la lista de cupones
         const articulosInsumos = await cuponesService.getAll(url + 'articulosInsumos');
-        // Calcular el total de cupones
         const totalArticulosInsumos = articulosInsumos.length;
-        // Obtener las denominaciones de los cupones
         const nombresArticulosInsumos = articulosInsumos.map(articuloInsumo => articuloInsumo.denominacion);
-        // Establecer el estado de las denominaciones de cupones
         setTotalArticulosInsumos(totalArticulosInsumos);
         setDenominacionesArticulosInsumos(nombresArticulosInsumos);
       } catch (error) {
-        console.error("Error al obtener los articulos insumos:", error);
+        console.error("Error al obtener los artículos insumos:", error);
       }
     };
-  
-    const obtenerCategorias = async () => {
+
+     const obtenerCategorias = async () => {
       try {
-        // Obtener la lista de cupones
         const categorias = await cuponesService.getAll(url + 'categorias');
-        // Calcular el total de cupones
         const totalCategorias = categorias.length;
-        // Obtener las denominaciones de los cupones
         const nombresCategorias = categorias.map(categoria => categoria.denominacion);
-        // Establecer el estado de las denominaciones de cupones
         setTotalCategorias(totalCategorias);
         setDenominacionCategoria(nombresCategorias);
       } catch (error) {
-        console.error("Error al obtener los pedidos:", error);
+        console.error("Error al obtener las categorías:", error);
       }
+      
     };
+    
 
     obtenerCategorias();
     obtenerArticulosInsumos();
     obtenerDatosProductos();
     obtenerDatosCupones();
   }, []);
+  
 
   return (
     <Grid container spacing={3}>
@@ -155,5 +144,4 @@ const Estadisticas = () => {
     </Grid>
   );
 };
-
 export default Estadisticas;

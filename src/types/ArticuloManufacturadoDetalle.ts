@@ -1,4 +1,4 @@
-import ArticuloInsumo from "./ArticuloInsumo";
+import ArticuloInsumo from "./ArticuloInsumoType";
 import DataModel from "./DataModel";
 
 interface IArticuloManufacturadoDetalle extends  DataModel<IArticuloManufacturadoDetalle> {
