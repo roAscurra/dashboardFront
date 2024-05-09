@@ -5,7 +5,7 @@ import articuloManufacturadoReducer from "./slices/ArticuloManufacturado"; // Re
 import modalReducer from "./slices/Modal"; // Renombramos el slice y su reducer
 import categoriaReducer from "./slices/Categoria";
 import usuarioReducer from "./slices/Usuario";
-import { PromocionSlice } from './slices/Promocion';
+import { promocionSlice } from './slices/Promocion';
 import { SucursalSlice } from './slices/Sucursal';
 
 
@@ -17,7 +17,7 @@ export const store = configureStore({
     modal: modalReducer, // Cambiamos el nombre de la clave para que coincida con el nombre del slice
     categoria: categoriaReducer,
     usuario: usuarioReducer,
-    promocion: PromocionSlice.reducer,
+    promocion: promocionSlice.reducer,
     sucursales: SucursalSlice.reducer,
   },
 });

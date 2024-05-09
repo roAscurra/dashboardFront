@@ -8,7 +8,7 @@ import Usuario from '../components/Usuario/Usuario';
 import { ListaCupones } from '../components/Marketing/Cupones';
 import Estadisticas from '../components/Estadisticas/Estadisticas';
 import BaseNavBar from '../components/common/BaseNavBar';
-import Promocion from '../components/Marketing/Promociones';
+import { ListaPromocion } from '../components/Marketing/Promocion';
 import Categoria from '../components/Categoria/Categoria';
 import  { Sucursales } from '../components/Configuracion/Sucursal';
 import { ListaArticulosInsumo } from '../components/ArticuloInsumo/ArticuloInsumo';
@@ -34,7 +34,7 @@ export const AppRouter = () => {
               <Route path="/productos/lista" element={<ListaProductos />} />
               <Route path="/categorias" element={<Categoria />} />
               <Route path="/cupones/lista" element={<ListaCupones />} />
-              <Route path="/promociones/lista" element={<Promocion />} />
+              <Route path="/promociones/lista" element={<ListaPromocion />} />
               <Route path="/sucursales/lista" element={<Sucursales />} />
 
 

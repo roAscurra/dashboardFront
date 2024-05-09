@@ -1,9 +1,6 @@
-import ArticuloInsumo from "./ArticuloInsumoType";
 import DataModel from "./DataModel";
-import Imagen from "./Imagen";
 
-interface Promociones extends DataModel<Promociones>{
-  id: 0,
+interface Promocion extends DataModel<Promocion>{
   denominacion: "",
   fechaDesde: Date,
   fechaHasta: Date,
@@ -11,4 +8,4 @@ interface Promociones extends DataModel<Promociones>{
   precioPromocional: ""
   }
 
-  export default Promociones;
+  export default Promocion;

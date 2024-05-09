@@ -176,3 +176,4 @@ const handleOpenEditModal = (rowData: Row) => {
     </Box>
   );
 }
+

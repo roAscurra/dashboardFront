@@ -3,17 +3,16 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { toggleModal } from "../../redux/slices/Modal";
-import PromocionesService from "../../services/PromocionService";
-import Promociones from "../../types/Promocion";
+import PromocionService from "../../services/PromocionService";
 import Promocion from "../../types/Promocion";
 
 interface ModalPromocionProps {
-  getPromociones: () => void;
-  promocionToEdit?: Promociones;
+  getPromocion: () => void;
+  promocionToEdit?: Promocion;
 }
 
-const ModalPromocion: React.FC<ModalPromocionProps> = ({ getPromociones, promocionToEdit }) => {
-  const promocionesService = new PromocionesService();
+const ModalPromocion: React.FC<ModalPromocionProps> = ({ getPromocion, promocionToEdit }) => {
+  const promocionService = new PromocionService();
   const url = import.meta.env.VITE_API_URL;
   const today = new Date();
 
@@ -63,14 +62,14 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({ getPromociones, promoci
             try {
               if (promocionToEdit) {
                 // Lógica para editar la promoción existente
-                await promocionesService.put(url + "promociones", values.id.toString(), values);
+                await promocionService.put(url + "promociones", values.id.toString(), values);
                 console.log("Se ha actualizado correctamente.");
               } else {
                 // Lógica para agregar una nueva promoción
-                await promocionesService.post(url + "promociones", values);
+                await promocionService.post(url + "promociones", values);
                 console.log("Se ha agregado correctamente.");
               }
-              getPromociones(); 
+              getPromocion(); 
               handleClose(); 
             } catch (error) {
               console.error("Error al realizar la operación:", error);
