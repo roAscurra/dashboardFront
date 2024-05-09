@@ -110,14 +110,14 @@ const handleOpenEditModal = (rowData: Row) => {
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
     { id: "fechaDesde", label: "Fecha Desde", renderCell: (rowData) => <>{rowData.fechaDesde}</> },
     { id: "fechaHasta", label: "Fecha Hasta", renderCell: (rowData) => <>{rowData.fechaHasta}</> },
-    { id: "descripcion", label: "Descripción", renderCell: (rowData) => <>{rowData.descripcion}</> },
+    { id: "descripcion", label: "Descripción", renderCell: (rowData) => <>{rowData.descripcion}</> }
     // Agregar columna de acciones para editar
-    { id: "acciones", label: "Acciones", renderCell: (rowData) => (
-      <div>
-        <Button onClick={() => handleOpenEditModal(rowData)}>Editar</Button>
-      </div>
+    // { id: "acciones", label: "Acciones", renderCell: (rowData) => (
+    //   <div>
+    //     <Button onClick={() => handleOpenEditModal(rowData)}>Editar</Button>
+    //   </div>
 
-    )},
+    // )},
   ];
 
   return (
