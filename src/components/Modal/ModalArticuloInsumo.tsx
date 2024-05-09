@@ -15,7 +15,7 @@ interface ModalArticuloInsumoProps {
 const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosInsumo, articuloToEdit }) => {
   const articuloInsumoService = new ArticuloInsumoService();
   const url = import.meta.env.VITE_API_URL;
-  const today = new Date();
+  // const today = new Date();
 
   const initialValues: ArticuloInsumo = articuloToEdit
     ? articuloToEdit

@@ -145,7 +145,7 @@ const handleOpenEditModal = (rowData: Row) => {
           }}
         >
           <Typography variant="h5" gutterBottom>
-            Promocion
+            Promociones
           </Typography>
           <Button
             sx={{
