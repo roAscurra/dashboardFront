@@ -5,6 +5,8 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { toggleModal } from "../../redux/slices/Modal";
 import SucursalService from "../../services/SucursalService";
 import Sucursal from "../../types/Sucursal";
+import LocalidaService from "../../services/LocalidadService";
+import { useEffect, useState } from "react";
 
 interface ModalSucursalProps {
   getSucursal: () => void;
@@ -16,7 +18,10 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
   const url = import.meta.env.VITE_API_URL;
   const today = new Date();
 
-  
+  const url2 = import.meta.env.VITE_API_TRAZA;
+  const localidadService = new LocalidaService();  
+  const [localidades, setLocalidades] = useState<string[]>([]); // Estado local para almacenar las localidades
+
   const initialValues: Sucursal = sucursalToEdit
     ? sucursalToEdit
     : {
@@ -34,6 +39,23 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
+
+  useEffect(() => {
+    const fetchLocalidad = async () => {
+      try {
+        const localidadesData = await localidadService.getAll(url2 + 'localidad');
+        // Asumiendo que la respuesta del servicio es un array de objetos con una propiedad "nombre"
+        const localidadesNames = localidadesData.map((localidad: any) => localidad.nombre);
+        setLocalidades(localidadesNames); // Guarda los nombres de las localidades en el estado local
+      } catch (error) {
+        console.error("Error al obtener las localidades:", error);
+      }
+    };
+
+    fetchLocalidad(); // Llama a la función para obtener las localidades al montar el componente
+  }, [localidadService, url2]);
+
+  
   return (
     <Modal
       id={"modal"}
@@ -91,6 +113,20 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
                     className="error-message"
                     component="div"
                   />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="localidad">Localidad:</label>
+                  <Field
+                    name="localidad"
+                    as="select"
+                    className="form-control mt-2"
+                  >
+                    <option value="">Seleccione una localidad</option>
+                    {/* Mapea las localidades para generar las opciones del combobox */}
+                    {localidades.map((localidad, index) => (
+                      <option key={index} value={localidad}>{localidad}</option>
+                    ))}
+                  </Field>
                 </div>
                 <div className="mb-4">
                   <label htmlFor="horarioApertura">Horario apertura:</label>
