@@ -10,7 +10,7 @@ const initialState: IInitialState = {
     sucursal: [],
 }
 
-export const SucursalSlice = createSlice({
+export const sucursalSlice = createSlice({
   name: 'sucursalState',
   initialState,
   reducers: {
@@ -23,6 +23,6 @@ export const SucursalSlice = createSlice({
   },
 })
 
-export const { setSucursal, resetSucursal } = SucursalSlice.actions;
+export const { setSucursal, resetSucursal } = sucursalSlice.actions;
 
-export default SucursalSlice.reducer;
+export default sucursalSlice.reducer;

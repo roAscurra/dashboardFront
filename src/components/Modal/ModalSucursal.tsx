@@ -14,6 +14,7 @@ interface ModalSucursalProps {
 const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEdit }) => {
   const sucursalService = new SucursalService();
   const url = import.meta.env.VITE_API_URL;
+  const today = new Date();
 
   
   const initialValues: Sucursal = sucursalToEdit
@@ -21,8 +22,8 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
     : {
       id: 0,
       nombre: "",
-      horarioApertura: "",
-      horarioCierre: "",
+      horarioApertura: today,
+      horarioCierre: today,
       sucursal: "",
       };
 
@@ -44,14 +45,14 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title>{sucursalToEdit ? "Editar Promoción" : "Agregar sucursal"}</Modal.Title>
+        <Modal.Title>{sucursalToEdit ? "Editar sucursal" : "Agregar sucursal"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Formik
           validationSchema={Yup.object({
             nombre: Yup.string().required("Campo requerido"),
-            horarioApertura: Yup.string().required("Campo requerido"),
-            horarioCierre: Yup.string().required("Campo requerido"),
+            horarioApertura: Yup.date().required("Campo requerido"),
+            horarioCierre: Yup.date().required("Campo requerido"),
             sucursal: Yup.string().required("Campo requerido"),
             
           })}
@@ -82,7 +83,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
                   <Field
                     name="nombre"
                     type="text"
-                    placeholder="nombre"
+                    placeholder="Nombre"
                     className="form-control mt-2"
                   />
                   <ErrorMessage

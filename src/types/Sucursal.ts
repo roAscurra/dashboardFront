@@ -2,10 +2,10 @@ import DataModel from "./DataModel";
 
 
 interface Sucursal extends DataModel<Sucursal>{
-    id: number;
-    nombre: string;
-    horarioApertura: string;
-    horarioCierre: string;
+    denominacion: string;
+    horarioApertura: Date;
+    horarioCierre: Date;
+    sucursal: string;
     
 }
 
