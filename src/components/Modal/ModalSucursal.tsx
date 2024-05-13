@@ -21,7 +21,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
     ? sucursalToEdit
     : {
       id: 0,
-      nombre: "",
+      denominacion: "",
       horarioApertura: today,
       horarioCierre: today,
       sucursal: "",
@@ -50,7 +50,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
       <Modal.Body>
         <Formik
           validationSchema={Yup.object({
-            nombre: Yup.string().required("Campo requerido"),
+            denominacion: Yup.string().required("Campo requerido"),
             horarioApertura: Yup.date().required("Campo requerido"),
             horarioCierre: Yup.date().required("Campo requerido"),
             sucursal: Yup.string().required("Campo requerido"),
@@ -79,15 +79,15 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
             <>
               <Form autoComplete="off">
                 <div className="mb-4">
-                  <label htmlFor="Nombre">Nombre:</label>
+                  <label htmlFor="Denominacion">Denominacion:</label>
                   <Field
-                    name="nombre"
+                    name="denominacion"
                     type="text"
-                    placeholder="Nombre"
+                    placeholder="Denominacion"
                     className="form-control mt-2"
                   />
                   <ErrorMessage
-                    name="nombre"
+                    name="denominacion"
                     className="error-message"
                     component="div"
                   />
