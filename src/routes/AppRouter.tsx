@@ -10,8 +10,9 @@ import Estadisticas from '../components/Estadisticas/Estadisticas';
 import BaseNavBar from '../components/common/BaseNavBar';
 import { ListaPromocion } from '../components/Marketing/Promocion';
 import Categoria from '../components/Categoria/Categoria';
-import  { ListaSucursal } from '../components/Configuracion/Sucursal';
+import  { ListaSucursal } from '../components/Sucursal/Sucursal';
 import { ListaArticulosInsumo } from '../components/ArticuloInsumo/ArticuloInsumo';
+import { ListaEmpresa } from '../components/Empresa/Empresa';
 
 export const AppRouter = () => {
   return (
@@ -36,6 +37,7 @@ export const AppRouter = () => {
               <Route path="/cupones/lista" element={<ListaCupones />} />
               <Route path="/promociones/lista" element={<ListaPromocion />} />
               <Route path="/sucursales/lista" element={<ListaSucursal />} />
+              <Route path="/empresas/lista" element={<ListaEmpresa />} />
 
 
               {/* Agrega más rutas aquí */}

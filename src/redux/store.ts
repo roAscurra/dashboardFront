@@ -7,6 +7,7 @@ import categoriaReducer from "./slices/Categoria";
 import usuarioReducer from "./slices/Usuario";
 import { promocionSlice } from './slices/Promocion';
 import { sucursalSlice } from './slices/Sucursal';
+import { empresaSlice} from './slices/Empresa';
 
 
 // Configuración de la tienda de Redux
@@ -19,6 +20,7 @@ export const store = configureStore({
     usuario: usuarioReducer,
     promocion: promocionSlice.reducer,
     sucursales: sucursalSlice.reducer,
+    empresas: empresaSlice.reducer,
   },
 });
 
