@@ -1,6 +1,6 @@
 import { Button, Modal } from 'react-bootstrap';
-import ArticuloManufacturado from "../../types/ArticuloManufacturado";
-import ProductoService from "../../services/ProductoService";
+import ProductoService from '../../services/ProductoService';
+import ArticuloManufacturado from '../../types/ArticuloManufacturado';
 
 interface ModalDeleteProductsProps {
     show: boolean;

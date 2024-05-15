@@ -1,14 +1,14 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useAppDispatch } from '../../hooks/redux';
-import { toggleModal } from '../../redux/slices/Modal';
 import Categoria from '../../types/Categoria';
 import CategoriaService from '../../services/CategoriaService';
+import { useAppDispatch } from '../../hooks/redux';
+import { toggleModal } from '../../redux/slices/Modal';
 
 interface ModalCategoriaProps {
-    open: boolean; // Agregar propiedades open y onClose
+    open: boolean;
     onClose: () => void;
     getCategories: () => void;
     categoryToEdit?: Categoria | null;
@@ -31,7 +31,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
 
     const handleClose = () => {
         dispatch(toggleModal({ modalName: 'modal' }));
-        onClose(); // Llamar a onClose al cerrar el modal
+        onClose();
     };
 
     return (
@@ -43,7 +43,11 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                 <Formik
                     validationSchema={Yup.object({
                         denominacion: Yup.string().required('Campo requerido'),
-                        // add validation for other fields
+                        subCategorias: Yup.array().of(
+                            Yup.object({
+                                denominacion: Yup.string().required('Campo requerido'),
+                            })
+                        )
                     })}
                     initialValues={initialValues}
                     onSubmit={async (values: Categoria) => {
@@ -62,7 +66,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                         }
                     }}
                 >
-                    {() => (
+                    {({ values }) => (
                         <>
                             <Form autoComplete="off">
                                 <div className="mb-4">
@@ -70,6 +74,38 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                                     <Field name="denominacion" type="text" placeholder="Nombre de la Categoría" className="form-control mt-2" />
                                     <ErrorMessage name="denominacion" className="error-message" component="div" />
                                 </div>
+                                <FieldArray name="subCategorias">
+                                    {({ push, remove }) => (
+                                        <div className="mb-4">
+                                            <label>Subcategorías:</label>
+                                            {values.subCategorias.map((subCategoria, index) => (
+                                                <div key={index} className="d-flex mb-2">
+                                                    <Field
+                                                        name={`subCategorias.${index}.denominacion`}
+                                                        type="text"
+                                                        placeholder="Nombre de la Subcategoría"
+                                                        className="form-control mt-2"
+                                                    />
+                                                    <Button
+                                                        variant="outline-danger"
+                                                        onClick={() => remove(index)}
+                                                        className="ml-2 mt-2"
+                                                    >
+                                                        Eliminar
+                                                    </Button>
+                                                    <ErrorMessage name={`subCategorias.${index}.denominacion`} component="div" className="error-message" />
+                                                </div>
+                                            ))}
+                                            <Button
+                                                variant="outline-primary"
+                                                onClick={() => push({ denominacion: '' })}
+                                                className="mt-2"
+                                            >
+                                                Agregar Subcategoría
+                                            </Button>
+                                        </div>
+                                    )}
+                                </FieldArray>
                                 <div className="d-flex justify-content-end">
                                     <Button variant="outline-success" type="submit" className="custom-button">
                                         Enviar

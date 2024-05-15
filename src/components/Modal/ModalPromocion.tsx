@@ -1,10 +1,10 @@
 import { Button, Modal } from "react-bootstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import Promocion from "../../types/Promocion";
+import PromocionService from "../../services/PromocionService";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { toggleModal } from "../../redux/slices/Modal";
-import PromocionService from "../../services/PromocionService";
-import Promocion from "../../types/Promocion";
 
 interface ModalPromocionProps {
   getPromocion: () => void;

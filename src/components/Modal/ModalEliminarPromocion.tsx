@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import PromocionService from '../../services/PromocionService';
 import Promocion from '../../types/Promocion';
+import PromocionService from '../../services/PromocionService';
 
 interface ModalEliminarPromocionProps {
     show: boolean;

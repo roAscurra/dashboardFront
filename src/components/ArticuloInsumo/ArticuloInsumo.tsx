@@ -2,14 +2,14 @@ import { useEffect, useState, useCallback } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { useAppDispatch } from "../../hooks/redux";
-import TableComponent from "../Table/Table";
-import SearchBar from "../SearchBar/SearchBar";
-import { setArticuloInsumo } from "../../redux/slices/ArticuloInsumo";
-import ModalArticuloInsumo from "../Modal/ModalArticuloInsumo";
-import { toggleModal } from "../../redux/slices/Modal";
 import ArticuloInsumoService from "../../services/ArticuloInsumoService";
-import ArticuloInsumo from "../../types/ArticuloInsumoType";
+import { setArticuloInsumo } from "../../redux/slices/ArticuloInsumo";
+import { toggleModal } from "../../redux/slices/Modal";
+import SearchBar from "../SearchBar/SearchBar";
+import TableComponent from "../Table/Table";
 import ModalEliminarArticuloInsumo from "../Modal/ModalEliminarArticuloInsumo";
+import ModalArticuloInsumo from "../Modal/ModalArticuloInsumo";
+import ArticuloInsumo from "../../types/ArticuloInsumoType";
 
 interface Row {
   [key: string]: any;

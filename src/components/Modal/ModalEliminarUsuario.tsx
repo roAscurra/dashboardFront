@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import UsuarioService from '../../services/UsuarioService';
 import Usuario from '../../types/UsuarioTypes';
+import UsuarioService from '../../services/UsuarioService';
 
 interface ModalEliminarUsuarioProps {
   show: boolean;
