@@ -1,10 +1,10 @@
 import { Button, Modal } from "react-bootstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import Cupones from "../../types/Cupones";
+import CuponesService from "../../services/CuponesService";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { toggleModal } from "../../redux/slices/Modal";
-import CuponesService from "../../services/CuponesService";
-import Cupones from "../../types/Cupones";
 
 interface ModalCuponProps {
   getCupones: () => void;
