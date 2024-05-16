@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import SucursalService from '../../services/SucursalService';
 import Sucursal from '../../types/Sucursal';
+import SucursalService from '../../services/SucursalService';
 
 interface ModalEliminarSucursalProps {
   show: boolean;

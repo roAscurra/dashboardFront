@@ -1,11 +1,11 @@
 import { Button, Modal } from "react-bootstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { toggleModal } from "../../redux/slices/Modal";
 import ArticuloInsumoService from "../../services/ArticuloInsumoService";
-import ArticuloInsumo from "../../types/ArticuloInsumoType";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import IUnidadMedida from "../../types/UnidadMedida";
+import { toggleModal } from "../../redux/slices/Modal";
+import ArticuloInsumo from "../../types/ArticuloInsumoType";
 
 interface ModalArticuloInsumoProps {
   getArticulosInsumo: () => void;

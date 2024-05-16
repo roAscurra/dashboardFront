@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import TableComponent from "../Table/Table";
-import SearchBar from "../SearchBar/SearchBar";
-import { setPromocion } from "../../redux/slices/Promocion";
+import { useAppDispatch } from "../../hooks/redux";
 import PromocionService from "../../services/PromocionService";
-import { toggleModal } from "../../redux/slices/Modal";
 import Promocion from "../../types/Promocion";
-import ModalPromocion from "../Modal/ModalPromocion";
+import { setPromocion } from "../../redux/slices/Promocion";
+import { toggleModal } from "../../redux/slices/Modal";
+import SearchBar from "../SearchBar/SearchBar";
+import TableComponent from "../Table/Table";
 import ModalEliminarPromocion from "../Modal/ModalEliminarPromocion";
+import ModalPromocion from "../Modal/ModalPromocion";
 
 interface Row {
   [key: string]: any;

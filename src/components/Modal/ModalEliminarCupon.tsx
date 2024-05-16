@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import CuponesService from '../../services/CuponesService';
 import Cupones from '../../types/Cupones';
+import CuponesService from '../../services/CuponesService';
 
 interface ModalEliminarCuponProps {
   show: boolean;

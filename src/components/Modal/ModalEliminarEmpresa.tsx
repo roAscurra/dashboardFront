@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import EmpresaService from '../../services/EmpresaService';
 import Empresa from '../../types/Empresa';
+import EmpresaService from '../../services/EmpresaService';
 
 interface ModalEliminarEmpresaProps {
   show: boolean;

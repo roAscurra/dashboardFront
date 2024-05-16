@@ -1,10 +1,10 @@
 import { Button, Modal } from "react-bootstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import Empresa from "../../types/Empresa";
+import EmpresaService from "../../services/EmpresaService";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { toggleModal } from "../../redux/slices/Modal";
-import EmpresaService from "../../services/EmpresaService";
-import Empresa from "../../types/Empresa";
 
 interface ModalEmpresaProps {
   getEmpresa: () => void;
