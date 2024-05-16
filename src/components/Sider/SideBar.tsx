@@ -117,23 +117,7 @@ const Sidebar: React.FC = () => {
               </Link>
             </CNavItem>
           </CNavGroup>
-          <CNavGroup
-            toggler={
-              <>
-                <CIcon customClassName="nav-icon" icon={icon.cilLocationPin} />
-                Sucursales
-              </>
-            }
-          >
-            <CNavItem>
-              <Link to="/sucursales/lista" className="nav-link">
-                <span className="nav-icon">
-                  <span className="nav-icon-bullet"></span>
-                </span>
-                Sucursales
-              </Link>
-            </CNavItem>
-          </CNavGroup>
+          
         </CSidebarNav>
       </CSidebar>
     </div>
