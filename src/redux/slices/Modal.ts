@@ -2,12 +2,10 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Definimos el estado inicial del slice
 interface IModalState {
-  modal: boolean; // Estado del modal de categoría
+  [modalName: string]: boolean; // Estado de cualquier modal
 }
 
-const initialState: IModalState = {
-  modal: false,
-};
+const initialState: IModalState = {};
 
 // Definimos la interfaz para la acción del payload
 interface IPayloadAction {
@@ -20,6 +18,7 @@ const modalsSlice = createSlice({
   initialState,
   reducers: {
     toggleModal(state, action: PayloadAction<IPayloadAction>) {
+
       const { modalName } = action.payload;
       state[modalName] = !state[modalName];
     },

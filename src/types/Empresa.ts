@@ -5,7 +5,7 @@ interface Empresa extends DataModel<Empresa>{
     nombre: string;
     razonSocial: string;
     cuil: number;
-    //sucursal: Sucursal[];
+    sucursal: string;
 }
 
 export default Empresa;

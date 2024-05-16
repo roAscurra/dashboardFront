@@ -9,9 +9,10 @@ import Empresa from "../../types/Empresa";
 interface ModalEmpresaProps {
   getEmpresa: () => void;
   empresaToEdit?: Empresa;
+  modalName: string;
 }
 
-const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ getEmpresa, empresaToEdit }) => {
+const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empresaToEdit }) => {
   const empresaService = new EmpresaService();
   const url = import.meta.env.VITE_API_URL;
 
@@ -23,9 +24,10 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ getEmpresa, empresaToEdit }
         nombre: "",
         razonSocial: "",
         cuil: 0, 
+        sucursal: ","
       };
 
-  const modal = useAppSelector((state) => state.modal.modal);
+  const modal = useAppSelector((state) => state.modal[modalName]);
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
@@ -51,6 +53,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ getEmpresa, empresaToEdit }
             nombre: Yup.string().required("Campo requerido"),
             razonSocial: Yup.string().required("Campo requerido"),
             cuil: Yup.number().required("Campo requerido"),
+            sucursal: Yup.string().required("Campo requerido"),
           })}
           initialValues={initialValues}
           onSubmit={async (values: Empresa) => {
@@ -115,13 +118,34 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ getEmpresa, empresaToEdit }
                     component="div"
                   />
                 </div>
+                <div className="mb-4">
+                  <label htmlFor="sucursal">Sucursal:</label>
+                  <Field
+                    name="sucusarl"
+                    type="number"
+                    className="form-control mt-2"
+                  />
+                  <ErrorMessage
+                    name="sucursal"
+                    className="error-message"
+                    component="div"
+                  />
+                </div>
                 <div className="d-flex justify-content-end">
+                <Button
+                    variant="outline-secondary"
+                    type="submit"
+                    className="custom-button"
+                    
+                  >
+                    Cerrar
+                  </Button>
                   <Button
                     variant="outline-success"
                     type="submit"
                     className="custom-button"
                   >
-                    Enviar
+                    Añadir
                   </Button>
                 </div>
               </Form>

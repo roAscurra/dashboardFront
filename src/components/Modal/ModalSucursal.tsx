@@ -11,9 +11,10 @@ import { useEffect, useState } from "react";
 interface ModalSucursalProps {
   getSucursal: () => void;
   sucursalToEdit?: Sucursal;
+  modalName: string;
 }
 
-const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEdit }) => {
+const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, sucursalToEdit }) => {
   const sucursalService = new SucursalService();
   const url = import.meta.env.VITE_API_URL;
   const today = new Date();
@@ -32,11 +33,11 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
       sucursal: "",
       };
 
-  const modal = useAppSelector((state) => state.modal.modal);
+  const modal = useAppSelector((state) => state.modal[modalName]);
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
-    dispatch(toggleModal({ modalName: "modal" }));
+    dispatch(toggleModal({ modalName }));
   };
 
 
@@ -49,6 +50,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
         setLocalidades(localidadesNames); // Guarda los nombres de las localidades en el estado local
       } catch (error) {
         console.error("Error al obtener las localidades:", error);
+        setLocalidades([]);
       }
     };
 
@@ -75,11 +77,13 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
             denominacion: Yup.string().required("Campo requerido"),
             horarioApertura: Yup.date().required("Campo requerido"),
             horarioCierre: Yup.date().required("Campo requerido"),
-            sucursal: Yup.string().required("Campo requerido"),
             
           })}
           initialValues={initialValues}
           onSubmit={async (values: Sucursal) => {
+
+            console.log(values)
+
             try {
               if (sucursalToEdit) {
                 // Lógica para editar la sucursal existente
@@ -154,20 +158,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ getSucursal, sucursalToEd
                     component="div"
                   />
                   </div>
-                <div className="mb-4">
-                  <label htmlFor="Sucursal">Sucursal:</label>
-                  <Field
-                    name="sucursal"
-                    type="text"
-                    placeholder="Sucursal"
-                    className="form-control mt-2"
-                  />
-                  <ErrorMessage
-                    name="Sucursal"
-                    className="error-message"
-                    component="div"
-                  />
-                 </div>
                 <div className="d-flex justify-content-end">
                   <Button
                     variant="outline-success"

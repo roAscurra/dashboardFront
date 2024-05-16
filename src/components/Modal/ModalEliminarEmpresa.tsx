@@ -34,7 +34,7 @@ const ModalEliminarEmpresa: React.FC<ModalEliminarEmpresaProps> = ({ show, onHid
           <Modal.Title>Eliminar Empresa</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>¿Estás seguro de que deseas eliminar la empresa "{empresa?.denominacion}"?</p>
+          <p>¿Estás seguro de que deseas eliminar la empresa "{empresa?.nombre}"?</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={onHide}>

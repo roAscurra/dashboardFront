@@ -35,7 +35,7 @@ interface ModalEliminarPromocionProps {
             <Modal.Title>Eliminar Promocion</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>¿Estás seguro de que deseas eliminar la promocion? "{promocion?.denominacion}"?</p>
+            <p>¿Estás seguro de que deseas eliminar la promocion "{promocion?.denominacion}"?</p>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={onHide}>

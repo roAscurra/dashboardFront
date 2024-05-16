@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
-import { Box, Typography, Button, Container } from "@mui/material";
-import { Add } from "@mui/icons-material";
+import { Box, Typography, Button, Container, Tooltip, IconButton } from "@mui/material";
+import { Add, AddCircle, Visibility } from "@mui/icons-material";
 import { useAppDispatch } from "../../hooks/redux";
 import TableComponent from "../Table/Table";
 import SearchBar from "../SearchBar/SearchBar";
@@ -10,6 +10,8 @@ import { toggleModal } from "../../redux/slices/Modal";
 import EmpresaService from "../../services/EmpresaService";
 import Empresa from "../../types/Empresa";
 import ModalEliminarEmpresa from "../Modal/ModalEliminarEmpresa";
+import { Link } from "react-router-dom";
+import ModalSucursal from "../Modal/ModalSucursal";
 
 interface Row {
   [key: string]: any;
@@ -25,9 +27,20 @@ export const ListaEmpresa = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   const empresaService = new EmpresaService();
+  const [filteredData, setFilteredData] = useState<Empresa[]>([]);
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [empresaToEdit, setEmpresaToEdit] = useState<Empresa | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const fetchEmpresas = async () => {
+    try {
+      const empresas = await empresaService.getAll(url + '/empresas');
+      dispatch(setEmpresa(empresas)); 
+      setFilteredData(empresas); 
+    } catch (error) {
+      console.error("Error al obtener las empresas:", error);
+    }
+  }; 
 
   // Función para abrir la modal de eliminación
   const handleOpenDeleteModal = (rowData: Row) => {
@@ -36,6 +49,7 @@ export const ListaEmpresa = () => {
       nombre: rowData.nombre,
       razonSocial: rowData.razonSocial,
       cuil: rowData.cuil,
+      sucursal: rowData.sucursal,
     });
     setDeleteModalOpen(true); // Utiliza el estado directamente para abrir la modal de eliminación
   };
@@ -61,7 +75,7 @@ export const ListaEmpresa = () => {
   
   const fetchEmpresa = useCallback(async () => {
     try {
-      const empresa = await empresaService.getAll(url + 'empresa');
+      const empresa = await empresaService.getAll(url + 'empresas');
       dispatch(setEmpresa(empresa));
       setFilterData(empresa);
 
@@ -91,6 +105,7 @@ const handleOpenEditModal = (rowData: Row) => {
     nombre: rowData.nombre,
     razonSocial: rowData.razonSocial,
     cuil: rowData.cuil,
+    sucursal: rowData.sucursal,
   });
   dispatch(toggleModal({ modalName: 'modal' }));
 };
@@ -98,9 +113,13 @@ const handleOpenEditModal = (rowData: Row) => {
 
   const handleSearch = (query: string) => {
     const filtered = filterData.filter((item) =>
-      item.descripcion.toLowerCase().includes(query.toLowerCase())
+      item.nombre.toLowerCase().includes(query.toLowerCase())
     );
     setFilterData(filtered);
+  };
+
+  const handleAddSucursal = () => {
+    dispatch(toggleModal({ modalName: "modalSucursal" })); // Abre el modal de sucursales
   };
 
   const columns: Column[] = [
@@ -108,14 +127,28 @@ const handleOpenEditModal = (rowData: Row) => {
     { id: "nombre", label: "Nombre", renderCell: (rowData) => <>{rowData.nombre}</> },
     { id: "razonSocial", label: "Razon Social", renderCell: (rowData) => <>{rowData.razonSocial}</> },
     { id: "cuil", label: "Cuil", renderCell: (rowData) => <>{rowData.cuil}</> },
-    
-    // Agregar columna de acciones para editar
-    // { id: "acciones", label: "Acciones", renderCell: (rowData) => (
-    //   <div>
-    //     <Button onClick={() => handleOpenEditModal(rowData)}>Editar</Button>
-    //   </div>
-
-    // )},
+    { id: "sucursales", label: "Sucursales", renderCell: (rowData) => (
+        <>
+        <Tooltip title="Ver Sucursales">
+          {rowData?.sucursales?.length > 0 ? (
+            <IconButton component={Link} to={`/empresas/${rowData.id}`} aria-label="Ver Sucursales">
+              <Visibility />
+            </IconButton>
+          ) : (
+            <IconButton disabled aria-label="Ver Sucursales">
+              <Visibility />
+            </IconButton>
+          )}
+        </Tooltip>
+        <Tooltip title="Agregar Sucursal">
+            {/* Cambia el evento onClick para llamar a handleAddSucursal con el ID de la empresa */}
+            <IconButton onClick={handleAddSucursal} aria-label="Agregar Sucursal">
+              <AddCircle />
+            </IconButton>
+          </Tooltip>
+        </>
+      ), 
+    }
   ];
 
   return (
@@ -167,8 +200,8 @@ const handleOpenEditModal = (rowData: Row) => {
         />
         <ModalEliminarEmpresa show={deleteModalOpen} onHide={handleCloseDeleteModal} empresa={empresaToEdit} onDelete={handleDelete} />
 
-    
-        <ModalEmpresa getEmpresa={fetchEmpresa} empresaToEdit={empresaToEdit !== null ? empresaToEdit : undefined} />
+        <ModalSucursal modalName="modalSucursal" getSucursal={() => {}} sucursalToEdit={undefined} />
+        <ModalEmpresa modalName="modal" getEmpresa={fetchEmpresa} empresaToEdit={empresaToEdit !== null ? empresaToEdit : undefined} />
       </Container>
     </Box>
   );

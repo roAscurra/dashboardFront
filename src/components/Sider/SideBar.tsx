@@ -48,23 +48,12 @@ const Sidebar: React.FC = () => {
               Inicio
             </Link>
           </CNavItem>
-          <CNavGroup
-            toggler={
-              <>
-                <CIcon customClassName="nav-icon" icon={icon.cilBuilding} />
-                Empresas
-              </>
-            }
-          >
-            <CNavItem>
-              <Link to="/empresas/lista" className="nav-link">
-                <span className="nav-icon">
-                  <span className="nav-icon-bullet"></span>
-                </span>
-                Empresas
-              </Link>
-            </CNavItem>
-          </CNavGroup>
+          <CNavItem>
+            <Link to="/empresas/lista" className="nav-link">
+              <CIcon customClassName="nav-icon" icon={icon.cilBuilding} />
+              Empresas
+            </Link>
+          </CNavItem>
           <CNavItem>
             <Link to="/estadisticas" className="nav-link">
               <CIcon customClassName="nav-icon" icon={icon.cilChartPie} />

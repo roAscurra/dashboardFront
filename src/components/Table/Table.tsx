@@ -10,6 +10,7 @@ interface Row {
 interface Column {
   id: keyof Row;
   label: string;
+  renderCell: (rowData: Row) => JSX.Element; 
 }
 
 interface Props {
@@ -47,7 +48,9 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
           {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
             <TableRow key={index}>
               {columns.map((column) => (
-                <TableCell key={column.id}>{row[column.id]}</TableCell>
+                <TableCell key={column.id}>
+                  {column.renderCell ? column.renderCell(row) : row[column.id]}
+                </TableCell>
               ))}
               <TableCell>
                 <Box sx={{ display: 'flex', gap: 1 }}>
