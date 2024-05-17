@@ -44,7 +44,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, s
   useEffect(() => {
     const fetchLocalidad = async () => {
       try {
-        const localidadesData = await localidadService.getAll(url2 + 'localidad');
+        const localidadesData = await localidadService.getAll(url + 'localidades');
         // Asumiendo que la respuesta del servicio es un array de objetos con una propiedad "nombre"
         const localidadesNames = localidadesData.map((localidad: any) => localidad.nombre);
         setLocalidades(localidadesNames); // Guarda los nombres de las localidades en el estado local
@@ -55,7 +55,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, s
     };
 
     fetchLocalidad(); // Llama a la función para obtener las localidades al montar el componente
-  }, [localidadService, url2]);
+  }, [localidadService, url]);
 
   
   return (

@@ -131,7 +131,7 @@ const handleOpenEditModal = (rowData: Row) => {
         <>
         <Tooltip title="Ver Sucursales">
           {rowData?.sucursales?.length > 0 ? (
-            <IconButton component={Link} to={`/empresas/${rowData.id}`} aria-label="Ver Sucursales">
+            <IconButton component={Link} to={`/empresas/${rowData.id}/sucursales`} aria-label="Ver Sucursales">
               <Visibility />
             </IconButton>
           ) : (

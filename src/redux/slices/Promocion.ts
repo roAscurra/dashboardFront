@@ -1,28 +1,29 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import Promocion from '../../types/Promocion';
 
-interface IInitialState {
-  promocion: Promocion[]; // Cambia el tipo del estado a una matriz de Promocion
+// Definimos un tipo genérico para el estado inicial
+interface IInitialState<T> {
+  data: T;
 }
 
-const initialState: IInitialState = {
-    promocion: [],
-}
+// Estado inicial específico para Promocion[]
+const initialPromocionState: IInitialState<Promocion[]> = {
+  data: [],
+};
 
 export const promocionSlice = createSlice({
   name: 'promocionState',
-  initialState,
+  initialState: initialPromocionState,
   reducers: {
-    setPromocion: (state, action: PayloadAction<Promocion[]>) => {
-      state.promocion = action.payload;
+    setData: (state, action: PayloadAction<Promocion[]>) => {
+      state.data = action.payload;
     },
-    resetPromocion: (state) => {
-      state.promocion = [];
+    resetData: (state) => {
+      state.data = [];
     }
   },
-})
+});
 
-export const { setPromocion, resetPromocion } = promocionSlice.actions;
+export const { setData: setPromocion, resetData: resetPromocion } = promocionSlice.actions;
 
 export default promocionSlice.reducer;

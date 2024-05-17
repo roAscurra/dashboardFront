@@ -83,7 +83,7 @@ export const ListaSucursal = () => {
   const handleAddSucursal = () => {
     // Reset sucursalToEdit to null when adding a new sucursal
     setSucursalToEdit(null);
-    dispatch(toggleModal({ modalName: "modal" }));
+    dispatch(toggleModal({ modalName: "modalSucursal" }));
   };
 
     // Función para abrir la modal de edición
@@ -112,10 +112,8 @@ const handleSearch = (query: string) => {
 const columns: Column[] = [
   { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
   { id: "denominacion", label: "Denominacion", renderCell: (rowData) => <>{rowData.denominacion}</> },
-  { id: "horarioApertura", label: "Horario apertura", renderCell: (rowData) => <>{rowData.fechaDesde}</> },
-  { id: "horarioCierre", label: "Horario cierre", renderCell: (rowData) => <>{rowData.fechaHasta}</> },
-  { id: "sucursal", label: "Sucursal", renderCell: (rowData) => <>{rowData.descripcionDescuento}</> },
- 
+  { id: "horarioApertura", label: "Horario apertura", renderCell: (rowData) => <>{rowData.horarioApertura}</> },
+  { id: "horarioCierre", label: "Horario cierre", renderCell: (rowData) => <>{rowData.horarioCierre}</> },
 ];
 
 return (
@@ -169,7 +167,7 @@ return (
 
 
       {/* Llamando a ModalSucursal con la prop fetchSucursal y sucursalToEdit */}
-      <ModalSucursal getSucursal={fetchSucursal} sucursalToEdit={sucursalToEdit !== null ? sucursalToEdit : undefined} />
+      <ModalSucursal modalName="modalSucursal" getSucursal={fetchSucursal} sucursalToEdit={sucursalToEdit !== null ? sucursalToEdit : undefined} />
     </Container>
   </Box>
 );

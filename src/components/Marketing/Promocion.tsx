@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { useAppDispatch } from "../../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import PromocionService from "../../services/PromocionService";
 import Promocion from "../../types/Promocion";
 import { setPromocion } from "../../redux/slices/Promocion";
@@ -10,6 +10,7 @@ import SearchBar from "../SearchBar/SearchBar";
 import TableComponent from "../Table/Table";
 import ModalEliminarPromocion from "../Modal/ModalEliminarPromocion";
 import ModalPromocion from "../Modal/ModalPromocion";
+import { handleSearch } from "../../utils.ts/utils";
 
 interface Row {
   [key: string]: any;
@@ -28,6 +29,10 @@ export const ListaPromocion = () => {
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [promocionToEdit, setPromocionToEdit] = useState<Promocion | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const globalPromocion = useAppSelector(
+    (state) => state.promocion.data
+  );
+
 
 // Función para abrir la modal de eliminación
 const handleOpenDeleteModal = (rowData: Row) => {
@@ -100,12 +105,9 @@ const handleOpenEditModal = (rowData: Row) => {
   dispatch(toggleModal({ modalName: 'modal' }));
 };
 
-  const handleSearch = (query: string) => {
-    const filtered = filterData.filter((item) =>
-      item.descripcion.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilterData(filtered);
-  };
+const onSearch = (query: string) => {
+  handleSearch(query, globalPromocion, 'denominacion', setFilterData);
+};
 
   const columns: Column[] = [
     { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
@@ -162,13 +164,14 @@ const handleOpenEditModal = (rowData: Row) => {
           </Button>
         </Box>
         <Box sx={{ mt: 2 }}>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={onSearch} />
         </Box> 
         <TableComponent
           data={filterData}
           columns={columns}
           handleOpenEditModal={handleOpenEditModal}
           handleOpenDeleteModal={handleOpenDeleteModal} // Pasa la función para abrir la modal de eliminación
+          
         />
         <ModalEliminarPromocion show={deleteModalOpen} onHide={handleCloseDeleteModal} promocion={promocionToEdit} onDelete={handleDelete} />
 
