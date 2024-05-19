@@ -107,7 +107,8 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
               const nuevaImagen = await imagenService.post(url + 'api/imagenArticulo', {
                 id: 0, // Este ID será ignorado por el backend y se generará uno nuevo
                 eliminado: false,
-                url: values.nuevaImagen, // Utiliza la URL proporcionada
+                url: values.nuevaImagen,
+                denominacion: ""
               });
               // Agregar la nueva imagen al array de imágenes del artículo manufacturado
               values.imagenes.push(nuevaImagen);
