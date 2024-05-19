@@ -4,7 +4,7 @@ import { Add } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { setArticuloManufacturado } from "../../../redux/slices/ArticuloManufacturado";
 import { toggleModal } from "../../../redux/slices/Modal";
-import ProductoService from "../../../services/ProductoService";
+import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService.ts";
 import AManufacturado from "../../../types/ArticuloManufacturado";
 import TableComponent from "../../ui/Table/Table.tsx";
 import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
@@ -26,7 +26,7 @@ export const ListaProductos = () => {
 
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
-  const productoService = new ProductoService();
+  const productoService = new ArticuloManufacturadoService();
   const [filteredData, setFilterData] = useState<Row[]>([]);
   const [productToEdit, setProductToEdit] = useState<AManufacturado | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);

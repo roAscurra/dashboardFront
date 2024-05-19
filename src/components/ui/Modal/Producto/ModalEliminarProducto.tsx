@@ -1,5 +1,5 @@
 import { Button, Modal } from 'react-bootstrap';
-import ProductoService from '../../../../services/ProductoService';
+import ArticuloManufacturadoService from '../../../../services/ArticuloManufacturadoService.ts';
 import ArticuloManufacturado from '../../../../types/ArticuloManufacturado';
 
 interface ModalDeleteProductsProps {
@@ -10,7 +10,7 @@ interface ModalDeleteProductsProps {
 }
 
 const ModalEliminarProducto: React.FC<ModalDeleteProductsProps> = ({ show, onHide, product }) => {
-    const productService = new ProductoService();
+    const productService = new ArticuloManufacturadoService();
     const url = import.meta.env.VITE_API_URL;
 
     const handleDelete = async () => {
