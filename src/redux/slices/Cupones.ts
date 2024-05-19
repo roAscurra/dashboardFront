@@ -1,28 +1,29 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
-import Cupones from '../../types/Cupones';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import Cupones from "../../types/Cupones.ts";
 
-interface IInitialState {
-  cupones: Cupones[]; // Cambia el tipo del estado a una matriz de Cupones
+// Definimos un tipo genérico para el estado inicial
+interface IInitialState<T> {
+  data: T;
 }
 
-const initialState: IInitialState = {
-    cupones: [],
-}
+// Estado inicial específico para Promocion[]
+const initialPromocionState: IInitialState<Cupones[]> = {
+  data: [],
+};
 
 export const cuponesSlice = createSlice({
-  name: 'cuponesState',
-  initialState,
+  name: 'cuponState',
+  initialState: initialPromocionState,
   reducers: {
-    setCupones: (state, action: PayloadAction<Cupones[]>) => {
-      state.cupones = action.payload;
+    setData: (state, action: PayloadAction<Cupones[]>) => {
+      state.data = action.payload;
     },
-    resetCupones: (state) => {
-      state.cupones = [];
+    resetData: (state) => {
+      state.data = [];
     }
   },
-})
+});
 
-export const { setCupones, resetCupones } = cuponesSlice.actions;
+export const { setData: setCupon, resetData: resetCupon } = cuponesSlice.actions;
 
 export default cuponesSlice.reducer;

@@ -9,15 +9,16 @@ import ModalEliminarCategoria from '../../ui/Modal/Categoria/ModalEliminarCatego
 import ICategoria from "../../../types/Categoria";
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 import { setCategoria } from '../../../redux/slices/Categoria';
+import {handleSearch} from "../../../utils.ts/utils.ts";
 
 const Categoria = () => {
     const url = import.meta.env.VITE_API_URL;
     const categoriaService = new CategoriaService();
 
     const dispatch = useAppDispatch();
-    const [filteredData, setFilteredData] = useState<ICategoria[]>([]);
+    const [filteredData, setFilterData] = useState<ICategoria[]>([]);
     const globalCategorias = useAppSelector(
-        (state) => state.categoria.categoria
+        (state) => state.categoria.data
     );
     const [selectedCategoria, setSelectedCategoria] = useState<ICategoria | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
@@ -28,7 +29,7 @@ const Categoria = () => {
         try {
             const categorias = await categoriaService.getAll(url + 'categorias');
             dispatch(setCategoria(categorias));
-            setFilteredData(categorias);
+            setFilterData(categorias);
         } catch (error) {
             console.error('Error al obtener las categorías:', error);
         }
@@ -37,14 +38,10 @@ const Categoria = () => {
 
     useEffect(() => {
         fetchCategorias();
-    }), [fetchCategorias];
+        onSearch(''); // Llamada a onSearch para filtrar los datos iniciales
+    }, []);
 
-    const handleSearch = (query: string) => {
-        const filtered = globalCategorias.filter((categoria: ICategoria) =>
-            categoria.denominacion.toLowerCase().includes(query.toLowerCase())
-        );
-        setFilteredData(filtered);
-    };
+
 
     const handleEditarCategoria = (categoria: ICategoria) => {
         setSelectedCategoria(categoria);
@@ -81,6 +78,10 @@ const Categoria = () => {
         }
     };
 
+    const onSearch = (query: string) => {
+        handleSearch(query, globalCategorias, setFilterData);
+    };
+
     return (
         <Box component="main" sx={{ flexGrow: 1, my: 2 }}>
             <Container>
@@ -103,7 +104,7 @@ const Categoria = () => {
                     </Button>
                 </Box>
                 <Box sx={{ mt: 2 }}>
-                    <SearchBar onSearch={handleSearch} />
+                    <SearchBar onSearch={onSearch} />
                 </Box>
                 <CategoriaLista categorias={filteredData} onEditar={handleEditarCategoria} onDelete={handleEliminarCategoria} />
                 <ModalCategoria open={modalOpen} onClose={handleCloseModal} getCategories={() => fetchCategorias()} categoryToEdit={selectedCategoria} />

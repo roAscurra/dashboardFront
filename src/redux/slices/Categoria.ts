@@ -1,29 +1,29 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
-import Categoria from '../../types/Categoria';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import Categoria from "../../types/Categoria.ts";
 
-
-interface IInitialState {
-  categoria: Categoria[];
+// Definimos un tipo genérico para el estado inicial
+interface IInitialState<T> {
+  data: T;
 }
 
-const initialState: IInitialState = {
-  categoria: [],
-}
+// Estado inicial específico para Promocion[]
+const initialCategoriaState: IInitialState<Categoria[]> = {
+  data: [],
+};
 
 export const categoriaSlice = createSlice({
   name: 'categoriaState',
-  initialState,
+  initialState: initialCategoriaState,
   reducers: {
-    setCategoria: (state, action: PayloadAction<Categoria[]>) => {
-      state.categoria = action.payload;
+    setData: (state, action: PayloadAction<Categoria[]>) => {
+      state.data = action.payload;
     },
-    resetCategoria: (state) => {
-      state.categoria = [];
+    resetData: (state) => {
+      state.data = [];
     }
   },
-})
+});
 
-export const { setCategoria, resetCategoria } = categoriaSlice.actions;
+export const { setData: setCategoria, resetData: resetCategoria } = categoriaSlice.actions;
 
 export default categoriaSlice.reducer;

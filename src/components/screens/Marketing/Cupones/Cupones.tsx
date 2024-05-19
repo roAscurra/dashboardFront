@@ -1,15 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { useAppDispatch } from "../../../../hooks/redux.ts";
+import {useAppDispatch, useAppSelector} from "../../../../hooks/redux.ts";
 import TableComponent from "../../../ui/Table/Table.tsx";
 import SearchBar from "../../../ui/SearchBar/SearchBar.tsx";
-import { setCupones } from "../../../../redux/slices/Cupones.ts";
 import ModalCupon from "../../../ui/Modal/Cupon/ModalCupon.tsx";
 import { toggleModal } from "../../../../redux/slices/Modal.ts";
 import CuponesService from "../../../../services/CuponesService.ts";
 import Cupones from "../../../../types/Cupones.ts";
 import ModalEliminarCupon from "../../../ui/Modal/Cupon/ModalEliminarCupon.tsx";
+import {handleSearch} from "../../../../utils.ts/utils.ts";
+import {setCupon} from "../../../../redux/slices/Cupones.ts";
 
 interface Row {
   [key: string]: any;
@@ -28,7 +29,9 @@ export const ListaCupones = () => {
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [cuponToEdit, setCuponToEdit] = useState<Cupones | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-
+  const globalCupones = useAppSelector(
+      (state) => state.cupones.data
+  );
   // Función para abrir la modal de eliminación
   const handleOpenDeleteModal = (rowData: Row) => {
     setCuponToEdit({
@@ -63,7 +66,7 @@ export const ListaCupones = () => {
   const fetchCupones = useCallback(async () => {
     try {
       const cupones = await cuponesService.getAll(url + 'cupones');
-      dispatch(setCupones(cupones));
+      dispatch(setCupon(cupones));
       setFilterData(cupones);
 
     } catch (error) {
@@ -74,7 +77,8 @@ export const ListaCupones = () => {
   useEffect(() => {
     // Llamando a fetchCupones dentro de useEffect
     fetchCupones();
-  }, [fetchCupones]); // fetchCupones se pasa como dependencia
+    onSearch('');
+  }, []); // fetchCupones se pasa como dependencia
 
   const handleAddCupon = () => {
     // Reset cuponToEdit to null when adding a new cupon
@@ -97,12 +101,8 @@ const handleOpenEditModal = (rowData: Row) => {
   dispatch(toggleModal({ modalName: 'modal' }));
 };
 
-
-  const handleSearch = (query: string) => {
-    const filtered = filterData.filter((item) =>
-      item.descripcion.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilterData(filtered);
+  const onSearch = (query: string) => {
+    handleSearch(query, globalCupones,  setFilterData);
   };
 
   const columns: Column[] = [
@@ -152,7 +152,7 @@ const handleOpenEditModal = (rowData: Row) => {
           </Button>
         </Box>
         <Box sx={{ mt: 2 }}>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={onSearch} />
         </Box>
         <TableComponent
           data={filterData}
