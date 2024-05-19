@@ -79,11 +79,10 @@ const handleOpenDeleteModal = (rowData: Row) => {
     }
   }, [dispatch, promocionService, url]);
 
-
   useEffect(() => {
-    // Llamando a fetchPromocion dentro de useEffect
     fetchPromocion();
-  }, [fetchPromocion]); // fetchPromocion se pasa como dependencia
+    onSearch('');
+  }, []);
 
   const handleAddPromocion = () => {
     // Reset promocionToEdit to null when adding a new cupon
@@ -106,7 +105,7 @@ const handleOpenEditModal = (rowData: Row) => {
 };
 
 const onSearch = (query: string) => {
-  handleSearch(query, globalPromocion, 'denominacion', setFilterData);
+  handleSearch(query, globalPromocion,  setFilterData);
 };
 
   const columns: Column[] = [
@@ -116,13 +115,7 @@ const onSearch = (query: string) => {
     { id: "fechaHasta", label: "Fecha Hasta", renderCell: (rowData) => <>{rowData.fechaHasta}</> },
     { id: "descripcionDescuento", label: "Descripcion Descuento", renderCell: (rowData) => <>{rowData.descripcionDescuento}</> },
     { id: "precioPromocional", label: "Precio Promocional", renderCell: (rowData) => <>{rowData.precioDescuento}</> }
-    // Agregar columna de acciones para editar
-    // { id: "acciones", label: "Acciones", renderCell: (rowData) => (
-    //   <div>
-    //     <Button onClick={() => handleOpenEditModal(rowData)}>Editar</Button>
-    //   </div>
 
-    // )},
   ];
 
   return (

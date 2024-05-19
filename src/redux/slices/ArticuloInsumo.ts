@@ -1,28 +1,29 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
-import ArticuloInsumo from '../../types/ArticuloInsumoType';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import IArticuloInsumo from "../../types/ArticuloInsumoType.ts";
 
-interface InitialState {
-  ArticuloInsumo: ArticuloInsumo[]; 
+// Definimos un tipo genérico para el estado inicial
+interface IInitialState<T> {
+  data: T;
 }
 
-const initialState: InitialState = {
-    ArticuloInsumo: [],
-}
+// Estado inicial específico para Promocion[]
+const initialArticuloInsumoState: IInitialState<IArticuloInsumo[]> = {
+  data: [],
+};
 
-export const ArticulosInsumoSlice = createSlice({
-  name: 'ArticuloInsumoState',
-  initialState,
+export const articuloInsumoSlice = createSlice({
+  name: 'articuloInsumoState',
+  initialState: initialArticuloInsumoState,
   reducers: {
-    setArticuloInsumo: (state, action: PayloadAction<ArticuloInsumo[]>) => {
-       state.ArticuloInsumo = action.payload;
+    setData: (state, action: PayloadAction<IArticuloInsumo[]>) => {
+      state.data = action.payload;
     },
-    resetUsuario: (state) => {
-      state.ArticuloInsumo = [];
+    resetData: (state) => {
+      state.data = [];
     }
   },
-})
+});
 
-export const { setArticuloInsumo, resetUsuario } = ArticulosInsumoSlice.actions;
+export const { setData: setArticuloInsumo, resetData: resetArticuloInsumo } = articuloInsumoSlice.actions;
 
-export default ArticulosInsumoSlice.reducer;
+export default articuloInsumoSlice.reducer;

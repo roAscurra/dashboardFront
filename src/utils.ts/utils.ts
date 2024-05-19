@@ -1,13 +1,22 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from 'react';
 
 export const handleSearch = (
     query: string,
     data: any[],
-    nombre: string, // Cambiado a string en lugar de any
     setData: Dispatch<SetStateAction<any[]>>
-  ) => {
-    const filter = data.filter((item) =>
-      item[nombre].toLowerCase().includes(query.toLowerCase())
+) => {
+  const filteredData = data.filter((item) => {
+    // Convierte cada valor del objeto en un array de strings y los concatena en un solo array
+    const values = Object.values(item).flatMap((value) =>
+        Array.isArray(value) ? value.map(String) : [String(value)]
     );
-    setData(filter);
-  };
+
+    // Verifica si alguno de los valores incluye la consulta
+    return values.some((value) =>
+        value.toLowerCase().includes(query.toLowerCase())
+    );
+  });
+
+  setData(filteredData);
+};
+

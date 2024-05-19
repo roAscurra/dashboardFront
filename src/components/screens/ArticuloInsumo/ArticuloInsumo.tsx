@@ -1,15 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { useAppDispatch } from "../../../hooks/redux";
+import {useAppDispatch, useAppSelector} from "../../../hooks/redux";
 import ArticuloInsumoService from "../../../services/ArticuloInsumoService";
-import { setArticuloInsumo } from "../../../redux/slices/ArticuloInsumo";
 import { toggleModal } from "../../../redux/slices/Modal";
 import SearchBar from "../../ui/SearchBar/SearchBar";
 import TableComponent from "../../ui/Table/Table";
 import ModalEliminarArticuloInsumo from "../../ui/Modal/ArticuloInsumo/ModalEliminarArticuloInsumo.tsx";
 import ModalArticuloInsumo from "../../ui/Modal/ArticuloInsumo/ModalArticuloInsumo.tsx";
 import ArticuloInsumo from "../../../types/ArticuloInsumoType";
+import {handleSearch} from "../../../utils.ts/utils.ts";
+import {setArticuloInsumo} from "../../../redux/slices/ArticuloInsumo.ts";
 
 interface Row {
   [key: string]: any;
@@ -30,7 +31,9 @@ export const ListaArticulosInsumo = () => {
     null
   );
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-
+  const globalArticuloInsumo = useAppSelector(
+      (state) => state.articuloInsumo.data
+  );
   const handleOpenDeleteModal = (rowData: Row) => {
     setArticuloToEdit({
       id: rowData.id,
@@ -85,7 +88,8 @@ export const ListaArticulosInsumo = () => {
 
   useEffect(() => {
     fetchArticulosInsumo();
-  }, [fetchArticulosInsumo]);
+    onSearch('');
+  }, []);
 
   const handleAddArticuloInsumo = () => {
     setArticuloToEdit(null);
@@ -107,71 +111,11 @@ export const ListaArticulosInsumo = () => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
-  const handleSearch = (query: string) => {
-    const filtered = filterData.filter((item) =>
-      item.denominacion.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilterData(filtered);
+  const onSearch = (query: string) => {
+    handleSearch(query, globalArticuloInsumo, setFilterData);
   };
 
-  // const columns: Column[] = [
-  //   { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
-  //   {
-  //     id: "denominacion",
-  //     label: "Nombre",
-  //     renderCell: (rowData) => <>{rowData.denominacion}</>,
-  //   },
-  //   {
-  //     id: "precioVenta",
-  //     label: "Precio de Venta",
-  //     renderCell: (rowData) => <>{rowData.precioVenta}</>,
-  //   },
-  //   {
-  //     id: "imagenes",
-  //     label: "Imágenes",
-  //     renderCell: (rowData) => (
-  //       <>
-  //         {rowData.imagenes.map((imagen: string, index: number) => (
-  //           <img key={index} src={imagen} alt={`Imagen ${index}`} />
-  //         ))}
-  //       </>
-  //     ),
-  //   },
-  //   {
-  //     id: "unidadMedida",
-  //     label: "Unidad de Medida",
-  //     renderCell: (rowData) => <>{rowData.unidadMedida.nombre}</>,
-  //   },
-  //   {
-  //     id: "precioCompra",
-  //     label: "Precio de Compra",
-  //     renderCell: (rowData) => <>{rowData.precioCompra}</>,
-  //   },
-  //   {
-  //     id: "stockActual",
-  //     label: "Stock Actual",
-  //     renderCell: (rowData) => <>{rowData.stockActual}</>,
-  //   },
-  //   {
-  //     id: "stockMaximo",
-  //     label: "Stock Máximo",
-  //     renderCell: (rowData) => <>{rowData.stockMaximo}</>,
-  //   },
-  //   {
-  //     id: "esParaElaborar",
-  //     label: "¿Es para Elaborar?",
-  //     renderCell: (rowData) => <>{rowData.esParaElaborar ? "Sí" : "No"}</>,
-  //   },
-  //   {
-  //     id: "acciones",
-  //     label: "Acciones",
-  //     renderCell: (rowData) => (
-  //       <div>
-  //         <Button onClick={() => handleOpenEditModal(rowData)}>Editar</Button>
-  //       </div>
-  //     ),
-  //   },
-  // ];
+
   const columns: Column[] = [
     { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
@@ -179,15 +123,6 @@ export const ListaArticulosInsumo = () => {
     { id: "precioCompra", label: "Precio Compra", renderCell: (rowData) => <>{rowData.precioCompra}</> },
     { id: "stockActual", label: "Stock Actual", renderCell: (rowData) => <>{rowData.stockActual}</> },
     { id: "stockMaximo", label: "Stock Maximo", renderCell: (rowData) => <>{rowData.stockMaximo}</> },
-    // { id: "unidadMedida", label: "Unidad de Medida", renderCell: (rowData) => <>{rowData.unidadMedida ? rowData.unidadMedida.denominacion : ""}</> },
-
-    // Agregar columna de acciones para editar
-    // { id: "acciones", label: "Acciones", renderCell: (rowData) => (
-    //   <div>
-    //     <Button onClick={() => handleOpenEditModal(rowData)}>Editar</Button>
-    //   </div>
-
-    // )},
   ];
   return (  
     <Box
@@ -228,7 +163,7 @@ export const ListaArticulosInsumo = () => {
           </Button>
         </Box>
         <Box sx={{ mt: 2 }}>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={onSearch} />
         </Box>
         <TableComponent
           data={filterData}
