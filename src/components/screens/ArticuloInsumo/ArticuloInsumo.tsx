@@ -34,6 +34,7 @@ export const ListaArticulosInsumo = () => {
   const globalArticuloInsumo = useAppSelector(
       (state) => state.articuloInsumo.data
   );
+
   const handleOpenDeleteModal = (rowData: Row) => {
     setArticuloToEdit({
       id: rowData.id,

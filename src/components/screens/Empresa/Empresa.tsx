@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Box, Typography, Button, Container, Tooltip, IconButton } from "@mui/material";
 import { Add, AddCircle, Visibility } from "@mui/icons-material";
-import { useAppDispatch } from "../../../hooks/redux";
+import {useAppDispatch, useAppSelector} from "../../../hooks/redux";
 import TableComponent from "../../ui/Table/Table";
 import SearchBar from "../../ui/SearchBar/SearchBar";
 import { setEmpresa } from "../../../redux/slices/Empresa";
@@ -12,6 +12,7 @@ import Empresa from "../../../types/Empresa";
 import ModalEliminarEmpresa from "../../ui/Modal/Empresa/ModalEliminarEmpresa.tsx";
 import { Link } from "react-router-dom";
 import ModalSucursal from "../../ui/Modal/Sucursal/ModalSucursal.tsx";
+import {handleSearch} from "../../../utils.ts/utils.ts";
 
 interface Row {
   [key: string]: any;
@@ -31,6 +32,9 @@ export const ListaEmpresa = () => {
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [empresaToEdit, setEmpresaToEdit] = useState<Empresa | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const globalEmpresas = useAppSelector(
+      (state) => state.empresas.data
+  );
 
   const fetchEmpresas = async () => {
     try {
@@ -87,7 +91,8 @@ export const ListaEmpresa = () => {
   useEffect(() => {
     
     fetchEmpresa();
-  }, [fetchEmpresa]); 
+    onSearch('');
+  }, []);
 
   const handleAddEmpresa = () => {
     
@@ -110,16 +115,12 @@ const handleOpenEditModal = (rowData: Row) => {
   dispatch(toggleModal({ modalName: 'modal' }));
 };
 
-
-  const handleSearch = (query: string) => {
-    const filtered = filterData.filter((item) =>
-      item.nombre.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilterData(filtered);
-  };
-
   const handleAddSucursal = () => {
     dispatch(toggleModal({ modalName: "modalSucursal" })); // Abre el modal de sucursales
+  };
+
+  const onSearch = (query: string) => {
+    handleSearch(query, globalEmpresas, setFilterData);
   };
 
   const columns: Column[] = [
@@ -190,7 +191,7 @@ const handleOpenEditModal = (rowData: Row) => {
           </Button>
         </Box>
         <Box sx={{ mt: 2 }}>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={onSearch} />
         </Box> 
         <TableComponent
           data={filterData}

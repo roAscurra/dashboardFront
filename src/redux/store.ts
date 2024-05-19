@@ -1,13 +1,13 @@
 // Importación necesaria
 import { configureStore } from "@reduxjs/toolkit";
 import tablaReducer from "./slices/TablaReducer"; // Renombramos el slice y su reducer
-import articuloManufacturadoReducer from "./slices/ArticuloManufacturado"; // Renombramos el slice y su reducer
+import {articuloManufacturadoSlice} from "./slices/ArticuloManufacturado"; // Renombramos el slice y su reducer
 import modalReducer from "./slices/Modal"; // Renombramos el slice y su reducer
 import {categoriaSlice} from "./slices/Categoria";
 import usuarioReducer from "./slices/Usuario";
 import { promocionSlice } from './slices/Promocion';
 import { sucursalSlice } from './slices/Sucursal';
-import { empresaSlice} from './slices/Empresa';
+import {empresasSlice} from './slices/Empresa';
 import {articuloInsumoSlice} from "./slices/ArticuloInsumo.ts";
 import {cuponesSlice} from "./slices/Cupones.ts";
 
@@ -18,14 +18,14 @@ export const store = configureStore({
     tabla: tablaReducer, // Cambiamos el nombre de la clave para que coincida con el nombre del slice
     modal: modalReducer, // Cambiamos el nombre de la clave para que coincida con el nombre del slice
     articuloInsumo: articuloInsumoSlice.reducer,
-    articuloManufacturado: articuloManufacturadoReducer,
+    articuloManufacturado: articuloManufacturadoSlice.reducer,
     //articuloManufacturadoDetalle
     categoria: categoriaSlice.reducer,
     cupones: cuponesSlice.reducer,
     usuario: usuarioReducer,
     promocion: promocionSlice.reducer,
     sucursales: sucursalSlice.reducer,
-    empresas: empresaSlice.reducer
+    empresas: empresasSlice.reducer,
   },
 });
 
