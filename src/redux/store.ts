@@ -4,7 +4,7 @@ import tablaReducer from "./slices/TablaReducer"; // Renombramos el slice y su r
 import {articuloManufacturadoSlice} from "./slices/ArticuloManufacturado"; // Renombramos el slice y su reducer
 import modalReducer from "./slices/Modal"; // Renombramos el slice y su reducer
 import {categoriaSlice} from "./slices/Categoria";
-import usuarioReducer from "./slices/Usuario";
+import {usuarioSlice} from "./slices/Usuario";
 import { promocionSlice } from './slices/Promocion';
 import { sucursalSlice } from './slices/Sucursal';
 import {empresasSlice} from './slices/Empresa';
@@ -22,7 +22,7 @@ export const store = configureStore({
     //articuloManufacturadoDetalle
     categoria: categoriaSlice.reducer,
     cupones: cuponesSlice.reducer,
-    usuario: usuarioReducer,
+    usuario: usuarioSlice.reducer,
     promocion: promocionSlice.reducer,
     sucursales: sucursalSlice.reducer,
     empresas: empresasSlice.reducer,
