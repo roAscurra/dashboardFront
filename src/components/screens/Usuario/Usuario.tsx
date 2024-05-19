@@ -8,8 +8,9 @@ import UsuarioService from "../../../services/UsuarioService";
 import { setUsuario } from "../../../redux/slices/Usuario";
 import ModalUsuario from "../../ui/Modal/Usuario/ModalUsuario.tsx";
 import ModalEliminarUsuario from "../../ui/Modal/Usuario/ModalEliminarUsuario.tsx";
-import Usuario from "../../../types/UsuarioTypes";
+import Usuario from "../../../types/Usuario.ts";
 import { toggleModal } from "../../../redux/slices/Modal";
+import {handleSearch} from "../../../utils.ts/utils.ts";
 
 interface Row {
   [key: string]: any;
@@ -25,16 +26,15 @@ export const ListaUsuarios = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   const usuarioService = new UsuarioService();
-  // Estado global de Redux
-  const globalUsuario = useAppSelector(
-    (state) => state.usuario.usuario
-  );
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [usuarioToEdit, setUsuarioToEdit] = useState<Usuario | null>(null); // Estado para el usuario seleccionado para eliminar
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false); // Estado para controlar la apertura y cierre del modal de eliminar
   const [loading, setLoading] = useState(true);
-
+  // Estado global de Redux
+  const globalUsuario = useAppSelector(
+      (state) => state.usuario.data
+  );
 
   // Definiendo fetchUsuarios con useCallback
   const fetchUsuarios = useCallback(async () => {
@@ -52,7 +52,8 @@ export const ListaUsuarios = () => {
   useEffect(() => {
     // Llamando a fetchUsuarios dentro de useEffect
     fetchUsuarios();
-  }, [fetchUsuarios]); // fetchUsuarios se pasa como dependencia
+    onSearch('');
+  }, []); // fetchUsuarios se pasa como dependencia
 
   const handleAddUsuario = () => {
     setUsuarioToEdit(null);
@@ -67,11 +68,10 @@ export const ListaUsuarios = () => {
     });
     dispatch(toggleModal({ modalName: 'modal' }));
   };
-  const handleSearch = (query: string) => {
-    const filtered = globalUsuario.filter((item) =>
-      item.username.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilterData(filtered);
+
+
+  const onSearch = (query: string) => {
+    handleSearch(query, globalUsuario, setFilterData);
   };
 
   const handleOpenDeleteModal = (rowData: Row) => {
@@ -152,7 +152,7 @@ export const ListaUsuarios = () => {
 
         {/* Barra de búsqueda */}
         <Box sx={{ mb: 2 }}>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={onSearch} />
         </Box>
 
         {/* Tabla de usuarios */}

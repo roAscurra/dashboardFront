@@ -4,7 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import UsuarioService from "../../../../services/UsuarioService";
-import Usuario from "../../../../types/UsuarioTypes";
+import Usuario from "../../../../types/Usuario.ts";
 import { toggleModal } from "../../../../redux/slices/Modal";
 
 interface ModalUsuarioProps {

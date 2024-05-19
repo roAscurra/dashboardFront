@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import Usuario from '../../../../types/UsuarioTypes';
+import Usuario from '../../../../types/Usuario.ts';
 import UsuarioService from '../../../../services/UsuarioService';
 
 interface ModalEliminarUsuarioProps {
