@@ -1,15 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { useAppDispatch } from "../../../hooks/redux";
-import TableComponent from "../../ui/Table/Table";
-import SearchBar from "../../ui/SearchBar/SearchBar";
-import { setCupones } from "../../../redux/slices/Cupones";
-import ModalCupon from "../../ui/Modal/Cupon/ModalCupon.tsx";
-import { toggleModal } from "../../../redux/slices/Modal";
-import CuponesService from "../../../services/CuponesService";
-import Cupones from "../../../types/Cupones";
-import ModalEliminarCupon from "../../ui/Modal/Cupon/ModalEliminarCupon.tsx";
+import { useAppDispatch } from "../../../../hooks/redux.ts";
+import TableComponent from "../../../ui/Table/Table.tsx";
+import SearchBar from "../../../ui/SearchBar/SearchBar.tsx";
+import { setCupones } from "../../../../redux/slices/Cupones.ts";
+import ModalCupon from "../../../ui/Modal/Cupon/ModalCupon.tsx";
+import { toggleModal } from "../../../../redux/slices/Modal.ts";
+import CuponesService from "../../../../services/CuponesService.ts";
+import Cupones from "../../../../types/Cupones.ts";
+import ModalEliminarCupon from "../../../ui/Modal/Cupon/ModalEliminarCupon.tsx";
 
 interface Row {
   [key: string]: any;
@@ -54,7 +54,7 @@ export const ListaCupones = () => {
       console.error('Error al eliminar el cupón:', error);
     }
   };
-  
+
   const handleCloseDeleteModal = () => {
     setDeleteModalOpen(false); // Utiliza el estado directamente para cerrar la modal de eliminación
   };
@@ -62,9 +62,9 @@ export const ListaCupones = () => {
   // Definiendo fetchCupones con useCallback
   const fetchCupones = useCallback(async () => {
     try {
-      const sucursales = await cuponesService.getAll(url + 'cupones');
-      dispatch(setCupones(sucursales));
-      setFilterData(sucursales);
+      const cupones = await cuponesService.getAll(url + 'cupones');
+      dispatch(setCupones(cupones));
+      setFilterData(cupones);
 
     } catch (error) {
       console.error("Error al obtener los cupones:", error);
@@ -82,7 +82,7 @@ export const ListaCupones = () => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
-  
+
 
   // Función para abrir la modal de edición
 // Definición de handleOpenEditModal
@@ -111,13 +111,6 @@ const handleOpenEditModal = (rowData: Row) => {
     { id: "fechaDesde", label: "Fecha Desde", renderCell: (rowData) => <>{rowData.fechaDesde}</> },
     { id: "fechaHasta", label: "Fecha Hasta", renderCell: (rowData) => <>{rowData.fechaHasta}</> },
     { id: "descripcion", label: "Descripción", renderCell: (rowData) => <>{rowData.descripcion}</> }
-    // Agregar columna de acciones para editar
-    // { id: "acciones", label: "Acciones", renderCell: (rowData) => (
-    //   <div>
-    //     <Button onClick={() => handleOpenEditModal(rowData)}>Editar</Button>
-    //   </div>
-
-    // )},
   ];
 
   return (
@@ -160,7 +153,7 @@ const handleOpenEditModal = (rowData: Row) => {
         </Box>
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={handleSearch} />
-        </Box> 
+        </Box>
         <TableComponent
           data={filterData}
           columns={columns}

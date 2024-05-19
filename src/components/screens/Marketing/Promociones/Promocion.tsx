@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
-import PromocionService from "../../../services/PromocionService";
-import Promocion from "../../../types/Promocion";
-import { setPromocion } from "../../../redux/slices/Promocion";
-import { toggleModal } from "../../../redux/slices/Modal";
-import SearchBar from "../../ui/SearchBar/SearchBar";
-import TableComponent from "../../ui/Table/Table";
-import ModalEliminarPromocion from "../../ui/Modal/Promocion/ModalEliminarPromocion.tsx";
-import ModalPromocion from "../../ui/Modal/Promocion/ModalPromocion.tsx";
-import { handleSearch } from "../../../utils.ts/utils";
+import { useAppDispatch, useAppSelector } from "../../../../hooks/redux.ts";
+import PromocionService from "../../../../services/PromocionService.ts";
+import Promocion from "../../../../types/Promocion.ts";
+import { setPromocion } from "../../../../redux/slices/Promocion.ts";
+import { toggleModal } from "../../../../redux/slices/Modal.ts";
+import SearchBar from "../../../ui/SearchBar/SearchBar.tsx";
+import TableComponent from "../../../ui/Table/Table.tsx";
+import ModalEliminarPromocion from "../../../ui/Modal/Promocion/ModalEliminarPromocion.tsx";
+import ModalPromocion from "../../../ui/Modal/Promocion/ModalPromocion.tsx";
+import { handleSearch } from "../../../../utils.ts/utils.ts";
 
 interface Row {
   [key: string]: any;
