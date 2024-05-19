@@ -1,28 +1,29 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
-import Empresa from '../../types/Empresa';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import Empresa from "../../types/Empresa.ts";
 
-interface IInitialState {
-  empresa: Empresa[]; 
+// Definimos un tipo genérico para el estado inicial
+interface IInitialState<T> {
+  data: T;
 }
 
-const initialState: IInitialState = {
-    empresa: [],
-}
+// Estado inicial específico para Promocion[]
+const initialEmpresaState: IInitialState<Empresa[]> = {
+  data: [],
+};
 
-export const empresaSlice = createSlice({
+export const empresasSlice = createSlice({
   name: 'empresaState',
-  initialState,
+  initialState: initialEmpresaState,
   reducers: {
-    setEmpresa: (state, action: PayloadAction<Empresa[]>) => {
-      state.empresa = action.payload;
+    setData: (state, action: PayloadAction<Empresa[]>) => {
+      state.data = action.payload;
     },
-    resetEmpresa: (state) => {
-      state.empresa = [];
+    resetData: (state) => {
+      state.data = [];
     }
   },
-})
+});
 
-export const { setEmpresa, resetEmpresa } = empresaSlice.actions;
+export const { setData: setEmpresa, resetData: resetEmpresa } = empresasSlice.actions;
 
-export default empresaSlice.reducer;
+export default empresasSlice.reducer;

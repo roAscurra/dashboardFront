@@ -4,12 +4,13 @@ import { Add } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { setArticuloManufacturado } from "../../../redux/slices/ArticuloManufacturado";
 import { toggleModal } from "../../../redux/slices/Modal";
-import ProductoService from "../../../services/ProductoService";
+import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService.ts";
 import AManufacturado from "../../../types/ArticuloManufacturado";
 import TableComponent from "../../ui/Table/Table.tsx";
 import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
 import ModalProducto from "../../ui/Modal/Producto/ModalProducto.tsx";
 import ModalEliminarProducto from "../../ui/Modal/Producto/ModalEliminarProducto.tsx";
+import {handleSearch} from "../../../utils.ts/utils.ts";
 
 interface Row {
   [key: string]: any;
@@ -25,15 +26,13 @@ export const ListaProductos = () => {
 
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
-  const productoService = new ProductoService();
-  // Estado global de Redux
-  const globalArticulosManufacturados = useAppSelector(
-    (state) => state.articuloManufacturado.articuloManufacturado
-  );
-  const [filteredData, setFilteredData] = useState<Row[]>([]);
+  const productoService = new ArticuloManufacturadoService();
+  const [filteredData, setFilterData] = useState<Row[]>([]);
   const [productToEdit, setProductToEdit] = useState<AManufacturado | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-
+  const globalArticuloManufacturado = useAppSelector(
+      (state) => state.articuloManufacturado.data
+  );
   const handleOpenDeleteModal = (rowData: Row) => {
     setProductToEdit({
       id: rowData.id,
@@ -73,7 +72,7 @@ export const ListaProductos = () => {
     try {
       const productos = await productoService.getAll(url + 'articulosManufacturados');
       dispatch(setArticuloManufacturado(productos));
-      setFilteredData(productos);
+      setFilterData(productos);
     } catch (error) {
       console.error("Error al obtener los productos:", error);
     }
@@ -81,7 +80,8 @@ export const ListaProductos = () => {
 
   useEffect(() => {
     fetchProductos();
-  }, [fetchProductos]);
+    onSearch('');
+  }, []);
 
   const handleAddProduct = () => {
     // Reset cuponToEdit to null when adding a new cupon
@@ -106,11 +106,8 @@ export const ListaProductos = () => {
 
 
   // Función para manejar la búsqueda de artículos manufacturados
-  const handleSearch = (query: string) => {
-    const filtered = globalArticulosManufacturados.filter((item) =>
-      item.denominacion.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredData(filtered);
+  const onSearch = (query: string) => {
+    handleSearch(query, globalArticuloManufacturado, setFilterData);
   };
 
   // Definición de las columnas para la tabla de artículos manufacturados
@@ -166,7 +163,7 @@ export const ListaProductos = () => {
         </Box>
         {/* Barra de búsqueda */}
         <Box sx={{ mt: 2 }}>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={onSearch} />
         </Box>
         {/* Componente de tabla para mostrar los artículos manufacturados */}
         <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />
