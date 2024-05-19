@@ -1,18 +1,20 @@
 import React from 'react';
-import Sidebar from '../components/Sider/SideBar';
 import { Route, Routes } from 'react-router-dom';
-import { ListaProductos } from '../components/Productos/ListaProductos';
+
 import { CContainer, CRow, CCol } from "@coreui/react";
-import Inicio from '../components/Inicio/Inicio';
-import Usuario from '../components/Usuario/Usuario';
-import { ListaCupones } from '../components/Marketing/Cupones';
-import Estadisticas from '../components/Estadisticas/Estadisticas';
-import BaseNavBar from '../components/common/BaseNavBar';
-import { ListaPromocion } from '../components/Marketing/Promocion';
-import Categoria from '../components/Categoria/Categoria';
-import { ListaSucursal } from '../components/Sucursal/Sucursal';
-import { ListaArticulosInsumo } from '../components/ArticuloInsumo/ArticuloInsumo';
-import { ListaEmpresa } from '../components/Empresa/Empresa';
+
+import BaseNavBar from '../components/ui/common/BaseNavBar';
+import {ListaArticulosInsumo} from "../components/screens/ArticuloInsumo/ArticuloInsumo.tsx";
+import Inicio from "../components/screens/Inicio/Inicio.tsx";
+import Usuario from "../components/screens/Usuario/Usuario.tsx";
+import Estadisticas from "../components/screens/Estadisticas/Estadisticas.tsx";
+import {ListaProductos} from "../components/screens/Productos/ListaProductos.tsx";
+import Categoria from "../components/screens/Categoria/Categoria.tsx";
+import {ListaCupones} from "../components/screens/Marketing/Cupones.tsx";
+import {ListaPromocion} from "../components/screens/Marketing/Promocion.tsx";
+import {ListaSucursal} from "../components/screens/Sucursal/Sucursal.tsx";
+import {ListaEmpresa} from "../components/screens/Empresa/Empresa.tsx";
+import Sidebar from "../components/ui/Sider/SideBar.tsx";
 
 export const AppRouter = () => {
   return (
