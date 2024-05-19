@@ -11,6 +11,7 @@ import ModalArticuloInsumo from "../../ui/Modal/ArticuloInsumo/ModalArticuloInsu
 import ArticuloInsumo from "../../../types/ArticuloInsumoType";
 import {handleSearch} from "../../../utils.ts/utils.ts";
 import {setArticuloInsumo} from "../../../redux/slices/ArticuloInsumo.ts";
+import UnidadMedida from "../../../types/UnidadMedida.ts";
 
 interface Row {
   [key: string]: any;
@@ -23,7 +24,7 @@ interface Column {
 }
 
 export const ListaArticulosInsumo = () => {
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_API_TRAZA;
   const dispatch = useAppDispatch();
   const articuloInsumoService = new ArticuloInsumoService();
   const [filterData, setFilterData] = useState<Row[]>([]);
@@ -123,7 +124,41 @@ export const ListaArticulosInsumo = () => {
     { id: "precioCompra", label: "Precio Compra", renderCell: (rowData) => <>{rowData.precioCompra}</> },
     { id: "stockActual", label: "Stock Actual", renderCell: (rowData) => <>{rowData.stockActual}</> },
     { id: "stockMaximo", label: "Stock Maximo", renderCell: (rowData) => <>{rowData.stockMaximo}</> },
+    { id: "esParaElaborar", label: "Es para elaborar", renderCell: (rowData) => <span>{rowData.esParaElaborar ? "Sí" : "No"}</span> },
+    {
+      id: "unidadMedida",
+      label: "Unidad Medida",
+      renderCell: (rowData) => {
+        // Verifica si la unidad de medida está presente y si tiene la propiedad denominacion
+        const unidadMedida: UnidadMedida = rowData.unidadMedida;
+        if (unidadMedida && unidadMedida.denominacion) {
+          return <span>{unidadMedida.denominacion}</span>;
+        } else {
+          // Si la unidad de medida no está presente o no tiene denominacion, muestra un valor por defecto
+          return <span>Sin unidad de medida</span>;
+        }
+      }
+    },
+    {
+      id: "imagenes",
+      label: "Imágenes",
+      renderCell: (rowData) => {
+        const imagenes = rowData.imagenes;
+        if (imagenes && imagenes.length > 0) {
+          return (
+            <div style={{ display: 'flex', gap: '5px' }}>
+              {imagenes.map((imagen: any, index: number) => (
+                <img key={index} src={imagen.url} alt={`Imagen ${index + 1}`} style={{ width: '100px', height: 'auto' }} />
+              ))}
+            </div>
+          );
+        } else {
+          return <span>No hay imágenes disponibles</span>;
+        }
+      }
+    },
   ];
+
   return (  
     <Box
       component="main"
