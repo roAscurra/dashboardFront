@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import ProductoService from '../../../services/ProductoService';
+import ArticuloManufacturadoService from '../../../services/ArticuloManufacturadoService.ts';
 import CuponesService from '../../../services/CuponesService';
 import { Card, CardContent, Typography, Grid } from '@mui/material';
 import * as icon from "@coreui/icons";
 import CIcon from '@coreui/icons-react';
 
 
-const productoService = new ProductoService();
+const productoService = new ArticuloManufacturadoService();
 const cuponesService = new CuponesService();
 
 const Estadisticas = () => {

@@ -1,6 +1,6 @@
 import DataModel from "./DataModel";
 
 interface IImagen extends DataModel<IImagen>{
-    url: string;
+    denominacion: string;
 }
 export default IImagen;
