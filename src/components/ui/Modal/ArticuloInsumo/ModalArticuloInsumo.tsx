@@ -104,7 +104,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
 
               console.log(values.nuevaImagen)
               // Crear una nueva imagen con la URL proporcionada
-              const nuevaImagen = await imagenService.post(url + 'api/imagenArticulo', {
+              const nuevaImagen = await imagenService.post(url + 'imagenArticulo', {
                 id: 0, // Este ID será ignorado por el backend y se generará uno nuevo
                 eliminado: false,
                 url: values.nuevaImagen,
@@ -115,11 +115,11 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
 
               if (articuloToEdit) {
                 // Lógica para editar el artículo de insumo existente
-                await articuloInsumoService.put(url + "api/articuloInsumo", values.id.toString(), values);
+                await articuloInsumoService.put(url + "articuloInsumo", values.id.toString(), values);
                 console.log("Se ha actualizado correctamente.");
               } else {
                 // Lógica para agregar un nuevo artículo de insumo
-                await articuloInsumoService.post(url + "api/articuloInsumo", values);
+                await articuloInsumoService.post(url + "articuloInsumo", values);
                 console.log("Se ha agregado correctamente.");
                 console.log(values)
               }

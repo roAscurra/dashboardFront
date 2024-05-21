@@ -55,7 +55,7 @@ export const ListaArticulosInsumo = () => {
     try {
       if (articuloToEdit && articuloToEdit.id) {
         await articuloInsumoService.delete(
-          url + "articulos-insumo",
+          url + "articuloInsumo",
           articuloToEdit.id.toString()
         );
         console.log("Artículo de insumo eliminado correctamente.");
@@ -78,7 +78,7 @@ export const ListaArticulosInsumo = () => {
   const fetchArticulosInsumo = useCallback(async () => {
     try {
       const articulosInsumo = await articuloInsumoService.getAll(
-        url + "articulosInsumos"
+        url + "articuloInsumo"
       );
       console.log(articulosInsumo)
       dispatch(setArticuloInsumo(articulosInsumo));
