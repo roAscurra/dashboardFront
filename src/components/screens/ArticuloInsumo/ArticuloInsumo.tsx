@@ -41,7 +41,7 @@ export const ListaArticulosInsumo = () => {
       id: rowData.id,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
-      imagenes: rowData.imagenes,
+      //imagenes: rowData.imagenes,
       precioCompra: rowData.precioCompra,
       stockActual: rowData.stockActual,
       stockMaximo: rowData.stockMaximo,
@@ -51,7 +51,7 @@ export const ListaArticulosInsumo = () => {
     setDeleteModalOpen(true);
   };
 
-  const handleDelete = async () => {
+ {/* const handleDelete = async () => {
     try {
       if (articuloToEdit && articuloToEdit.id) {
         await articuloInsumoService.delete(
@@ -71,6 +71,7 @@ export const ListaArticulosInsumo = () => {
     }
   };
 
+*/}
   const handleCloseDeleteModal = () => {
     setDeleteModalOpen(false);
   };
@@ -103,7 +104,7 @@ export const ListaArticulosInsumo = () => {
       id: rowData.id,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
-      imagenes: rowData.imagenes,
+     // imagenes: rowData.imagenes,
       precioCompra: rowData.precioCompra,
       stockActual: rowData.stockActual,
       stockMaximo: rowData.stockMaximo,
@@ -140,6 +141,10 @@ export const ListaArticulosInsumo = () => {
         }
       }
     },
+   
+  ];
+
+   {/*
     {
       id: "imagenes",
       label: "Imágenes",
@@ -158,7 +163,7 @@ export const ListaArticulosInsumo = () => {
         }
       }
     },
-  ];
+     */}
 
   return (  
     <Box
@@ -211,7 +216,7 @@ export const ListaArticulosInsumo = () => {
           show={deleteModalOpen}
           onHide={handleCloseDeleteModal}
           articuloInsumo={articuloToEdit}
-          onDelete={handleDelete}
+          //onDelete={handleDelete}
         />
         <ModalArticuloInsumo
           getArticulosInsumo={fetchArticulosInsumo}

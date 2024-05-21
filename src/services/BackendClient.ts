@@ -85,14 +85,21 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
   }
 
   // Método para eliminar un elemento por su ID
-  async delete(url: string, id: string): Promise<void> {
+  async delete(url:string, id: string): Promise<void> {
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "DELETE",
       headers: {
+        Accept: "application/json",
         "Content-Type": "application/json",
       },
     };
-    await this.request(path, options);
+    try {
+      await this.request(path, options);
+      console.log('Eliminación lógica realizada correctamente.');
+    } catch (error) {
+      console.error('Error al eliminar el artículo de insumo:', error);
+      throw error;
+    }
   }
 }

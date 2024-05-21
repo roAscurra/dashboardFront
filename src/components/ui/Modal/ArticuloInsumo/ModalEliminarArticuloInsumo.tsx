@@ -7,17 +7,16 @@ interface ModalEliminarArticuloInsumoProps {
   show: boolean;
   onHide: () => void;
   articuloInsumo: ArticuloInsumo | null;
-  onDelete: () => void;
 }
 
 const ModalEliminarArticuloInsumo: React.FC<ModalEliminarArticuloInsumoProps> = ({ show, onHide, articuloInsumo }) => {
     const articuloInsumoService = new ArticuloInsumoService();
     const url = import.meta.env.VITE_API_URL;
-  
+
     const handleDelete = async () => {
       try {
         if (articuloInsumo && articuloInsumo.id) {
-          await articuloInsumoService.delete(url + 'articulos-insumo', articuloInsumo.id.toString());
+          await articuloInsumoService.delete(url + 'articuloInsumo',articuloInsumo.id.toString());
           console.log('Se ha eliminado correctamente.');
           onHide(); // Cerramos el modal
         } else {
@@ -46,7 +45,6 @@ const ModalEliminarArticuloInsumo: React.FC<ModalEliminarArticuloInsumoProps> = 
         </Modal.Footer>
       </Modal>
     );
-  };
-  
+};
 
 export default ModalEliminarArticuloInsumo;

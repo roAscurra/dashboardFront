@@ -7,7 +7,7 @@ import IUnidadMedida from "../../../../types/UnidadMedida";
 import { toggleModal } from "../../../../redux/slices/Modal";
 import ArticuloInsumo from "../../../../types/ArticuloInsumoType";
 import UnidadMedidaService from "../../../../services/UnidadMedidaService";
-import ImagenArticuloService from "../../../../services/ImagenArticuloService";
+//import ImagenArticuloService from "../../../../services/ImagenArticuloService";
 import { useEffect, useState } from "react";
 
 interface ModalArticuloInsumoProps {
@@ -20,7 +20,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
   const articuloInsumoService = new ArticuloInsumoService();
   const unidadService = new UnidadMedidaService();
   const [unidadesMedida, setUnidadesMedida] = useState<IUnidadMedida[]>([]);
-  const imagenService = new ImagenArticuloService();
+  //const imagenService = new ImagenArticuloService();
   // const categoriaService = new CategoriaService();
   // const [categorias, setCategoria] = useState<ICategoria[]>([]);
   const url = import.meta.env.VITE_API_URL;
@@ -34,7 +34,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
     stockActual: articuloToEdit ? articuloToEdit.stockActual : 0,
     stockMaximo: articuloToEdit ? articuloToEdit.stockMaximo : 0,
     esParaElaborar: articuloToEdit ? articuloToEdit.esParaElaborar : false,
-    imagenes: articuloToEdit ? articuloToEdit.imagenes.map((imagen: any) => imagen.url) : [],
+    // imagenes: articuloToEdit ? articuloToEdit.imagenes?.map((imagen: any) => imagen.url) : [],
     unidadMedida: articuloToEdit && articuloToEdit.unidadMedida
       ? { ...articuloToEdit.unidadMedida }
       : {
@@ -42,7 +42,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
         eliminado: false,
         denominacion: '',
       },
-    nuevaImagen: articuloToEdit ? articuloToEdit.imagenes[0].url : "",
+    //nuevaImagen: articuloToEdit ? articuloToEdit.imagenes[0].url : "",
   };
 
   const modal = useAppSelector((state) => state.modal.modal);
@@ -91,7 +91,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
           initialValues={initialValues}
           onSubmit={async (values: ArticuloInsumo) => {
             try {
-
+              {/*
               console.log(values.nuevaImagen)
               // Crear una nueva imagen con la URL proporcionada
               const nuevaImagen = await imagenService.post(url + 'imagenArticulo', {
@@ -102,6 +102,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
               });
               // Agregar la nueva imagen al array de imágenes del artículo manufacturado
               values.imagenes.push(nuevaImagen);
+              */}
 
               if (articuloToEdit) {
                 // Lógica para editar el artículo de insumo existente
@@ -164,7 +165,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                       className="error-message"
                       component="div"
                     />
-
+                    {/*
                     <label htmlFor="nuevaImagen">Imagen:</label>
                     <Field
                       name="nuevaImagen"
@@ -178,6 +179,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                       className="error-message"
                       component="div"
                     />
+                     */}
                   </Col>
                   <Col>
                     <label htmlFor="stockActual">Stock Actual:</label>
