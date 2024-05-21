@@ -53,10 +53,10 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                     onSubmit={async (values: Categoria) => {
                         try {
                             if (categoryToEdit) {
-                                await categoriaService.put(url + 'categorias', values.id.toString(), values);
+                                await categoriaService.put(url + 'categoria', values.id.toString(), values);
                                 console.log('Categoría actualizada correctamente.');
                             } else {
-                                await categoriaService.post(url + 'categorias', values);
+                                await categoriaService.post(url + 'categoria', values);
                                 console.log('Categoría agregada correctamente.');
                             }
                             getCategories();
