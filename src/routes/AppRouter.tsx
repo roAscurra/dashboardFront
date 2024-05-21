@@ -14,12 +14,14 @@ import {ListaCupones} from "../components/screens/Marketing/Cupones/Cupones.tsx"
 import {ListaPromocion} from "../components/screens/Marketing/Promociones/Promocion.tsx";
 import {ListaSucursal} from "../components/screens/Sucursal/Sucursal.tsx";
 import {ListaEmpresa} from "../components/screens/Empresa/Empresa.tsx";
+import SubirImagen from "../components/screens/Empresa/SubirImagen.tsx";
+
 import Sidebar from "../components/ui/Sider/SideBar.tsx";
 
 export const AppRouter = () => {
   return (
     <React.Fragment>
-      <BaseNavBar /> {/* Agregar BaseNavBar aquí */}
+       <BaseNavBar /> {/* Agregar BaseNavBar aquí */}
       <CContainer fluid>
         <CRow>
           {/* Sidebar */}
@@ -41,6 +43,7 @@ export const AppRouter = () => {
               <Route path="/promociones/lista" element={<ListaPromocion />} />
               <Route path="/sucursales/lista" element={<ListaSucursal />} />
               <Route path="/empresas/:id/sucursales" element={<ListaSucursal />} />
+              <Route path="/imagenEmpresa" element={<SubirImagen />} /> {/* Ruta para el componente SubirImagen */}
 
               {/* Agrega más rutas aquí */}
             </Routes>

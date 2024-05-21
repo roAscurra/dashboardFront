@@ -21,10 +21,19 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
     ? empresaToEdit
     : {
         id: 0,
+        eliminado: false,
         nombre: "",
         razonSocial: "",
         cuil: 0, 
-        sucursal: ","
+        sucursal: ",",
+        imagenes: [
+          {
+            id: 0,
+            eliminado: false,
+            name: "",
+            url: ""
+          }
+        ]      
       };
 
   const modal = useAppSelector((state) => state.modal[modalName]);
@@ -60,11 +69,11 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
             try {
               if (empresaToEdit) {
         
-                await empresaService.put(url + "empresas", values.id.toString(), values);
+                await empresaService.put(url + "empresa", values.id.toString(), values);
                 console.log("Se ha actualizado correctamente.");
               } else {
                 
-                await empresaService.post(url + "empresas", values);
+                await empresaService.post(url + "empresa", values);
                 console.log("Se ha agregado correctamente.");
               }
               getEmpresa(); 

@@ -1,8 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
-import { Box, Typography, Button, Container, Tooltip, IconButton, Card, CardMedia, CardContent, CardActions, Grid } from "@mui/material";
-import { Add, AddCircle, Visibility } from "@mui/icons-material";
+import { Box, Typography, Button, Container, IconButton, Card, CardMedia, CardContent, CardActions, Grid } from "@mui/material";
+import { Add } from "@mui/icons-material";
 import {useAppDispatch, useAppSelector} from "../../../hooks/redux";
-import TableComponent from "../../ui/Table/Table";
 import SearchBar from "../../ui/SearchBar/SearchBar";
 import { setEmpresa } from "../../../redux/slices/Empresa";
 import ModalEmpresa from "../../ui/Modal/Empresa/ModalEmpresa.tsx";
@@ -21,17 +20,10 @@ interface Row {
   [key: string]: any;
 }
 
-interface Column {
-  id: keyof Row;
-  label: string;
-  renderCell: (rowData: Row) => JSX.Element;
-}
-
 export const ListaEmpresa = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   const empresaService = new EmpresaService();
-  const [filteredData, setFilteredData] = useState<Empresa[]>([]);
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [empresaToEdit, setEmpresaToEdit] = useState<Empresa | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -39,24 +31,16 @@ export const ListaEmpresa = () => {
       (state) => state.empresas.data
   );
 
-  const fetchEmpresas = async () => {
-    try {
-      const empresas = await empresaService.getAll(url + '/empresas');
-      dispatch(setEmpresa(empresas)); 
-      setFilteredData(empresas); 
-    } catch (error) {
-      console.error("Error al obtener las empresas:", error);
-    }
-  }; 
-
+ 
   // Función para abrir la modal de eliminación
   const handleOpenDeleteModal = (rowData: Row) => {
     setEmpresaToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       nombre: rowData.nombre,
       razonSocial: rowData.razonSocial,
       cuil: rowData.cuil,
-      sucursal: rowData.sucursal,
+    imagenes: rowData.imagenes[0]
     });
     setDeleteModalOpen(true); // Utiliza el estado directamente para abrir la modal de eliminación
   };
@@ -82,7 +66,7 @@ export const ListaEmpresa = () => {
   
   const fetchEmpresa = useCallback(async () => {
     try {
-      const empresa = await empresaService.getAll(url + 'empresas');
+      const empresa = await empresaService.getAll(url + 'empresa');
       dispatch(setEmpresa(empresa));
       setFilterData(empresa);
 
@@ -110,50 +94,23 @@ export const ListaEmpresa = () => {
 const handleOpenEditModal = (rowData: Row) => {
   setEmpresaToEdit({
     id: rowData.id,
+    eliminado: rowData.eliminado,
     nombre: rowData.nombre,
     razonSocial: rowData.razonSocial,
     cuil: rowData.cuil,
-    sucursal: rowData.sucursal,
+    imagenes: rowData.imagenes[0]
   });
   dispatch(toggleModal({ modalName: 'modal' }));
 };
 
-  const handleAddSucursal = () => {
-    dispatch(toggleModal({ modalName: "modalSucursal" })); // Abre el modal de sucursales
-  };
+  // const handleAddSucursal = () => {
+  //   dispatch(toggleModal({ modalName: "modalSucursal" })); // Abre el modal de sucursales
+  // };
 
   const onSearch = (query: string) => {
     handleSearch(query, globalEmpresas, setFilterData);
   };
 
-  const columns: Column[] = [
-    { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
-    { id: "nombre", label: "Nombre", renderCell: (rowData) => <>{rowData.nombre}</> },
-    { id: "razonSocial", label: "Razon Social", renderCell: (rowData) => <>{rowData.razonSocial}</> },
-    { id: "cuil", label: "Cuil", renderCell: (rowData) => <>{rowData.cuil}</> },
-    { id: "sucursales", label: "Sucursales", renderCell: (rowData) => (
-        <>
-        <Tooltip title="Ver Sucursales">
-          {rowData?.sucursales?.length > 0 ? (
-            <IconButton component={Link} to={`/empresas/${rowData.id}/sucursales`} aria-label="Ver Sucursales">
-              <Visibility />
-            </IconButton>
-          ) : (
-            <IconButton disabled aria-label="Ver Sucursales">
-              <Visibility />
-            </IconButton>
-          )}
-        </Tooltip>
-        <Tooltip title="Agregar Sucursal">
-            {/* Cambia el evento onClick para llamar a handleAddSucursal con el ID de la empresa */}
-            <IconButton onClick={handleAddSucursal} aria-label="Agregar Sucursal">
-              <AddCircle />
-            </IconButton>
-          </Tooltip>
-        </>
-      ), 
-    }
-  ];
 
   return (
     <Box
