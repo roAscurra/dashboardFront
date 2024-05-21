@@ -23,7 +23,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
   const imagenService = new ImagenArticuloService();
   // const categoriaService = new CategoriaService();
   // const [categorias, setCategoria] = useState<ICategoria[]>([]);
-  const url = import.meta.env.VITE_API_TRAZA;
+  const url = import.meta.env.VITE_API_URL;
 
 
   const initialValues: ArticuloInsumo = {
@@ -61,18 +61,8 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
     }
   };
 
-  // const fetchCategorias = async () => {
-  //   try {
-  //     const categorias = await categoriaService.getAll(url + 'api/categoria');
-  //     setCategoria(categorias);
-  //   } catch (error) {
-  //     console.error('Error al obtener las categorias:', error);
-  //   }
-  // };
-
   useEffect(() => {
     fetchUnidadesMedida();
-    // fetchCategorias();
   })
 
   return (
@@ -240,35 +230,6 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                       ))}
                     </Field>
 
-                    {/* <ErrorMessage
-                      name="unidadMedida"
-                      className="error-message"
-                      component="div"
-                    />
-
-                    <label htmlFor="categoria">Categoria:</label>
-                    <Field
-                      name="categoria"
-                      as="select"
-                      className="form-control"
-                      onChange={(e: { target: { value: string; }; }) => {
-                        const categoriaId = parseInt(e.target.value);
-                        setFieldValue('categoria', categoriaId);
-                      }}
-                    >
-                      <option value="">Seleccionar Categoria</option>
-                      {categorias.map((categoria) => (
-                        <option key={categoria.id} value={categoria.id}>
-                          {categoria.denominacion}
-                        </option>
-                      ))}
-                    </Field>
-                    <ErrorMessage
-                      name="categoria"
-                      className="error-message"
-                      component="div"
-                    /> */}
-
                     <label htmlFor="esParaElaborar" className="mt-3">Es para elaborar:</label>
                     <Field
                       name="esParaElaborar"
@@ -284,23 +245,6 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                   </Col>
                 </Row>
 
-
-                {/*
-                <div className="mb-4">
-                  <label htmlFor="imagenes">Imagen:</label>
-                  <Field
-                    name="imagenes[0].url"
-                    type="text"
-                    placeholder="URL de la imagen"
-                    className="form-control my-2"
-                  />
-                  <ErrorMessage
-                    name="imagenes[0].url"
-                    className="error-message"
-                    component="div"
-                  />
-                </div>
-                */}
                 <div className="d-flex justify-content-end">
                   <Button
                     variant="outline-success"

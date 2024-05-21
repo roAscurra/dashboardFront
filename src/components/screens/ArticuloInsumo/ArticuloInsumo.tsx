@@ -24,7 +24,7 @@ interface Column {
 }
 
 export const ListaArticulosInsumo = () => {
-  const url = import.meta.env.VITE_API_TRAZA;
+  const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   const articuloInsumoService = new ArticuloInsumoService();
   const [filterData, setFilterData] = useState<Row[]>([]);
