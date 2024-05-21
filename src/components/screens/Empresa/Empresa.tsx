@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Box, Typography, Button, Container, Tooltip, IconButton } from "@mui/material";
+import { Box, Typography, Button, Container, Tooltip, IconButton, Card, CardMedia, CardContent, CardActions, Grid } from "@mui/material";
 import { Add, AddCircle, Visibility } from "@mui/icons-material";
 import {useAppDispatch, useAppSelector} from "../../../hooks/redux";
 import TableComponent from "../../ui/Table/Table";
@@ -13,6 +13,9 @@ import ModalEliminarEmpresa from "../../ui/Modal/Empresa/ModalEliminarEmpresa.ts
 import { Link } from "react-router-dom";
 import ModalSucursal from "../../ui/Modal/Sucursal/ModalSucursal.tsx";
 import {handleSearch} from "../../../utils.ts/utils.ts";
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+
 
 interface Row {
   [key: string]: any;
@@ -193,12 +196,47 @@ const handleOpenEditModal = (rowData: Row) => {
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={onSearch} />
         </Box> 
-        <TableComponent
-          data={filterData}
-          columns={columns}
-          handleOpenEditModal={handleOpenEditModal}
-          handleOpenDeleteModal={handleOpenDeleteModal}
-        />
+      
+        <Grid container spacing={4}
+            direction="row"
+            justifyContent="space-evenly"
+            alignItems="center"
+            style={{ minHeight: '80vh', paddingTop: '1rem' }}
+        >
+        {
+          filterData.map((empresa) => {
+            return <Grid item xs={3} sm={6} md={4} >
+              <Link to={`/empresas/${empresa.id}/sucursales`}>
+                <Card sx={{ maxWidth: 345 }}>
+                  <CardMedia
+                    component="img"
+                    alt="green iguana"
+                    height="140"
+                    image= {empresa.imagen}
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {empresa.nombre}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {empresa.denominacion}
+                    </Typography>
+                  </CardContent>
+                  <CardActions> 
+                    <IconButton onClick={()=>handleOpenDeleteModal(empresa)} aria-label="delete">
+                      <DeleteIcon/>
+                    </IconButton>
+                    <IconButton onClick={()=>handleOpenEditModal(empresa)} aria-label="delete">
+                      <EditIcon/>
+                    </IconButton>
+                  </CardActions>
+                </Card>
+              </Link>
+            </Grid>
+          })
+        }
+        </Grid>
+        
         <ModalEliminarEmpresa show={deleteModalOpen} onHide={handleCloseDeleteModal} empresa={empresaToEdit} onDelete={handleDelete} />
 
         <ModalSucursal modalName="modalSucursal" getSucursal={() => {}} sucursalToEdit={undefined} />
@@ -207,4 +245,6 @@ const handleOpenEditModal = (rowData: Row) => {
     </Box>
   );
 }
+
+
 

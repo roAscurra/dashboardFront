@@ -49,9 +49,9 @@ const Sidebar: React.FC = () => {
             </Link>
           </CNavItem>
           <CNavItem>
-            <Link to="/empresas/lista" className="nav-link">
-              <CIcon customClassName="nav-icon" icon={icon.cilBuilding} />
-              Empresas
+            <Link to="/sucursales/lista" className="nav-link">
+              <CIcon customClassName="nav-icon" icon={icon.cilLocationPin} />
+              Sucursales
             </Link>
           </CNavItem>
           <CNavItem>

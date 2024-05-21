@@ -118,19 +118,6 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
                     component="div"
                   />
                 </div>
-                <div className="mb-4">
-                  <label htmlFor="sucursal">Sucursal:</label>
-                  <Field
-                    name="sucusarl"
-                    type="number"
-                    className="form-control mt-2"
-                  />
-                  <ErrorMessage
-                    name="sucursal"
-                    className="error-message"
-                    component="div"
-                  />
-                </div>
                 <div className="d-flex justify-content-end">
                 <Button
                     variant="outline-secondary"

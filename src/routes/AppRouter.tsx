@@ -30,6 +30,7 @@ export const AppRouter = () => {
           {/* Contenido principal */}
           <CCol>
             <Routes>
+            <Route path="/" element={<ListaEmpresa />} />
               <Route path='/ArticuloInsumo/Lista' element={< ListaArticulosInsumo/>}></Route>
               <Route path="/" element={<Inicio />} />
               <Route path="/usuario" element={<Usuario />} />
@@ -39,7 +40,6 @@ export const AppRouter = () => {
               <Route path="/cupones/lista" element={<ListaCupones />} />
               <Route path="/promociones/lista" element={<ListaPromocion />} />
               <Route path="/sucursales/lista" element={<ListaSucursal />} />
-              <Route path="/empresas/lista" element={<ListaEmpresa />} />
               <Route path="/empresas/:id/sucursales" element={<ListaSucursal />} />
 
               {/* Agrega más rutas aquí */}
