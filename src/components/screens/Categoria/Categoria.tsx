@@ -27,7 +27,7 @@ const Categoria = () => {
 
     const fetchCategorias = useCallback(async () => {
         try {
-            const categorias = await categoriaService.getAll(url + 'categorias');
+            const categorias = await categoriaService.getAll(url + 'categoria');
             dispatch(setCategoria(categorias));
             setFilterData(categorias);
         } catch (error) {
@@ -67,7 +67,7 @@ const Categoria = () => {
     const handleEliminar = async () => {
         try {
             if (selectedCategoria && selectedCategoria.id) {
-                await categoriaService.delete(url + 'categorias', selectedCategoria.id.toString());
+                await categoriaService.delete(url + 'categoria', selectedCategoria.id.toString());
                 console.log('Se ha eliminado correctamente.');
                 handleCloseModal(); // Cerramos el modal después de eliminar
             } else {

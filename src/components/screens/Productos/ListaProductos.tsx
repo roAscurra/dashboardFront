@@ -38,7 +38,7 @@ export const ListaProductos = () => {
       id: rowData.id,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
-      imagenes: rowData.imagenes,
+     // imagenes: rowData.imagenes,
       unidadMedida: rowData.unidadMedida,
       descripcion: rowData.descripcion,
       tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
@@ -55,7 +55,7 @@ export const ListaProductos = () => {
   const handleDelete = async () => {
     try {
       if (productToEdit && productToEdit.id) {
-        await productoService.delete(url + 'productos', productToEdit.id.toString());
+        await productoService.delete(url + 'articuloManufacturado', productToEdit.id.toString());
         console.log('Se ha eliminado correctamente.');
         handleCloseDeleteModal(); // Cerrar el modal de eliminación
         fetchProductos();
@@ -70,7 +70,7 @@ export const ListaProductos = () => {
 
   const fetchProductos = useCallback(async () => {
     try {
-      const productos = await productoService.getAll(url + 'articulosManufacturados');
+      const productos = await productoService.getAll(url + 'articuloManufacturado');
       dispatch(setArticuloManufacturado(productos));
       setFilterData(productos);
     } catch (error) {
@@ -94,7 +94,7 @@ export const ListaProductos = () => {
       id: rowData.id,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
-      imagenes: rowData.imagenes,
+     // imagenes: rowData.imagenes,
       unidadMedida: rowData.unidadMedida,
       descripcion: rowData.descripcion,
       tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,

@@ -31,7 +31,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     const [insumos, setInsumos] = useState<ArticuloInsumoType[]>([]);
     const [categorias, setCategoria] = useState<Categoria[]>([]);
     const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
-    const url = import.meta.env.VITE_API_TRAZA;
+    const url = import.meta.env.VITE_API_URL;
 
     const initialValues: ArticuloManufacturado = {
         id: productToEdit ? productToEdit.id : 0,
@@ -66,7 +66,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
     const fetchArticuloInsumo = async () => {
         try {
-            const articulosInsumos = await insumoService.getAll(url + '/articuloInsumo');
+            const articulosInsumos = await insumoService.getAll(url + 'articuloInsumo');
             setInsumos(articulosInsumos);
         } catch (error) {
             console.error("Error al obtener los insumos:", error);
@@ -75,7 +75,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
     const fetchUnidadesMedida = async () => {
         try {
-            const unidades = await unidadService.getAll(url + '/unidadMedida');
+            const unidades = await unidadService.getAll(url + 'unidadMedida');
             setUnidadesMedida(unidades);
         } catch (error) {
             console.error('Error al obtener las unidades de medida:', error);
@@ -84,7 +84,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
     const fetchCategorias = async () => {
         try {
-            const categorias = await categoriaService.getAll(url + '/categoria');
+            const categorias = await categoriaService.getAll(url + 'categoria');
             setCategoria(categorias);
         } catch (error) {
             console.error('Error al obtener las categorias:', error);
@@ -182,7 +182,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
                             console.log(values.nuevaImagen)
                             // Crear una nueva imagen con la URL proporcionada
-                            const nuevaImagen = await imagenArticuloService.post(url + '/imagenArticulo', {
+                            const nuevaImagen = await imagenArticuloService.post(url + 'imagenArticulo', {
                                 id: 0, // Este ID será ignorado por el backend y se generará uno nuevo
                                 eliminado: false,
                                 denominacion: values.nuevaImagen, // Utiliza la URL proporcionada
@@ -193,13 +193,13 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                             // Guardar el artículo manufacturado con la nueva imagen
                             if (productToEdit) {
                                 await productoService.put(
-                                    url + 'api/producto',
+                                    url + 'articuloManufacturado',
                                     values.id.toString(),
                                     values
                                 );
                                 console.log('Se ha actualizado correctamente.');
                             } else {
-                                await productoService.post(url + 'api/producto', values);
+                                await productoService.post(url + 'articuloManufacturado', values);
                                 console.log('Se ha agregado correctamente.');
                                 console.log(values)
                             }
