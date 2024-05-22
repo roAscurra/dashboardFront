@@ -1,9 +1,11 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import axios from 'axios';
 import Button from '@mui/material/Button';
+import EmpresaService from '../../../services/EmpresaService';
 
 const SubirImagen: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
+  const empresaService = new EmpresaService();
+  const url = import.meta.env.VITE_API_URL;
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -18,17 +20,9 @@ const SubirImagen: React.FC = () => {
         return;
       }
 
-      const formData = new FormData();
-      formData.append('uploads', file);
-      formData.append('id', "1"); // Reemplaza '1' con el ID de la empresa correspondiente
+      const response = await empresaService.uploadFile(url + 'empresa/uploads', file, "1");
 
-      const response = await axios.post('http://localhost:8080/empresa/uploads', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      console.log('Upload successful:', response.data);
+      console.log('Upload successful:', response);
     } catch (error) {
       console.error('Error uploading file:', error);
     }

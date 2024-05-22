@@ -5,6 +5,7 @@ import Empresa from "../../../../types/Empresa";
 import EmpresaService from "../../../../services/EmpresaService";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { toggleModal } from "../../../../redux/slices/Modal";
+import { useState, ChangeEvent } from 'react';
 
 interface ModalEmpresaProps {
   getEmpresa: () => void;
@@ -15,6 +16,7 @@ interface ModalEmpresaProps {
 const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empresaToEdit }) => {
   const empresaService = new EmpresaService();
   const url = import.meta.env.VITE_API_URL;
+  const [file, setFile] = useState<File | null>(null);
 
 
   const initialValues: Empresa = empresaToEdit
@@ -24,16 +26,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
         eliminado: false,
         nombre: "",
         razonSocial: "",
-        cuil: 0, 
-        sucursal: ",",
-        imagenes: [
-          {
-            id: 0,
-            eliminado: false,
-            name: "",
-            url: ""
-          }
-        ]      
+        cuil: 0
       };
 
   const modal = useAppSelector((state) => state.modal[modalName]);
@@ -41,6 +34,11 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
 
   const handleClose = () => {
     dispatch(toggleModal({ modalName: "modal" }));
+  };
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
   };
 
   return (
@@ -61,27 +59,38 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
           validationSchema={Yup.object({
             nombre: Yup.string().required("Campo requerido"),
             razonSocial: Yup.string().required("Campo requerido"),
-            cuil: Yup.number().required("Campo requerido"),
-            sucursal: Yup.string().required("Campo requerido"),
+            cuil: Yup.number().required("Campo requerido")
           })}
           initialValues={initialValues}
           onSubmit={async (values: Empresa) => {
+            console.log(values)
             try {
+              let newCompanyId: string | null = null; // Cambiado de const a let
+
               if (empresaToEdit) {
-        
                 await empresaService.put(url + "empresa", values.id.toString(), values);
                 console.log("Se ha actualizado correctamente.");
               } else {
-                
-                await empresaService.post(url + "empresa", values);
+                const response = await empresaService.post(url + "empresa", values);
                 console.log("Se ha agregado correctamente.");
+          
+                // Obtener el id de la nueva empresa desde la respuesta
+                newCompanyId = response.id.toString(); // Convertir a string
               }
+          
+              // Verificar si hay un archivo seleccionado para cargar
+              if (file && newCompanyId) {
+                const response = await empresaService.uploadFile(url + 'empresa/uploads', file, newCompanyId);
+                console.log('Upload successful:', response);
+              }
+          
               getEmpresa(); 
               handleClose(); 
             } catch (error) {
               console.error("Error al realizar la operación:", error);
             }
           }}
+          
         >
           {() => (
             <>
@@ -125,6 +134,13 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
                     name="cuil"
                     className="error-message"
                     component="div"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    multiple
                   />
                 </div>
                 <div className="d-flex justify-content-end">

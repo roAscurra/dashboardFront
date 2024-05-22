@@ -14,5 +14,8 @@ export abstract class AbstractBackendClient<T> {
   
     // Método abstracto para eliminar un elemento por su ID
     abstract delete(url: string, id: string): Promise<void>;
+    
+    // Método abstracto para subir archivos
+    abstract uploadFile(url: string, file: File, id: string): Promise<Response>;
   }
   

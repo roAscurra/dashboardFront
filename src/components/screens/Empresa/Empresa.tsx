@@ -30,8 +30,30 @@ export const ListaEmpresa = () => {
   const globalEmpresas = useAppSelector(
       (state) => state.empresas.data
   );
+  // const [imagenesEmpresas, setImagenesEmpresas] = useState<Map<number, string>>(new Map());
 
- 
+  // const fetchImages = async () => {
+  //   try {
+  //     const response = await empresaService.get(url + 'empresa/getAllImagesByEmpresaId', "1");
+  //     console.log('Get successful:', response);
+  //   } catch (error) {
+  //     console.error('Error fetching images:', error);
+  //   }
+  // };
+  const fetchImages = async (empresaId: string) => {
+    try {
+      const response = await empresaService.get(url + 'empresa/getAllImagesByEmpresaId', empresaId);
+      console.log('Get successful:', response);
+      if (response.data && response.data.length > 0) {
+        return response.data[0].url; // Devuelve la URL de la imagen
+      }
+      return 'https://via.placeholder.com/150'; // Usar una imagen placeholder si no se encuentra imagen
+    } catch (error) {
+      console.error('Error fetching images:', error);
+      return 'https://via.placeholder.com/150'; // Usar una imagen placeholder en caso de error
+    }
+  };
+  
   // Función para abrir la modal de eliminación
   const handleOpenDeleteModal = (rowData: Row) => {
     setEmpresaToEdit({
@@ -40,7 +62,6 @@ export const ListaEmpresa = () => {
       nombre: rowData.nombre,
       razonSocial: rowData.razonSocial,
       cuil: rowData.cuil,
-    imagenes: rowData.imagenes[0]
     });
     setDeleteModalOpen(true); // Utiliza el estado directamente para abrir la modal de eliminación
   };
@@ -66,17 +87,22 @@ export const ListaEmpresa = () => {
   
   const fetchEmpresa = useCallback(async () => {
     try {
-      const empresa = await empresaService.getAll(url + 'empresa');
-      dispatch(setEmpresa(empresa));
-      setFilterData(empresa);
-
+      const empresas = await empresaService.getAll(url + 'empresa');
+      const empresasConImagenes = await Promise.all(
+        empresas.map(async (empresa) => {
+          const imagenUrl = await fetchImages(empresa.id.toString());
+          return { ...empresa, imagen: imagenUrl };
+        })
+      );
+      dispatch(setEmpresa(empresasConImagenes));
+      setFilterData(empresasConImagenes);
     } catch (error) {
-      console.error("Error al obtener la empresa:", error);
+      console.error("Error al obtener las empresas:", error);
     }
-  }, [dispatch, empresaService, url]);
-
+  }, [dispatch, empresaService, url, fetchImages]);
+  
+  
   useEffect(() => {
-    
     fetchEmpresa();
     onSearch('');
   }, []);
@@ -162,36 +188,40 @@ const handleOpenEditModal = (rowData: Row) => {
         >
         {
           filterData.map((empresa) => {
-            return <Grid item xs={3} sm={6} md={4} >
-              <Link to={`/empresas/${empresa.id}/sucursales`}>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardMedia
-                    component="img"
-                    alt="green iguana"
-                    height="140"
-                    image= {empresa.imagen}
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {empresa.nombre}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {empresa.denominacion}
-                    </Typography>
-                  </CardContent>
-                  <CardActions> 
-                    <IconButton onClick={()=>handleOpenDeleteModal(empresa)} aria-label="delete">
-                      <DeleteIcon/>
-                    </IconButton>
-                    <IconButton onClick={()=>handleOpenEditModal(empresa)} aria-label="delete">
-                      <EditIcon/>
-                    </IconButton>
-                  </CardActions>
-                </Card>
-              </Link>
-            </Grid>
+            return (
+              <Grid item xs={3} sm={6} md={4}>
+                <Link to={`/empresas/${empresa.id}/sucursales`}>
+                  <Card sx={{ maxWidth: 345 }}>
+                    <CardMedia
+                      component="img"
+                      alt={empresa.nombre}
+                      height="140"
+                      image={empresa.imagen}
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {empresa.nombre}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {empresa.denominacion}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <IconButton onClick={() => handleOpenDeleteModal(empresa)} aria-label="delete">
+                        <DeleteIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleOpenEditModal(empresa)} aria-label="delete">
+                        <EditIcon />
+                      </IconButton>
+                    </CardActions>
+                  </Card>
+                </Link>
+              </Grid>
+            );
           })
         }
+
+
         </Grid>
         
         <ModalEliminarEmpresa show={deleteModalOpen} onHide={handleCloseDeleteModal} empresa={empresaToEdit} onDelete={handleDelete} />
