@@ -144,7 +144,7 @@ export const ListaEmpresa = () => {
           <Typography variant="h5" gutterBottom>
             Empresas
           </Typography>
-          <Button sx={{bgcolor: "#cc5533","&:hover": {bgcolor: "#b23e1f",},}} variant="contained" startIcon={<Add />} onClick={handleAddEmpresa}>
+          <Button sx={{bgcolor: "#9c27b0","&:hover": {bgcolor: "#9c27b0",},}} variant="contained" startIcon={<Add />} onClick={handleAddEmpresa}>
             Empresa
           </Button>
         </Box>

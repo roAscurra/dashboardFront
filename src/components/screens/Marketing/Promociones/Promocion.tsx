@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux.ts";
@@ -11,6 +11,9 @@ import TableComponent from "../../../ui/Table/Table.tsx";
 import ModalEliminarPromocion from "../../../ui/Modal/Promocion/ModalEliminarPromocion.tsx";
 import ModalPromocion from "../../../ui/Modal/Promocion/ModalPromocion.tsx";
 import { handleSearch } from "../../../../utils.ts/utils.ts";
+import { CCol, CContainer, CRow } from "@coreui/react";
+import { BaseNavBar } from "../../../ui/common/BaseNavBar.tsx";
+import Sidebar from "../../../ui/Sider/SideBar.tsx";
 
 interface Row {
   [key: string]: any;
@@ -25,6 +28,7 @@ interface Column {
 export const ListaPromocion = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const promocionService = new PromocionService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [promocionToEdit, setPromocionToEdit] = useState<Promocion | null>(null);
@@ -82,6 +86,7 @@ const handleOpenDeleteModal = (rowData: Row) => {
   useEffect(() => {
     fetchPromocion();
     onSearch('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAddPromocion = () => {
@@ -119,59 +124,72 @@ const onSearch = (query: string) => {
   ];
 
   return (
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        my: 2,
-      }}
-    >
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            my: 1,
-          }}
-        >
-          <Typography variant="h5" gutterBottom>
-            Promociones
-          </Typography>
-          <Button
+  <React.Fragment>
+    <BaseNavBar title="" />
+    <CContainer fluid>
+      <CRow>
+        {/* Sidebar */}
+        <CCol xs="auto" className="sidebar">
+          <Sidebar />
+        </CCol>
+        <CCol>
+          <Box
+            component="main"
             sx={{
-              bgcolor: "#cc5533",
-              "&:hover": {
-                bgcolor: "#b23e1f",
-              },
+              flexGrow: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              my: 2,
             }}
-            variant="contained"
-            startIcon={<Add />}
-            onClick={handleAddPromocion}
           >
-            Promocion
-          </Button>
-        </Box>
-        <Box sx={{ mt: 2 }}>
-          <SearchBar onSearch={onSearch} />
-        </Box> 
-        <TableComponent
-          data={filterData}
-          columns={columns}
-          handleOpenEditModal={handleOpenEditModal}
-          handleOpenDeleteModal={handleOpenDeleteModal} // Pasa la función para abrir la modal de eliminación
-          
-        />
-        <ModalEliminarPromocion show={deleteModalOpen} onHide={handleCloseDeleteModal} promocion={promocionToEdit} onDelete={handleDelete} />
+            <Container maxWidth="lg">
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  my: 1,
+                }}
+              >
+                <Typography variant="h5" gutterBottom>
+                  Promociones
+                </Typography>
+                <Button
+                  sx={{
+                    bgcolor: "#9c27b0",
+                    "&:hover": {
+                      bgcolor: "#9c27b0",
+                    },
+                  }}
+                  variant="contained"
+                  startIcon={<Add />}
+                  onClick={handleAddPromocion}
+                >
+                  Promocion
+                </Button>
+              </Box>
+              <Box sx={{ mt: 2 }}>
+                <SearchBar onSearch={onSearch} />
+              </Box> 
+              <TableComponent
+                data={filterData}
+                columns={columns}
+                handleOpenEditModal={handleOpenEditModal}
+                handleOpenDeleteModal={handleOpenDeleteModal} // Pasa la función para abrir la modal de eliminación
+                
+              />
+              <ModalEliminarPromocion show={deleteModalOpen} onHide={handleCloseDeleteModal} promocion={promocionToEdit} onDelete={handleDelete} />
 
 
-        {/* Llamando a ModalPromocion con la prop fetchPromocion y promocionToEdit */}
-        <ModalPromocion getPromocion={fetchPromocion} promocionToEdit={promocionToEdit !== null ? promocionToEdit : undefined} />
-      </Container>
-    </Box>
+              {/* Llamando a ModalPromocion con la prop fetchPromocion y promocionToEdit */}
+              <ModalPromocion getPromocion={fetchPromocion} promocionToEdit={promocionToEdit !== null ? promocionToEdit : undefined} />
+            </Container>
+          </Box>
+        </CCol>
+      </CRow>
+    </CContainer>
+  </React.Fragment>
   );
 }

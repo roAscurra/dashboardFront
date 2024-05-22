@@ -122,7 +122,7 @@ export const ListaSucursal = () => {
         <Grid container spacing={4} direction="row" justifyContent="space-evenly" alignItems="center" style={{ minHeight: '80vh', paddingTop: '1rem' }}>
           {filterData.map((sucursal) => (
             <Grid item xs={3} sm={6} md={4}>
-              <Link to={`/sucursal/${sucursal.id}`}>
+              <Link to={`/inicio/${sucursal.id}`}>
                 <Card sx={{ maxWidth: 345 }}>
                   <CardMedia
                     component="img"
