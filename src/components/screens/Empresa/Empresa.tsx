@@ -13,7 +13,7 @@ import Empresa from "../../../types/Empresa";
 import ModalEliminarEmpresa from "../../ui/Modal/Empresa/ModalEliminarEmpresa.tsx";
 import { Link } from "react-router-dom";
 import ModalSucursal from "../../ui/Modal/Sucursal/ModalSucursal.tsx";
-import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
+// import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 // import {handleSearch} from "../../../utils.ts/utils.ts";
 // import DeleteIcon from '@mui/icons-material/Delete';
 // import EditIcon from '@mui/icons-material/Edit';
@@ -129,8 +129,6 @@ export const ListaEmpresa = () => {
 
 
   return (
-    <div>
-      <BaseNavBar title="Empresas" />
       <Box
       component="main"
       sx={{
@@ -219,7 +217,6 @@ export const ListaEmpresa = () => {
         <ModalEmpresa modalName="modal" getEmpresa={fetchEmpresa} empresaToEdit={empresaToEdit !== null ? empresaToEdit : undefined} />
       </Container>
     </Box>
-    </div>
 
   );
 }

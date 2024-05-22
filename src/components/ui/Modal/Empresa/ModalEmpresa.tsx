@@ -149,7 +149,9 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
                     component="div"
                   />
                 </div>
-                <div>
+                <div className="mb-4">
+                  <label htmlFor="logo">Logo:</label>
+                  <br />
                   <input
                     type="file"
                     onChange={handleFileChange}
