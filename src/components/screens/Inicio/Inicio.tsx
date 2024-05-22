@@ -3,6 +3,10 @@ import InicioCard from "../../ui/common/InicioCard";
 import ChartCard from "./ChartCard";
 import BaseBar from "./BaseBar";
 import BasePie from "./BasePie";
+import React from "react";
+import { BaseNavBar } from "../../ui/common/BaseNavBar";
+import Sidebar from "../../ui/Sider/SideBar";
+import { CCol, CContainer, CRow } from "@coreui/react";
 
 // Contenido para las tarjetas de inicio
 
@@ -47,69 +51,82 @@ const CuponesContent = {
 };
 
 
-// Estilo para las tarjetas
 const cardStyle = {
     width: "100%",
     height: "100%",
     backgroundColor: "#b23e1f", 
 };
 
-//Renderización del componente
 const Inicio: React.FC = () => {
     return (
-        <Box component="main" sx={{ flexGrow: 1, pl: 9, pt: 4}}>
-            <Container>
-                <Typography component="h1" variant="h5" color="initial" >Welcome</Typography>
-                        
-                <Grid container spacing={3} sx={{ py: 2, alignContent: 'center' , justifyContent: 'center' }}>
-                    <Grid item xs={12} md={6}>
-                        <ChartCard title="Gráfico de Pastel">
-                            <BasePie />
-                        </ChartCard>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <ChartCard title="Gráfico de Barras">
-                            <BaseBar />
-                        </ChartCard>
-                    </Grid>
-                </Grid>
-                <Grid container spacing={3} sx={{ alignContent: 'center' , justifyContent: 'center'}}>
-                <Grid item xs={12} md={4}>
-                        <Box sx={cardStyle}>
-                            <InicioCard content={EstadisticaContent} />
+    <React.Fragment>
+    <BaseNavBar title="" />
+      <CContainer fluid>
+        <CRow>
+          {/* Sidebar */}
+          <CCol xs="auto" className="sidebar">
+            <Sidebar />
+          </CCol>
 
-                        </Box>
+          {/* Contenido principal */}
+          <CCol>
+            <Box component="main" sx={{ flexGrow: 1, pl: 9, pt: 4}}>
+                <Container>
+                    <Typography component="h1" variant="h5" color="initial" >Welcome</Typography>
+                            
+                    <Grid container spacing={3} sx={{ py: 2, alignContent: 'center' , justifyContent: 'center' }}>
+                        <Grid item xs={12} md={6}>
+                            <ChartCard title="Gráfico de Pastel">
+                                <BasePie />
+                            </ChartCard>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <ChartCard title="Gráfico de Barras">
+                                <BaseBar />
+                            </ChartCard>
+                        </Grid>
                     </Grid>
+                    <Grid container spacing={3} sx={{ alignContent: 'center' , justifyContent: 'center'}}>
                     <Grid item xs={12} md={4}>
-                        <Box sx={cardStyle}>
-                            <InicioCard content={productosContent} />
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Box sx={cardStyle}>
-                            <InicioCard content={categoriaContent} />
+                            <Box sx={cardStyle}>
+                                <InicioCard content={EstadisticaContent} />
 
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Box sx={cardStyle}>
-                            <InicioCard content={CuponesContent} />
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <Box sx={cardStyle}>
+                                <InicioCard content={productosContent} />
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <Box sx={cardStyle}>
+                                <InicioCard content={categoriaContent} />
 
-                        </Box>
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <Box sx={cardStyle}>
+                                <InicioCard content={CuponesContent} />
+
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <Box sx={cardStyle}>
+                                <InicioCard content={promocionesContent} />
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <Box sx={cardStyle}>
+                                <InicioCard content={sucursalesContent} />
+                            </Box>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Box sx={cardStyle}>
-                            <InicioCard content={promocionesContent} />
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Box sx={cardStyle}>
-                            <InicioCard content={sucursalesContent} />
-                        </Box>
-                    </Grid>
-                </Grid>
-            </Container>
-        </Box>
+                </Container>
+            </Box>
+          </CCol>
+        </CRow>
+        </CContainer>
+    </React.Fragment>
     );
 };
 

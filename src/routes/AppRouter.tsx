@@ -16,7 +16,7 @@ const AppRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<><BaseNavBar title="Empresas" /> <ListaEmpresa /></>} />
-      <Route path='/ArticuloInsumo/Lista' element={<ListaArticulosInsumo />} />
+      <Route path='/articuloInsumo/Lista/:sucursalId' element={<ListaArticulosInsumo />} />
       <Route path="/inicio/:sucursalId" element={<Inicio />} />
       <Route path="/usuario/:sucursalId" element={<Usuario />} />
       {/* <Route path="/estadisticas" element={<Estadisticas />} /> */}
