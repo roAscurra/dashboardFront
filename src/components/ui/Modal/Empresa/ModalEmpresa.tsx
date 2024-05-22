@@ -20,14 +20,27 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
 
 
   const initialValues: Empresa = empresaToEdit
-    ? empresaToEdit
-    : {
-        id: 0,
-        eliminado: false,
-        nombre: "",
-        razonSocial: "",
-        cuil: 0
-      };
+  ? {
+      ...empresaToEdit,
+      imagen: {
+        name: "",
+        url: "",
+        id: 0  // Asegúrate de proporcionar un valor para 'id'
+      }
+    }
+  : {
+      id: 0,
+      eliminado: false,
+      nombre: "",
+      razonSocial: "",
+      cuil: 0,
+      imagen: {
+        name: "",
+        url: "",
+        id: 0  // Asegúrate de proporcionar un valor para 'id'
+      }
+    };
+
 
   const modal = useAppSelector((state) => state.modal[modalName]);
   const dispatch = useAppDispatch();
