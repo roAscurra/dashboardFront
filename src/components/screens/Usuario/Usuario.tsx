@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Box, Typography, Button, Container, CircularProgress } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
@@ -11,6 +11,9 @@ import ModalEliminarUsuario from "../../ui/Modal/Usuario/ModalEliminarUsuario.ts
 import Usuario from "../../../types/Usuario.ts";
 import { toggleModal } from "../../../redux/slices/Modal";
 import {handleSearch} from "../../../utils.ts/utils.ts";
+import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
+import { CCol, CContainer, CRow } from "@coreui/react";
+import Sidebar from "../../ui/Sider/SideBar.tsx";
 
 interface Row {
   [key: string]: any;
@@ -112,66 +115,79 @@ export const ListaUsuarios = () => {
   ];
 
   return (
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        my: 2,
-      }}
-    >
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-          }}
-        >
-          <Typography variant="h5" gutterBottom>
-            Usuarios
-          </Typography>
-          <Button
+    <React.Fragment>
+    <BaseNavBar title="" />
+    <CContainer fluid>
+      <CRow>
+        {/* Sidebar */}
+        <CCol xs="auto" className="sidebar">
+          <Sidebar />
+        </CCol>
+        <CCol>
+          <Box
+            component="main"
             sx={{
-              bgcolor: "#cc5533",
-              "&:hover": {
-                bgcolor: "#b23e1f",
-              },
+              flexGrow: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              my: 2,
             }}
-            variant="contained"
-            startIcon={<Add />}
-            onClick={handleAddUsuario}
           >
-            Usuario
-          </Button>
-        </Box>
+            <Container maxWidth="lg">
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Typography variant="h5" gutterBottom>
+                  Usuarios
+                </Typography>
+                <Button
+                  sx={{
+                    bgcolor: "#cc5533",
+                    "&:hover": {
+                      bgcolor: "#b23e1f",
+                    },
+                  }}
+                  variant="contained"
+                  startIcon={<Add />}
+                  onClick={handleAddUsuario}
+                >
+                  Usuario
+                </Button>
+              </Box>
 
-        {/* Barra de búsqueda */}
-        <Box sx={{ mb: 2 }}>
-          <SearchBar onSearch={onSearch} />
-        </Box>
+              {/* Barra de búsqueda */}
+              <Box sx={{ mb: 2 }}>
+                <SearchBar onSearch={onSearch} />
+              </Box>
 
-        {/* Tabla de usuarios */}
-        {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <CircularProgress />
+              {/* Tabla de usuarios */}
+              {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} handleOpenDeleteModal={handleOpenDeleteModal} />
+              )}
+
+              
+              {/* Modal de Usuario */}
+              <ModalUsuario getUsuarios={fetchUsuarios} usuarioToEdit={usuarioToEdit !== null ? usuarioToEdit : undefined} />
+
+              {/* Modal de Eliminar Usuario */}
+              <ModalEliminarUsuario show={deleteModalOpen} onHide={handleCloseDeleteModal} usuario={usuarioToEdit} onDelete={handleDeleteUsuario} />
+            </Container>
           </Box>
-        ) : (
-          <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} handleOpenDeleteModal={handleOpenDeleteModal} />
-        )}
-
-        
-        {/* Modal de Usuario */}
-        <ModalUsuario getUsuarios={fetchUsuarios} usuarioToEdit={usuarioToEdit !== null ? usuarioToEdit : undefined} />
-
-        {/* Modal de Eliminar Usuario */}
-        <ModalEliminarUsuario show={deleteModalOpen} onHide={handleCloseDeleteModal} usuario={usuarioToEdit} onDelete={handleDeleteUsuario} />
-      </Container>
-    </Box>
+        </CCol>
+      </CRow>
+    </CContainer>
+  </React.Fragment>
   );
 }
 

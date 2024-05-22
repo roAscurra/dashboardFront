@@ -50,12 +50,6 @@ const Sidebar: React.FC = () => {
               Inicio
             </Link>
           </CNavItem>
-          <CNavItem>
-            <Link to={`/sucursales/lista/${sucursalId}`} className="nav-link">
-              <CIcon customClassName="nav-icon" icon={icon.cilLocationPin} />
-              Sucursales
-            </Link>
-          </CNavItem>
           <CNavGroup
             toggler={
               <>
