@@ -1,8 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
-import { Box, Typography, Button, Container, Tooltip, IconButton, Card, CardMedia, CardContent, CardActions, Grid } from "@mui/material";
-import { Add, AddCircle, Visibility } from "@mui/icons-material";
+import { Box, Typography, Button, Container, IconButton, Card, CardMedia, CardContent, CardActions, Grid } from "@mui/material";
+import { Add } from "@mui/icons-material";
 import {useAppDispatch, useAppSelector} from "../../../hooks/redux";
-import TableComponent from "../../ui/Table/Table";
 import SearchBar from "../../ui/SearchBar/SearchBar";
 import { setEmpresa } from "../../../redux/slices/Empresa";
 import ModalEmpresa from "../../ui/Modal/Empresa/ModalEmpresa.tsx";
@@ -21,42 +20,48 @@ interface Row {
   [key: string]: any;
 }
 
-interface Column {
-  id: keyof Row;
-  label: string;
-  renderCell: (rowData: Row) => JSX.Element;
-}
-
 export const ListaEmpresa = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   const empresaService = new EmpresaService();
-  const [filteredData, setFilteredData] = useState<Empresa[]>([]);
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [empresaToEdit, setEmpresaToEdit] = useState<Empresa | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const globalEmpresas = useAppSelector(
       (state) => state.empresas.data
   );
+  // const [imagenesEmpresas, setImagenesEmpresas] = useState<Map<number, string>>(new Map());
 
-  const fetchEmpresas = async () => {
+  // const fetchImages = async () => {
+  //   try {
+  //     const response = await empresaService.get(url + 'empresa/getAllImagesByEmpresaId', "1");
+  //     console.log('Get successful:', response);
+  //   } catch (error) {
+  //     console.error('Error fetching images:', error);
+  //   }
+  // };
+  const fetchImages = async (empresaId: string) => {
     try {
-      const empresas = await empresaService.getAll(url + '/empresas');
-      dispatch(setEmpresa(empresas)); 
-      setFilteredData(empresas); 
+      const response = await empresaService.get(url + 'empresa/getAllImagesByEmpresaId', empresaId);
+      console.log('Get successful:', response);
+      if (response.data && response.data.length > 0) {
+        return response.data[0].url; // Devuelve la URL de la imagen
+      }
+      return 'https://via.placeholder.com/150'; // Usar una imagen placeholder si no se encuentra imagen
     } catch (error) {
-      console.error("Error al obtener las empresas:", error);
+      console.error('Error fetching images:', error);
+      return 'https://via.placeholder.com/150'; // Usar una imagen placeholder en caso de error
     }
-  }; 
-
+  };
+  
   // Función para abrir la modal de eliminación
   const handleOpenDeleteModal = (rowData: Row) => {
     setEmpresaToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       nombre: rowData.nombre,
       razonSocial: rowData.razonSocial,
       cuil: rowData.cuil,
-      sucursal: rowData.sucursal,
     });
     setDeleteModalOpen(true); // Utiliza el estado directamente para abrir la modal de eliminación
   };
@@ -82,17 +87,22 @@ export const ListaEmpresa = () => {
   
   const fetchEmpresa = useCallback(async () => {
     try {
-      const empresa = await empresaService.getAll(url + 'empresas');
-      dispatch(setEmpresa(empresa));
-      setFilterData(empresa);
-
+      const empresas = await empresaService.getAll(url + 'empresa');
+      const empresasConImagenes = await Promise.all(
+        empresas.map(async (empresa) => {
+          const imagenUrl = await fetchImages(empresa.id.toString());
+          return { ...empresa, imagen: imagenUrl };
+        })
+      );
+      dispatch(setEmpresa(empresasConImagenes));
+      setFilterData(empresasConImagenes);
     } catch (error) {
-      console.error("Error al obtener la empresa:", error);
+      console.error("Error al obtener las empresas:", error);
     }
-  }, [dispatch, empresaService, url]);
-
+  }, [dispatch, empresaService, url, fetchImages]);
+  
+  
   useEffect(() => {
-    
     fetchEmpresa();
     onSearch('');
   }, []);
@@ -110,50 +120,23 @@ export const ListaEmpresa = () => {
 const handleOpenEditModal = (rowData: Row) => {
   setEmpresaToEdit({
     id: rowData.id,
+    eliminado: rowData.eliminado,
     nombre: rowData.nombre,
     razonSocial: rowData.razonSocial,
     cuil: rowData.cuil,
-    sucursal: rowData.sucursal,
+    imagenes: rowData.imagenes[0]
   });
   dispatch(toggleModal({ modalName: 'modal' }));
 };
 
-  const handleAddSucursal = () => {
-    dispatch(toggleModal({ modalName: "modalSucursal" })); // Abre el modal de sucursales
-  };
+  // const handleAddSucursal = () => {
+  //   dispatch(toggleModal({ modalName: "modalSucursal" })); // Abre el modal de sucursales
+  // };
 
   const onSearch = (query: string) => {
     handleSearch(query, globalEmpresas, setFilterData);
   };
 
-  const columns: Column[] = [
-    { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
-    { id: "nombre", label: "Nombre", renderCell: (rowData) => <>{rowData.nombre}</> },
-    { id: "razonSocial", label: "Razon Social", renderCell: (rowData) => <>{rowData.razonSocial}</> },
-    { id: "cuil", label: "Cuil", renderCell: (rowData) => <>{rowData.cuil}</> },
-    { id: "sucursales", label: "Sucursales", renderCell: (rowData) => (
-        <>
-        <Tooltip title="Ver Sucursales">
-          {rowData?.sucursales?.length > 0 ? (
-            <IconButton component={Link} to={`/empresas/${rowData.id}/sucursales`} aria-label="Ver Sucursales">
-              <Visibility />
-            </IconButton>
-          ) : (
-            <IconButton disabled aria-label="Ver Sucursales">
-              <Visibility />
-            </IconButton>
-          )}
-        </Tooltip>
-        <Tooltip title="Agregar Sucursal">
-            {/* Cambia el evento onClick para llamar a handleAddSucursal con el ID de la empresa */}
-            <IconButton onClick={handleAddSucursal} aria-label="Agregar Sucursal">
-              <AddCircle />
-            </IconButton>
-          </Tooltip>
-        </>
-      ), 
-    }
-  ];
 
   return (
     <Box
@@ -205,36 +188,40 @@ const handleOpenEditModal = (rowData: Row) => {
         >
         {
           filterData.map((empresa) => {
-            return <Grid item xs={3} sm={6} md={4} >
-              <Link to={`/empresas/${empresa.id}/sucursales`}>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardMedia
-                    component="img"
-                    alt="green iguana"
-                    height="140"
-                    image= {empresa.imagen}
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {empresa.nombre}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {empresa.denominacion}
-                    </Typography>
-                  </CardContent>
-                  <CardActions> 
-                    <IconButton onClick={()=>handleOpenDeleteModal(empresa)} aria-label="delete">
-                      <DeleteIcon/>
-                    </IconButton>
-                    <IconButton onClick={()=>handleOpenEditModal(empresa)} aria-label="delete">
-                      <EditIcon/>
-                    </IconButton>
-                  </CardActions>
-                </Card>
-              </Link>
-            </Grid>
+            return (
+              <Grid item xs={3} sm={6} md={4}>
+                <Link to={`/empresas/${empresa.id}/sucursales`}>
+                  <Card sx={{ maxWidth: 345 }}>
+                    <CardMedia
+                      component="img"
+                      alt={empresa.nombre}
+                      height="140"
+                      image={empresa.imagen}
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {empresa.nombre}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {empresa.denominacion}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <IconButton onClick={() => handleOpenDeleteModal(empresa)} aria-label="delete">
+                        <DeleteIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleOpenEditModal(empresa)} aria-label="delete">
+                        <EditIcon />
+                      </IconButton>
+                    </CardActions>
+                  </Card>
+                </Link>
+              </Grid>
+            );
           })
         }
+
+
         </Grid>
         
         <ModalEliminarEmpresa show={deleteModalOpen} onHide={handleCloseDeleteModal} empresa={empresaToEdit} onDelete={handleDelete} />

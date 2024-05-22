@@ -40,22 +40,21 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, s
     dispatch(toggleModal({ modalName }));
   };
 
-
+  const fetchLocalidad = async () => {
+    try {
+      const localidadesData = await localidadService.getAll(url + 'localidad');
+      // Asumiendo que la respuesta del servicio es un array de objetos con una propiedad "nombre"
+      const localidadesNames = localidadesData.map((localidad: any) => localidad.nombre);
+      setLocalidades(localidadesNames); // Guarda los nombres de las localidades en el estado local
+    } catch (error) {
+      console.error("Error al obtener las localidades:", error);
+      setLocalidades([]);
+    }
+  };
   useEffect(() => {
-    const fetchLocalidad = async () => {
-      try {
-        const localidadesData = await localidadService.getAll(url + 'localidades');
-        // Asumiendo que la respuesta del servicio es un array de objetos con una propiedad "nombre"
-        const localidadesNames = localidadesData.map((localidad: any) => localidad.nombre);
-        setLocalidades(localidadesNames); // Guarda los nombres de las localidades en el estado local
-      } catch (error) {
-        console.error("Error al obtener las localidades:", error);
-        setLocalidades([]);
-      }
-    };
 
     fetchLocalidad(); // Llama a la función para obtener las localidades al montar el componente
-  }, [localidadService, url]);
+  }, []);
 
   
   return (
