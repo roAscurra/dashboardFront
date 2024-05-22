@@ -14,10 +14,12 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
-import LunchDiningOutlinedIcon from '@mui/icons-material/LunchDiningOutlined';
 import Divider from '@mui/material/Divider';
 
-export default function PrimarySearchAppBar() {
+interface BaseNavBarProps {
+  title: string;
+}
+export const BaseNavBar = ({ title }: BaseNavBarProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleProfileMenuOpen = () => {
@@ -38,8 +40,7 @@ export default function PrimarySearchAppBar() {
             component="div"
             sx={{ flexGrow: 1, justifyContent: 'center' ,fontSize: '1.7rem' }}
           >
-            <LunchDiningOutlinedIcon sx={{mr: 2}}/>
-            Buen Sabor
+            {title}
           </Typography>
           <IconButton
             size="large"

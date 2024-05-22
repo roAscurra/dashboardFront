@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
-import { Box, Typography, Button, Container, IconButton, Card, CardMedia, CardContent, CardActions, Grid } from "@mui/material";
-import { Add } from "@mui/icons-material";
-import {useAppDispatch, useAppSelector} from "../../../hooks/redux";
-import SearchBar from "../../ui/SearchBar/SearchBar";
+import { Box, Typography, Container, Card, CardMedia, CardContent, Grid } from "@mui/material";
+// import { Box, Typography, Button, Container, IconButton, Card, CardMedia, CardContent, CardActions, Grid } from "@mui/material";
+// import { Add } from "@mui/icons-material";
+import {useAppDispatch} from "../../../hooks/redux";
+// import {useAppSelector} from "../../../hooks/redux";
+// import SearchBar from "../../ui/SearchBar/SearchBar";
 import { setEmpresa } from "../../../redux/slices/Empresa";
 import ModalEmpresa from "../../ui/Modal/Empresa/ModalEmpresa.tsx";
 import { toggleModal } from "../../../redux/slices/Modal";
@@ -11,9 +13,10 @@ import Empresa from "../../../types/Empresa";
 import ModalEliminarEmpresa from "../../ui/Modal/Empresa/ModalEliminarEmpresa.tsx";
 import { Link } from "react-router-dom";
 import ModalSucursal from "../../ui/Modal/Sucursal/ModalSucursal.tsx";
-import {handleSearch} from "../../../utils.ts/utils.ts";
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
+// import {handleSearch} from "../../../utils.ts/utils.ts";
+// import DeleteIcon from '@mui/icons-material/Delete';
+// import EditIcon from '@mui/icons-material/Edit';
 
 
 interface Row {
@@ -27,44 +30,60 @@ export const ListaEmpresa = () => {
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [empresaToEdit, setEmpresaToEdit] = useState<Empresa | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const globalEmpresas = useAppSelector(
-      (state) => state.empresas.data
-  );
-  // const [imagenesEmpresas, setImagenesEmpresas] = useState<Map<number, string>>(new Map());
+  // const globalEmpresas = useAppSelector(
+  //     (state) => state.empresas.data
+  // );
 
-  // const fetchImages = async () => {
-  //   try {
-  //     const response = await empresaService.get(url + 'empresa/getAllImagesByEmpresaId', "1");
-  //     console.log('Get successful:', response);
-  //   } catch (error) {
-  //     console.error('Error fetching images:', error);
-  //   }
-  // };
-  const fetchImages = async (empresaId: string) => {
+  const fetchImages = useCallback(async (empresaId: string) => {
     try {
-      const response = await empresaService.get(url + 'empresa/getAllImagesByEmpresaId', empresaId);
-      console.log('Get successful:', response);
-      if (response.data && response.data.length > 0) {
-        return response.data[0].url; // Devuelve la URL de la imagen
-      }
-      return 'https://via.placeholder.com/150'; // Usar una imagen placeholder si no se encuentra imagen
+        const response = await empresaService.get(url + 'empresa/getAllImagesByEmpresaId', empresaId);
+        
+        if (Array.isArray(response) && response.length > 0) {
+            // console.log('Get successful:', response.map(image => image.url));
+            return response[0].url; // Devuelve la URL de la primera imagen
+        }
+        // Si no se encuentra ninguna imagen, devuelve una imagen placeholder
+        return 'https://via.placeholder.com/150';
     } catch (error) {
-      console.error('Error fetching images:', error);
-      return 'https://via.placeholder.com/150'; // Usar una imagen placeholder en caso de error
+        // console.error('Error fetching images:', error);
+        // En caso de error, devuelve una imagen placeholder
+        return 'https://via.placeholder.com/150';
     }
-  };
-  
+  }, [empresaService, url]);
+
+  const fetchEmpresa = useCallback(async () => {
+    try {
+      const empresas = await empresaService.getAll(url + 'empresa');
+      const empresasConImagenes = await Promise.all(
+        empresas.map(async (empresa) => {
+          const imagenUrl = await fetchImages(empresa.id.toString());
+          return { ...empresa, imagen: imagenUrl };
+        })
+      );
+      dispatch(setEmpresa(empresasConImagenes));
+      setFilterData(empresasConImagenes);
+    } catch (error) {
+      // console.error("Error al obtener las empresas:", error);
+    }
+  }, [dispatch, empresaService, url, fetchImages]);
+
+
+  useEffect(() => {
+    fetchEmpresa();
+    // onSearch('');
+  }, []);
   // Función para abrir la modal de eliminación
-  const handleOpenDeleteModal = (rowData: Row) => {
-    setEmpresaToEdit({
-      id: rowData.id,
-      eliminado: rowData.eliminado,
-      nombre: rowData.nombre,
-      razonSocial: rowData.razonSocial,
-      cuil: rowData.cuil,
-    });
-    setDeleteModalOpen(true); // Utiliza el estado directamente para abrir la modal de eliminación
-  };
+  // const handleOpenDeleteModal = (rowData: Row) => {
+  //   setEmpresaToEdit({
+  //     id: rowData.id,
+  //     eliminado: rowData.eliminado,
+  //     nombre: rowData.nombre,
+  //     razonSocial: rowData.razonSocial,
+  //     cuil: rowData.cuil,
+  //     imagen: rowData.imagen.url
+  //   });
+  //   setDeleteModalOpen(true); // Utiliza el estado directamente para abrir la modal de eliminación
+  // };
   const handleDelete = async () => {
     try {
       if (empresaToEdit && empresaToEdit.id) {
@@ -84,28 +103,6 @@ export const ListaEmpresa = () => {
     setDeleteModalOpen(false); // Utiliza el estado directamente para cerrar la modal de eliminación
   };
 
-  
-  const fetchEmpresa = useCallback(async () => {
-    try {
-      const empresas = await empresaService.getAll(url + 'empresa');
-      const empresasConImagenes = await Promise.all(
-        empresas.map(async (empresa) => {
-          const imagenUrl = await fetchImages(empresa.id.toString());
-          return { ...empresa, imagen: imagenUrl };
-        })
-      );
-      dispatch(setEmpresa(empresasConImagenes));
-      setFilterData(empresasConImagenes);
-    } catch (error) {
-      console.error("Error al obtener las empresas:", error);
-    }
-  }, [dispatch, empresaService, url, fetchImages]);
-  
-  
-  useEffect(() => {
-    fetchEmpresa();
-    onSearch('');
-  }, []);
 
   const handleAddEmpresa = () => {
     
@@ -113,33 +110,28 @@ export const ListaEmpresa = () => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
-  
-
   // Función para abrir la modal de edición
-// Definición de handleOpenEditModal
-const handleOpenEditModal = (rowData: Row) => {
-  setEmpresaToEdit({
-    id: rowData.id,
-    eliminado: rowData.eliminado,
-    nombre: rowData.nombre,
-    razonSocial: rowData.razonSocial,
-    cuil: rowData.cuil,
-    imagenes: rowData.imagenes[0]
-  });
-  dispatch(toggleModal({ modalName: 'modal' }));
-};
+// const handleOpenEditModal = (rowData: Row) => {
+//   setEmpresaToEdit({
+//     id: rowData.id,
+//     eliminado: rowData.eliminado,
+//     nombre: rowData.nombre,
+//     razonSocial: rowData.razonSocial,
+//     cuil: rowData.cuil,
+//     imagen: rowData.imagen.url
+//   });
+//   dispatch(toggleModal({ modalName: 'modal' }));
+// };
 
-  // const handleAddSucursal = () => {
-  //   dispatch(toggleModal({ modalName: "modalSucursal" })); // Abre el modal de sucursales
-  // };
-
-  const onSearch = (query: string) => {
-    handleSearch(query, globalEmpresas, setFilterData);
-  };
+// const onSearch = (query: string) => {
+//   handleSearch(query, globalEmpresas, setFilterData);
+// };
 
 
   return (
-    <Box
+    <div>
+      <BaseNavBar title="Empresas" />
+      <Box
       component="main"
       sx={{
         flexGrow: 1,
@@ -149,43 +141,25 @@ const handleOpenEditModal = (rowData: Row) => {
         justifyContent: "center",
         my: 2,
       }}
-    >
+      >
       <Container maxWidth="lg">
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            my: 1,
-          }}
-        >
+        {/* <Box sx={{ display: "flex",ustifyContent: "space-between",alignItems: "center",my: 1,}}>
           <Typography variant="h5" gutterBottom>
             Empresas
           </Typography>
-          <Button
-            sx={{
-              bgcolor: "#cc5533",
-              "&:hover": {
-                bgcolor: "#b23e1f",
-              },
-            }}
-            variant="contained"
-            startIcon={<Add />}
-            onClick={handleAddEmpresa}
-          >
+          <Button sx={{bgcolor: "#cc5533","&:hover": {bgcolor: "#b23e1f",},}} variant="contained" startIcon={<Add />} onClick={handleAddEmpresa}>
             Empresa
           </Button>
         </Box>
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={onSearch} />
-        </Box> 
-      
-        <Grid container spacing={4}
-            direction="row"
-            justifyContent="space-evenly"
-            alignItems="center"
-            style={{ minHeight: '80vh', paddingTop: '1rem' }}
-        >
+        </Box>  */}
+      <Grid container spacing={4}
+          direction="row"
+          justifyContent="space-evenly"
+          alignItems="center"
+          style={{ minHeight: '80vh', paddingTop: '1rem' }}
+      >
         {
           filterData.map((empresa) => {
             return (
@@ -206,14 +180,14 @@ const handleOpenEditModal = (rowData: Row) => {
                         {empresa.denominacion}
                       </Typography>
                     </CardContent>
-                    <CardActions>
+                    {/* <CardActions>
                       <IconButton onClick={() => handleOpenDeleteModal(empresa)} aria-label="delete">
                         <DeleteIcon />
                       </IconButton>
                       <IconButton onClick={() => handleOpenEditModal(empresa)} aria-label="delete">
                         <EditIcon />
                       </IconButton>
-                    </CardActions>
+                    </CardActions> */}
                   </Card>
                 </Link>
               </Grid>
@@ -221,15 +195,32 @@ const handleOpenEditModal = (rowData: Row) => {
           })
         }
 
-
+          {/* Tarjeta vacía */}
+          <Grid item xs={3} sm={6} md={4} onClick={handleAddEmpresa}>
+            <Card sx={{ maxWidth: 345 }}>
+              <CardMedia
+                component="img"
+                alt={"Crear empresa"}
+                height="140"
+                image={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFJd8e-dfvZFuUNjVpjo0HSaGAuansjA2SI9lfEAbXcw&s"}
+              />
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  Agregar Empresa
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
+
         
         <ModalEliminarEmpresa show={deleteModalOpen} onHide={handleCloseDeleteModal} empresa={empresaToEdit} onDelete={handleDelete} />
-
         <ModalSucursal modalName="modalSucursal" getSucursal={() => {}} sucursalToEdit={undefined} />
         <ModalEmpresa modalName="modal" getEmpresa={fetchEmpresa} empresaToEdit={empresaToEdit !== null ? empresaToEdit : undefined} />
       </Container>
     </Box>
+    </div>
+
   );
 }
 
