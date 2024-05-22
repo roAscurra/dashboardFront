@@ -60,8 +60,7 @@ export const AppRouter = () => {
               <Route path="/cupones/lista" element={<ListaCupones />} />
               <Route path="/promociones/lista" element={<ListaPromocion />} />
               <Route path="/sucursales/lista" element={<ListaSucursal />} />
-              <Route path="/sucursal/:id" element={<><BaseNavBar title="Sucursales" /><ListaSucursal /></>} />
-
+              <Route path="/sucursal/:empresaId" element={<><BaseNavBar title="Sucursales" /><ListaSucursal /></>} />
               {/* Agrega más rutas aquí */}
             </Routes>
           </CCol>

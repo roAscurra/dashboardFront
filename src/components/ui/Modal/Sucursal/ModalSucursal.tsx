@@ -27,7 +27,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, s
   const domicilioService = new DomicilioService();
   const [localidades, setLocalidades] = useState<Localidad[]>([]); 
   const [file, setFile] = useState<File | null>(null);
-  const { id: empresaId } = useParams();
+  const { empresaId } = useParams();
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };

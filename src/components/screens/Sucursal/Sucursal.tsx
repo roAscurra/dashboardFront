@@ -16,7 +16,7 @@ interface Row {
 
 export const ListaSucursal = () => {
   const url = import.meta.env.VITE_API_URL;
-  const { id } = useParams(); // Obtén el ID de la URL
+  const { empresaId } = useParams(); // Obtén el ID de la URL
   const dispatch = useAppDispatch();
   const sucursalService = new SucursalService();
   const empresaService = new EmpresaService();
@@ -27,14 +27,14 @@ export const ListaSucursal = () => {
 
   const fetchEmpresa = useCallback(async () => {
     try {
-      if(id){
-        const empresa = await empresaService.get(url + 'empresa', id); // Utiliza el ID de la URL para obtener los detalles de la empresa
+      if(empresaId){
+        const empresa = await empresaService.get(url + 'empresa', empresaId); // Utiliza el ID de la URL para obtener los detalles de la empresa
         console.log('Detalles de la empresa:', empresa);
       }
     } catch (error) {
       console.error("Error al obtener los detalles de la empresa:", error);
     }
-  }, [empresaService, id, url]);
+  }, [empresaService, empresaId, url]);
 
   const fetchImages = useCallback(async (sucursalId: string) => {
     try {
@@ -54,18 +54,25 @@ export const ListaSucursal = () => {
   const fetchSucursal = useCallback(async () => {
     try {
       const sucursales = await sucursalService.getAll(url + 'sucursal');
+      
       const sucursalesConImagenes = await Promise.all(
         sucursales.map(async (sucursal) => {
           const imagenUrl = await fetchImages(sucursal.id.toString());
           return { ...sucursal, imagen: imagenUrl };
         })
       );
-      dispatch(setSucursal(sucursalesConImagenes));
-      setFilterData(sucursalesConImagenes);
+      console.log("IDs de empresa antes del filtrado:", sucursalesConImagenes.map(sucursal => sucursal.empresa.id.toString()));
+      console.log(empresaId)
+      const sucursalesFiltradas = sucursalesConImagenes.filter(sucursal => sucursal.empresa.id.toString() == empresaId);
+      console.log("IDs de empresa después del filtrado:", sucursalesFiltradas.map(sucursal => sucursal.empresa.id.toString()));
+
+      dispatch(setSucursal(sucursalesFiltradas));
+      setFilterData(sucursalesFiltradas);
     } catch (error) {
-        console.error("Error al obtener las sucursales:", error);
+      console.error("Error al obtener las sucursales:", error);
     }
-  }, [dispatch, sucursalService, url, fetchImages]);
+  }, [dispatch, sucursalService, url, fetchImages, empresaId]);
+
 
   useEffect(() => {
     fetchSucursal();
