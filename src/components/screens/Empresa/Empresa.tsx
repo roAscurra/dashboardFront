@@ -12,7 +12,7 @@ import EmpresaService from "../../../services/EmpresaService";
 import Empresa from "../../../types/Empresa";
 import ModalEliminarEmpresa from "../../ui/Modal/Empresa/ModalEliminarEmpresa.tsx";
 import { Link } from "react-router-dom";
-import ModalSucursal from "../../ui/Modal/Sucursal/ModalSucursal.tsx";
+// import ModalSucursal from "../../ui/Modal/Sucursal/ModalSucursal.tsx";
 // import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 // import {handleSearch} from "../../../utils.ts/utils.ts";
 // import DeleteIcon from '@mui/icons-material/Delete';
@@ -105,7 +105,6 @@ export const ListaEmpresa = () => {
 
 
   const handleAddEmpresa = () => {
-    
     setEmpresaToEdit(null);
     dispatch(toggleModal({ modalName: "modal" }));
   };
@@ -162,7 +161,7 @@ export const ListaEmpresa = () => {
           filterData.map((empresa) => {
             return (
               <Grid item xs={3} sm={6} md={4}>
-                <Link to={`/empresas/${empresa.id}/sucursales`}>
+                <Link to={`/sucursal/${empresa.id}`}>
                   <Card sx={{ maxWidth: 345 }}>
                     <CardMedia
                       component="img"
@@ -213,7 +212,6 @@ export const ListaEmpresa = () => {
 
         
         <ModalEliminarEmpresa show={deleteModalOpen} onHide={handleCloseDeleteModal} empresa={empresaToEdit} onDelete={handleDelete} />
-        <ModalSucursal modalName="modalSucursal" getSucursal={() => {}} sucursalToEdit={undefined} />
         <ModalEmpresa modalName="modal" getEmpresa={fetchEmpresa} empresaToEdit={empresaToEdit !== null ? empresaToEdit : undefined} />
       </Container>
     </Box>

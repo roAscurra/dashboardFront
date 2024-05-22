@@ -1,8 +1,10 @@
 import DataModel from "./DataModel";
+import Pais from "./Pais";
 
 interface Provincia extends DataModel<Provincia>{
+  eliminado: boolean;
   nombre: "";
-  pais: "";
+  pais: Pais;
   }
 
   export default Provincia;

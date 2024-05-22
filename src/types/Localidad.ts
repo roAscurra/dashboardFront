@@ -1,11 +1,10 @@
 import DataModel from "./DataModel";
+import Provincia from "./Provincia";
 
 interface Localidad extends DataModel<Localidad>{
-  denominacion: "",
-  fechaDesde: Date,
-  fechaHasta: Date,
-  descripcionDescuento: "",
-  precioPromocional: ""
+  eliminado: boolean;
+  nombre: string;
+  provincia: Provincia
   }
 
   export default Localidad;
