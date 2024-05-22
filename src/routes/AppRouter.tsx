@@ -24,8 +24,7 @@ const AppRouter = () => {
       <Route path="/categorias" element={<Categoria />} />
       <Route path="/cupones/lista" element={<ListaCupones />} />
       <Route path="/promociones/lista" element={<ListaPromocion />} />
-      <Route path="/sucursales/lista" element={<ListaSucursal />} />
-      <Route path="/empresas/:id/sucursales" element={<ListaSucursal />} />
+      <Route path="/sucursal/:empresaId" element={<><BaseNavBar title="Sucursales" /><ListaSucursal /></>} />
     </Routes>
   );
 };
