@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
+import { useAppDispatch } from "../../../hooks/redux";
 import { setArticuloManufacturado } from "../../../redux/slices/ArticuloManufacturado";
 import { toggleModal } from "../../../redux/slices/Modal";
 import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService.ts";
 import AManufacturado from "../../../types/ArticuloManufacturado";
 import TableComponent from "../../ui/Table/Table.tsx";
-import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
+//import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
 import ModalProducto from "../../ui/Modal/Producto/ModalProducto.tsx";
 import ModalEliminarProducto from "../../ui/Modal/Producto/ModalEliminarProducto.tsx";
-import {handleSearch} from "../../../utils.ts/utils.ts";
+import UnidadMedida from "../../../types/UnidadMedida.ts";
+//import {handleSearch} from "../../../utils.ts/utils.ts";
 
 interface Row {
   [key: string]: any;
@@ -30,15 +31,53 @@ export const ListaProductos = () => {
   const [filteredData, setFilterData] = useState<Row[]>([]);
   const [productToEdit, setProductToEdit] = useState<AManufacturado | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const globalArticuloManufacturado = useAppSelector(
-      (state) => state.articuloManufacturado.data
-  );
+
+  // const globalArticuloManufacturado = useAppSelector(
+  //     (state) => state.articuloManufacturado.data
+  // );
+
+  const fetchImages = useCallback(async (productoId: string) =>{
+    try{
+      const response = await productoService.get(url + 'articuloManufacturado/getAllImagesByArticuloManufacturadoId', productoId);
+
+      if(Array.isArray(response) && response.length > 0){
+        return response[0].url;
+      }
+      return 'https://via.placeholder.com/150';
+    }catch(error){
+      return 'https://via.placeholder.com/150';
+    }
+  },[productoService, url]);
+
+  const fetchProductos = useCallback(async () => {
+    try {
+      const productos = await productoService.getAll(url + 'articuloManufacturado');
+      const productoConImagenes = await Promise.all(
+        productos.map(async(product) => {
+          const imagenUrl = await fetchImages(product.id.toString());
+          return {...product, imagen: imagenUrl};
+        })
+      )
+
+      dispatch(setArticuloManufacturado(productoConImagenes));
+      setFilterData(productoConImagenes);
+    } catch (error) {
+      console.error("Error al obtener los productos:", error);
+    }
+  }, [dispatch, productoService, url, fetchImages]);
+
+  useEffect(() => {
+    fetchProductos();
+    // onSearch('');
+  }, []);
+
+
   const handleOpenDeleteModal = (rowData: Row) => {
     setProductToEdit({
       id: rowData.id,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
-     // imagenes: rowData.imagenes,
+      imagenes: rowData.imagenes,
       unidadMedida: rowData.unidadMedida,
       descripcion: rowData.descripcion,
       tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
@@ -68,20 +107,7 @@ export const ListaProductos = () => {
   };
 
 
-  const fetchProductos = useCallback(async () => {
-    try {
-      const productos = await productoService.getAll(url + 'articuloManufacturado');
-      dispatch(setArticuloManufacturado(productos));
-      setFilterData(productos);
-    } catch (error) {
-      console.error("Error al obtener los productos:", error);
-    }
-  }, [dispatch, productoService, url]);
 
-  useEffect(() => {
-    fetchProductos();
-    onSearch('');
-  }, []);
 
   const handleAddProduct = () => {
     // Reset cuponToEdit to null when adding a new cupon
@@ -94,7 +120,7 @@ export const ListaProductos = () => {
       id: rowData.id,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
-     // imagenes: rowData.imagenes,
+      imagenes: rowData.imagenes,
       unidadMedida: rowData.unidadMedida,
       descripcion: rowData.descripcion,
       tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
@@ -106,9 +132,9 @@ export const ListaProductos = () => {
 
 
   // Función para manejar la búsqueda de artículos manufacturados
-  const onSearch = (query: string) => {
-    handleSearch(query, globalArticuloManufacturado, setFilterData);
-  };
+  // const onSearch = (query: string) => {
+  //   handleSearch(query, globalArticuloManufacturado, setFilterData);
+  // };
 
   // Definición de las columnas para la tabla de artículos manufacturados
   const columns: Column[] = [
@@ -120,6 +146,38 @@ export const ListaProductos = () => {
       id: "tiempoEstimadoMinutos",
       label: "Tiempo estimado en minutos",
       renderCell: (rowData) => <>{rowData.tiempoEstimadoMinutos}</>,
+    }, 
+    {
+      id: "unidadMedida",
+      label: "Unidad Medida",
+      renderCell: (rowData) => {
+        // Verifica si la unidad de medida está presente y si tiene la propiedad denominacion
+        const unidadMedida: UnidadMedida = rowData.unidadMedida;
+        if (unidadMedida && unidadMedida.denominacion) {
+          return <span>{unidadMedida.denominacion}</span>;
+        } else {
+          // Si la unidad de medida no está presente o no tiene denominacion, muestra un valor por defecto
+          return <span>Sin unidad de medida</span>;
+        }
+      }
+    },
+    {
+      id: "imagenes",
+      label: "Imágenes",
+      renderCell: (rowData) => {
+        const imagenes = rowData.imagenes;
+        if (imagenes && imagenes.length > 0) {
+          return (
+            <div style={{ display: 'flex', gap: '5px' }}>
+              {imagenes.map((imagen: any, index: number) => (
+                <img key={index} src={imagen.url} alt={`Imagen ${index + 1}`} style={{ width: '100px', height: 'auto' }} />
+              ))}
+            </div>
+          );
+        } else {
+          return <span>No hay imágenes disponibles</span>;
+        }
+      }
     },
   ];
 
@@ -163,7 +221,7 @@ export const ListaProductos = () => {
         </Box>
         {/* Barra de búsqueda */}
         <Box sx={{ mt: 2 }}>
-          <SearchBar onSearch={onSearch} />
+          {/* <SearchBar onSearch={onSearch} /> */}
         </Box>
         {/* Componente de tabla para mostrar los artículos manufacturados */}
         <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />

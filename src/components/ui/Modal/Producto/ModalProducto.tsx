@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Button, Modal, Row, Col } from 'react-bootstrap';
 import { Formik, Form, Field, ErrorMessage, FieldArray } from 'formik';
 import * as Yup from 'yup';
-// import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloManufacturadoDetalleService.ts";
+import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloManufacturadoDetalleService.ts";
 import ArticuloManufacturadoService from "../../../../services/ArticuloManufacturadoService.ts";
 import UnidadMedidaService from "../../../../services/UnidadMedidaService.ts";
 import ArticuloManufacturado from "../../../../types/ArticuloManufacturado.ts";
@@ -12,8 +12,8 @@ import ImagenArticuloService from "../../../../services/ImagenArticuloService.ts
 import UnidadMedida from "../../../../types/UnidadMedida.ts";
 import ArticuloInsumoType from "../../../../types/ArticuloInsumoType.ts";
 import Categoria from "../../../../types/Categoria.ts";
-import {useAppDispatch, useAppSelector} from "../../../../hooks/redux.ts";
-import {toggleModal} from "../../../../redux/slices/Modal.ts";
+import { useAppDispatch, useAppSelector } from "../../../../hooks/redux.ts";
+import { toggleModal } from "../../../../redux/slices/Modal.ts";
 
 interface ModalProductProps {
     getProducts: () => void;
@@ -25,13 +25,14 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     const unidadService = new UnidadMedidaService();
     const insumoService = new ArticuloInsumoService();
     const categoriaService = new CategoriaService();
-    const imagenArticuloService = new ImagenArticuloService();
-    // const articuloManufacturadoDetalles = new ArticuloManufacturadoDetalleService();
+    //const imagenArticuloService = new ImagenArticuloService();
+    const articuloManufacturadoDetalles = new ArticuloManufacturadoDetalleService();
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
     const [insumos, setInsumos] = useState<ArticuloInsumoType[]>([]);
     const [categorias, setCategoria] = useState<Categoria[]>([]);
     const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
-    const url = import.meta.env.VITE_API_URL;
+    const [file, setFile] = useState<File | null>(null);
+    const url = import.meta.env.VITE_API_TRAZA;
 
     const initialValues: ArticuloManufacturado = {
         id: productToEdit ? productToEdit.id : 0,
@@ -50,7 +51,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
         tiempoEstimadoMinutos: productToEdit ? productToEdit.tiempoEstimadoMinutos : 0,
         preparacion: productToEdit ? productToEdit.preparacion : '',
         articuloManufacturadoDetalles: productToEdit && productToEdit.articuloManufacturadoDetalles
-            ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({...detalle}))
+            ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({ ...detalle }))
             : [],
         nuevaImagen: productToEdit ? productToEdit.imagenes[0].url : '',
 
@@ -62,6 +63,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
     const handleClose = () => {
         dispatch(toggleModal({ modalName: 'modal' }));
+    };
+
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setFile(e.target.files[0]);
+        }
     };
 
     const fetchArticuloInsumo = async () => {
@@ -163,7 +170,9 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                     onSubmit={async (values: ArticuloManufacturado) => {
                         try {
 
-                            values.articuloManufacturadoDetalles.map((insumo) =>(
+                            let productoId: string | null = null;
+
+                            values.articuloManufacturadoDetalles.map((insumo) => (
                                 console.log(insumo.cantidad)
                                 // Crear el nuevo detalle mediante el servicio
                                 // const nuevoDetalle = await articuloManufacturadoDetalles.post(url + 'api/articuloManufacturadoDetalle', {
@@ -182,13 +191,13 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
                             console.log(values.nuevaImagen)
                             // Crear una nueva imagen con la URL proporcionada
-                            const nuevaImagen = await imagenArticuloService.post(url + 'imagenArticulo', {
-                                id: 0, // Este ID será ignorado por el backend y se generará uno nuevo
-                                eliminado: false,
-                                denominacion: values.nuevaImagen, // Utiliza la URL proporcionada
-                            });
-                            // Agregar la nueva imagen al array de imágenes del artículo manufacturado
-                            values.imagenes.push(nuevaImagen);
+                            // const nuevaImagen = await imagenArticuloService.post(url + 'imagenArticulo', {
+                            //     id: 0, // Este ID será ignorado por el backend y se generará uno nuevo
+                            //     eliminado: false,
+                            //     denominacion: values.nuevaImagen, // Utiliza la URL proporcionada
+                            // });
+                            // // Agregar la nueva imagen al array de imágenes del artículo manufacturado
+                            // values.imagenes.push(nuevaImagen);
 
                             // Guardar el artículo manufacturado con la nueva imagen
                             if (productToEdit) {
@@ -202,6 +211,11 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 await productoService.post(url + 'articuloManufacturado', values);
                                 console.log('Se ha agregado correctamente.');
                                 console.log(values)
+                            }
+
+                            if (file && productoId) {
+                                const response = await productoService.uploadFile(url + 'articuloManufacturado/uploads', file, productoId);
+                                console.log('Upload successful:', response);
                             }
                             getProducts();
                             handleClose();
@@ -366,21 +380,18 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
                                 </Col>
                                 <Col>
-                                    <label htmlFor="nuevaImagen">Imagen:</label>
-                                    <Field
-                                        name="nuevaImagen"
-                                        type="text"
-                                        placeholder="URL de la imagen"
-                                        className="form-control my-2"
-                                        value={values.nuevaImagen}
-                                    />
-                                    <ErrorMessage
-                                        name="nuevaImagen"
-                                        className="error-message"
-                                        component="div"
-                                    />
-
-
+                                    <Row className="mt-3">
+                                        <Col>
+                                            <label htmlFor="imagenes">Imágenes:</label>
+                                            <input
+                                                name="imagenes"
+                                                type="file"
+                                                className="form-control"
+                                                onChange={handleFileChange}
+                                                multiple
+                                            />
+                                        </Col>
+                                    </Row>
 
                                     <label htmlFor="unidadMedida">Unidad de Medida:</label>
                                     <Field
