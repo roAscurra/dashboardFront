@@ -29,6 +29,7 @@ interface Column {
 export const ListaArticulosInsumo = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const articuloInsumoService = new ArticuloInsumoService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [articuloToEdit, setArticuloToEdit] = useState<ArticuloInsumo | null>(
@@ -72,6 +73,7 @@ export const ListaArticulosInsumo = () => {
   useEffect(() => {
     fetchArticulosInsumo();
     // onSearch('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleOpenDeleteModal = (rowData: Row) => {
@@ -241,9 +243,9 @@ export const ListaArticulosInsumo = () => {
                 </Typography>
                 <Button
                   sx={{
-                    bgcolor: "#cc5533",
+                    bgcolor: "#9c27b0",
                     "&:hover": {
-                      bgcolor: "#b23e1f",
+                      bgcolor: "#9c27b0",
                     },
                   }}
                   variant="contained"

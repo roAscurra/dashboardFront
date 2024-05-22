@@ -28,6 +28,7 @@ interface Column {
 export const ListaPromocion = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const promocionService = new PromocionService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [promocionToEdit, setPromocionToEdit] = useState<Promocion | null>(null);
@@ -85,6 +86,7 @@ const handleOpenDeleteModal = (rowData: Row) => {
   useEffect(() => {
     fetchPromocion();
     onSearch('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAddPromocion = () => {
@@ -156,9 +158,9 @@ const onSearch = (query: string) => {
                 </Typography>
                 <Button
                   sx={{
-                    bgcolor: "#cc5533",
+                    bgcolor: "#9c27b0",
                     "&:hover": {
-                      bgcolor: "#b23e1f",
+                      bgcolor: "#9c27b0",
                     },
                   }}
                   variant="contained"

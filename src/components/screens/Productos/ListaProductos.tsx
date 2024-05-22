@@ -29,6 +29,7 @@ export const ListaProductos = () => {
 
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   const productoService = new ArticuloManufacturadoService();
   const [filteredData, setFilterData] = useState<Row[]>([]);
   const [productToEdit, setProductToEdit] = useState<AManufacturado | null>(null);
@@ -84,6 +85,7 @@ export const ListaProductos = () => {
   useEffect(() => {
     fetchProductos();
     onSearch('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAddProduct = () => {
@@ -161,9 +163,9 @@ export const ListaProductos = () => {
                 </Typography>
                 <Button
                   sx={{
-                    bgcolor: "#cc5533", // Terracota
+                    bgcolor: "#9c27b0", // Terracota
                     "&:hover": {
-                      bgcolor: "#b23e1f", // Terracota más oscuro al pasar el mouse
+                      bgcolor: "#9c27b0", // Terracota más oscuro al pasar el mouse
                     },
                   }}
                   variant="contained"

@@ -54,7 +54,7 @@ const CuponesContent = {
 const cardStyle = {
     width: "100%",
     height: "100%",
-    backgroundColor: "#b23e1f", 
+    backgroundColor: "#9c27b0", 
 };
 
 const Inicio: React.FC = () => {

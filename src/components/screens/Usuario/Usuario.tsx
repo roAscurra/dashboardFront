@@ -28,6 +28,7 @@ interface Column {
 export const ListaUsuarios = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const usuarioService = new UsuarioService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [usuarioToEdit, setUsuarioToEdit] = useState<Usuario | null>(null); // Estado para el usuario seleccionado para eliminar
@@ -56,8 +57,8 @@ export const ListaUsuarios = () => {
     // Llamando a fetchUsuarios dentro de useEffect
     fetchUsuarios();
     onSearch('');
-  }, []); // fetchUsuarios se pasa como dependencia
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+  }, []); 
   const handleAddUsuario = () => {
     setUsuarioToEdit(null);
     dispatch(toggleModal({ modalName: "modal" }));
@@ -149,9 +150,9 @@ export const ListaUsuarios = () => {
                 </Typography>
                 <Button
                   sx={{
-                    bgcolor: "#cc5533",
+                    bgcolor: "#9c27b0",
                     "&:hover": {
-                      bgcolor: "#b23e1f",
+                      bgcolor: "#9c27b0",
                     },
                   }}
                   variant="contained"

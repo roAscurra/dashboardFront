@@ -49,13 +49,14 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
   
   useEffect(() => {
       fetchSucursalData();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sucursalId]); // Dependencia actualizada
     if(title === ''){
       title = `Sucursal ${sucursalName}`;
     }
   return (
     <Box sx={{ marginBottom: 1 }}>
-      <AppBar position="static" sx={{ bgcolor: "#b23e1f", height: 80, marginBottom: 1 }}>
+      <AppBar position="static" sx={{ bgcolor: "#9c27b0", height: 80, marginBottom: 1 }}>
         <Toolbar>
           <Typography
             variant="h6"

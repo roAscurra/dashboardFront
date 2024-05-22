@@ -16,8 +16,8 @@ import { BaseNavBar } from '../../ui/common/BaseNavBar.tsx';
 
 const Categoria = () => {
     const url = import.meta.env.VITE_API_URL;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const categoriaService = new CategoriaService();
-
     const dispatch = useAppDispatch();
     const [filteredData, setFilterData] = useState<ICategoria[]>([]);
     const globalCategorias = useAppSelector(
@@ -42,6 +42,7 @@ const Categoria = () => {
     useEffect(() => {
         fetchCategorias();
         onSearch(''); // Llamada a onSearch para filtrar los datos iniciales
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
     }, []);
 
 
@@ -103,9 +104,9 @@ const Categoria = () => {
                         </Typography>
                         <Button
                             sx={{
-                                bgcolor: "#cc5533",
+                                bgcolor: "#9c27b0",
                                 '&:hover': {
-                                    bgcolor: "#b23e1f",
+                                    bgcolor: "#9c27b0",
                                 },
                             }}
                             variant="contained"
