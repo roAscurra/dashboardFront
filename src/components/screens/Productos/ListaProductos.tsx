@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { useAppDispatch } from "../../../hooks/redux";
@@ -10,8 +10,10 @@ import TableComponent from "../../ui/Table/Table.tsx";
 //import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
 import ModalProducto from "../../ui/Modal/Producto/ModalProducto.tsx";
 import ModalEliminarProducto from "../../ui/Modal/Producto/ModalEliminarProducto.tsx";
-import UnidadMedida from "../../../types/UnidadMedida.ts";
-//import {handleSearch} from "../../../utils.ts/utils.ts";
+import {handleSearch} from "../../../utils.ts/utils.ts";
+import { CCol, CContainer, CRow } from "@coreui/react";
+import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
+import Sidebar from "../../ui/Sider/SideBar.tsx";
 
 interface Row {
   [key: string]: any;
@@ -27,6 +29,7 @@ export const ListaProductos = () => {
 
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   const productoService = new ArticuloManufacturadoService();
   const [filteredData, setFilterData] = useState<Row[]>([]);
   const [productToEdit, setProductToEdit] = useState<AManufacturado | null>(null);
@@ -107,7 +110,21 @@ export const ListaProductos = () => {
   };
 
 
+  const fetchProductos = useCallback(async () => {
+    try {
+      const productos = await productoService.getAll(url + 'articuloManufacturado');
+      dispatch(setArticuloManufacturado(productos));
+      setFilterData(productos);
+    } catch (error) {
+      console.error("Error al obtener los productos:", error);
+    }
+  }, [dispatch, productoService, url]);
 
+  useEffect(() => {
+    fetchProductos();
+    onSearch('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAddProduct = () => {
     // Reset cuponToEdit to null when adding a new cupon
@@ -182,55 +199,69 @@ export const ListaProductos = () => {
   ];
 
   return (
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        my: 2,
-      }}
-    >
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            my: 1,
-          }}
-        >
-          <Typography variant="h5" gutterBottom>
-            Productos
-          </Typography>
-          <Button
+  <React.Fragment>
+    <BaseNavBar title="" />
+    <CContainer fluid>
+      <CRow>
+        {/* Sidebar */}
+        <CCol xs="auto" className="sidebar">
+          <Sidebar />
+        </CCol>
+        <CCol>
+          <Box
+            component="main"
             sx={{
-              bgcolor: "#cc5533", // Terracota
-              "&:hover": {
-                bgcolor: "#b23e1f", // Terracota más oscuro al pasar el mouse
-              },
+              flexGrow: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              my: 2,
             }}
-            variant="contained"
-            startIcon={<Add />}
-            onClick={handleAddProduct}
           >
-            Producto
-          </Button>
-        </Box>
-        {/* Barra de búsqueda */}
-        <Box sx={{ mt: 2 }}>
-          {/* <SearchBar onSearch={onSearch} /> */}
-        </Box>
-        {/* Componente de tabla para mostrar los artículos manufacturados */}
-        <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />
+            <Container maxWidth="lg">
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  my: 1,
+                }}
+              >
+                <Typography variant="h5" gutterBottom>
+                  Productos
+                </Typography>
+                <Button
+                  sx={{
+                    bgcolor: "#9c27b0", // Terracota
+                    "&:hover": {
+                      bgcolor: "#9c27b0", // Terracota más oscuro al pasar el mouse
+                    },
+                  }}
+                  variant="contained"
+                  startIcon={<Add />}
+                  onClick={handleAddProduct}
+                >
+                  Producto
+                </Button>
+              </Box>
+              {/* Barra de búsqueda */}
+              <Box sx={{ mt: 2 }}>
+                <SearchBar onSearch={onSearch} />
+              </Box>
+              {/* Componente de tabla para mostrar los artículos manufacturados */}
+              <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />
 
-        {/* Llamando a ModalCupon con la prop fetchCupones y cuponToEdit */}
-        <ModalProducto getProducts={fetchProductos} productToEdit={productToEdit !== null ? productToEdit : undefined} />
+              {/* Llamando a ModalCupon con la prop fetchCupones y cuponToEdit */}
+              <ModalProducto getProducts={fetchProductos} productToEdit={productToEdit !== null ? productToEdit : undefined} />
 
-        <ModalEliminarProducto show={deleteModalOpen} onHide={handleCloseDeleteModal} product={productToEdit} onDelete={handleDelete} />
-      </Container>
-    </Box>
+              <ModalEliminarProducto show={deleteModalOpen} onHide={handleCloseDeleteModal} product={productToEdit} onDelete={handleDelete} />
+            </Container>
+          </Box>
+        </CCol>
+      </CRow>
+      </CContainer>
+      </React.Fragment>
+
   );
 }

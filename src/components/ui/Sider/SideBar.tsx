@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import * as icon from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 import {
@@ -12,6 +12,8 @@ import {
 import "@coreui/coreui/dist/css/coreui.min.css";
 
 const Sidebar: React.FC = () => {
+  const { sucursalId } = useParams(); // Obtén el ID de la URL
+
   return (
     <div>
       <CSidebar
@@ -33,7 +35,7 @@ const Sidebar: React.FC = () => {
           >
             <CNavItem>
               <Link
-                to="/usuario"
+                to={`/usuario/${sucursalId}`}
                 className="nav-link"
                 style={{ color: "#856404" }}
               >
@@ -48,18 +50,6 @@ const Sidebar: React.FC = () => {
               Inicio
             </Link>
           </CNavItem>
-          <CNavItem>
-            <Link to="/sucursales/lista" className="nav-link">
-              <CIcon customClassName="nav-icon" icon={icon.cilLocationPin} />
-              Sucursales
-            </Link>
-          </CNavItem>
-          <CNavItem>
-            <Link to="/estadisticas" className="nav-link">
-              <CIcon customClassName="nav-icon" icon={icon.cilChartPie} />
-              Estadísticas
-            </Link>
-          </CNavItem>
           <CNavGroup
             toggler={
               <>
@@ -69,7 +59,7 @@ const Sidebar: React.FC = () => {
             }
           >
             <CNavItem>
-              <Link to="/productos/lista" className="nav-link">
+              <Link to={`/productos/lista/${sucursalId}`} className="nav-link">
                 <span className="nav-icon">
                   <span className="nav-icon-bullet"></span>
                 </span>
@@ -77,7 +67,7 @@ const Sidebar: React.FC = () => {
               </Link>
             </CNavItem>
             <CNavItem>
-              <Link to="/categorias" className="nav-link">
+              <Link to={`/categorias/${sucursalId}`} className="nav-link">
                 <span className="nav-icon">
                   <span className="nav-icon-bullet"></span>
                 </span>
@@ -87,7 +77,7 @@ const Sidebar: React.FC = () => {
           </CNavGroup>
           <CNavItem>
               <Link
-                to="/ArticuloInsumo/Lista"className="nav-link">
+                to={`/articuloInsumo/Lista/${sucursalId}`}className="nav-link">
                 <CIcon customClassName="nav-icon" icon={icon.cilClipboard} />
                 Articulo Insumo
               </Link>
@@ -101,15 +91,7 @@ const Sidebar: React.FC = () => {
             }
           >
             <CNavItem>
-              <Link to="/cupones/lista" className="nav-link">
-                <span className="nav-icon">
-                  <span className="nav-icon-bullet"></span>
-                </span>
-                Cupones
-              </Link>
-            </CNavItem>
-            <CNavItem>
-              <Link to="/promociones/lista" className="nav-link">
+              <Link to={`/promociones/lista/${sucursalId}`} className="nav-link">
                 <span className="nav-icon">
                   <span className="nav-icon-bullet"></span>
                 </span>

@@ -82,7 +82,7 @@ const Estadisticas = () => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} sm={6}>
-        <Card style={{ backgroundColor: '#cc5533', color: "#ffff" }}>
+        <Card style={{ backgroundColor: '#9c27b0', color: "#ffff" }}>
           <CardContent>
             <Typography variant="h5" component="h2">
               <CIcon customClassName="nav-icon" icon={icon.cilPizza} style={heig} />
@@ -97,7 +97,7 @@ const Estadisticas = () => {
         </Card>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <Card style={{ backgroundColor: '#cc5533', color: "#ffff" }}>
+        <Card style={{ backgroundColor: '#9c27b0', color: "#ffff" }}>
           <CardContent>
             <Typography variant="h5" component="h2">
               <CIcon customClassName="nav-icon" icon={icon.cilTag} style={heig} />
@@ -112,7 +112,7 @@ const Estadisticas = () => {
         </Card>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <Card style={{ backgroundColor: '#cc5533', color: "#ffff" }}>
+        <Card style={{ backgroundColor: '#9c27b0', color: "#ffff" }}>
           <CardContent>
             <Typography variant="h5" component="h2">
               <CIcon customClassName="nav-icon" icon={icon.cilLineStyle} style={heig} />
@@ -127,7 +127,7 @@ const Estadisticas = () => {
         </Card>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <Card style={{ backgroundColor: '#cc5533', color: "#ffff" }}>
+        <Card style={{ backgroundColor: '#9c27b0', color: "#ffff" }}>
           <CardContent>
             <Typography variant="h5" component="h2">
               <CIcon customClassName="nav-icon" icon={icon.cilLibrary} style={heig} />

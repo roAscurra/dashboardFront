@@ -139,9 +139,9 @@ const handleOpenEditModal = (rowData: Row) => {
           </Typography>
           <Button
             sx={{
-              bgcolor: "#cc5533",
+              bgcolor: "#9c27b0",
               "&:hover": {
-                bgcolor: "#b23e1f",
+                bgcolor: "#9c27b0",
               },
             }}
             variant="contained"
