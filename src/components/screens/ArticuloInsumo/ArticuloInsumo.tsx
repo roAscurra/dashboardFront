@@ -1,15 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import {useAppDispatch, useAppSelector} from "../../../hooks/redux";
+import {useAppDispatch } from "../../../hooks/redux";
 import ArticuloInsumoService from "../../../services/ArticuloInsumoService";
 import { toggleModal } from "../../../redux/slices/Modal";
-import SearchBar from "../../ui/SearchBar/SearchBar";
+// import SearchBar from "../../ui/SearchBar/SearchBar";
 import TableComponent from "../../ui/Table/Table";
 import ModalEliminarArticuloInsumo from "../../ui/Modal/ArticuloInsumo/ModalEliminarArticuloInsumo.tsx";
 import ModalArticuloInsumo from "../../ui/Modal/ArticuloInsumo/ModalArticuloInsumo.tsx";
 import ArticuloInsumo from "../../../types/ArticuloInsumoType";
-import {handleSearch} from "../../../utils.ts/utils.ts";
+// import {handleSearch} from "../../../utils.ts/utils.ts";
 import {setArticuloInsumo} from "../../../redux/slices/ArticuloInsumo.ts";
 import UnidadMedida from "../../../types/UnidadMedida.ts";
 
@@ -32,16 +32,51 @@ export const ListaArticulosInsumo = () => {
     null
   );
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const globalArticuloInsumo = useAppSelector(
-      (state) => state.articuloInsumo.data
-  );
+  // const globalArticuloInsumo = useAppSelector(
+  //     (state) => state.articuloInsumo.data
+  // );
+
+  const fetchImages = useCallback(async (articuloInsumoId: string) =>{
+    try{
+      const response = await articuloInsumoService.get(url + 'articuloInsumo/getAllImagesByInsumoId', articuloInsumoId);
+
+      if(Array.isArray(response) && response.length > 0){
+        return response[0].url;
+      }
+      return 'https://via.placeholder.com/150';
+    }catch(error){
+      return 'https://via.placeholder.com/150';
+    }
+  },[articuloInsumoService, url]);
+
+  const fetchArticulosInsumo = useCallback(async () => {
+    try {
+      const articulosInsumo = await articuloInsumoService.getAll(url + "articuloInsumo");
+      const artInsumoConImagenes = await Promise.all(
+        articulosInsumo.map(async(articuloInsumo) => {
+          const imagenUrl = await fetchImages(articuloInsumo.id.toString());
+          return {...articuloInsumo, imagen: imagenUrl};
+        })
+      )
+      console.log(articulosInsumo)
+      dispatch(setArticuloInsumo(artInsumoConImagenes));
+      setFilterData(artInsumoConImagenes);
+    } catch (error) {
+      console.error("Error al obtener los artículos de insumo:", error);
+    }
+  }, [dispatch, articuloInsumoService, url, fetchImages]);
+
+  useEffect(() => {
+    fetchArticulosInsumo();
+    // onSearch('');
+  }, []);
 
   const handleOpenDeleteModal = (rowData: Row) => {
     setArticuloToEdit({
       id: rowData.id,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
-      //imagenes: rowData.imagenes,
+      imagenes: rowData.imagenes,
       precioCompra: rowData.precioCompra,
       stockActual: rowData.stockActual,
       stockMaximo: rowData.stockMaximo,
@@ -76,23 +111,6 @@ export const ListaArticulosInsumo = () => {
     setDeleteModalOpen(false);
   };
 
-  const fetchArticulosInsumo = useCallback(async () => {
-    try {
-      const articulosInsumo = await articuloInsumoService.getAll(
-        url + "articuloInsumo"
-      );
-      console.log(articulosInsumo)
-      dispatch(setArticuloInsumo(articulosInsumo));
-      setFilterData(articulosInsumo);
-    } catch (error) {
-      console.error("Error al obtener los artículos de insumo:", error);
-    }
-  }, [dispatch, articuloInsumoService, url]);
-
-  useEffect(() => {
-    fetchArticulosInsumo();
-    onSearch('');
-  }, []);
 
   const handleAddArticuloInsumo = () => {
     setArticuloToEdit(null);
@@ -104,7 +122,7 @@ export const ListaArticulosInsumo = () => {
       id: rowData.id,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
-     // imagenes: rowData.imagenes,
+      imagenes: rowData.imagenes,
       precioCompra: rowData.precioCompra,
       stockActual: rowData.stockActual,
       stockMaximo: rowData.stockMaximo,
@@ -114,9 +132,9 @@ export const ListaArticulosInsumo = () => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
-  const onSearch = (query: string) => {
-    handleSearch(query, globalArticuloInsumo, setFilterData);
-  };
+  // const onSearch = (query: string) => {
+  //   handleSearch(query, globalArticuloInsumo, setFilterData);
+  // };
 
 
   const columns: Column[] = [
@@ -138,6 +156,24 @@ export const ListaArticulosInsumo = () => {
         } else {
           // Si la unidad de medida no está presente o no tiene denominacion, muestra un valor por defecto
           return <span>Sin unidad de medida</span>;
+        }
+      }
+    },
+    {
+      id: "imagenes",
+      label: "Imágenes",
+      renderCell: (rowData) => {
+        const imagenes = rowData.imagenes;
+        if (imagenes && imagenes.length > 0) {
+          return (
+            <div style={{ display: 'flex', gap: '5px' }}>
+              {imagenes.map((imagen: any, index: number) => (
+                <img key={index} src={imagen.url} alt={`Imagen ${index + 1}`} style={{ width: '100px', height: 'auto' }} />
+              ))}
+            </div>
+          );
+        } else {
+          return <span>No hay imágenes disponibles</span>;
         }
       }
     },
@@ -204,7 +240,7 @@ export const ListaArticulosInsumo = () => {
           </Button>
         </Box>
         <Box sx={{ mt: 2 }}>
-          <SearchBar onSearch={onSearch} />
+          {/* <SearchBar onSearch={onSearch} /> */}
         </Box>
         <TableComponent
           data={filterData}
