@@ -74,6 +74,15 @@ const Sidebar: React.FC = () => {
                 Categorías
               </Link>
             </CNavItem>
+            <CNavItem>
+              <Link to={"/unidadMedida"} className="nav-link">
+                <span className="nav-icon">
+                  <span className="nav-icon-bullet"></span>
+                </span>
+                  Unidad de Medida
+              </Link>
+            </CNavItem>
+            
           </CNavGroup>
           <CNavItem>
               <Link

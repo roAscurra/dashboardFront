@@ -10,6 +10,7 @@ import Categoria from "../components/screens/Categoria/Categoria.tsx";
 import {ListaPromocion} from "../components/screens/Marketing/Promociones/Promocion.tsx";
 import {ListaSucursal} from "../components/screens/Sucursal/Sucursal.tsx";
 import {ListaEmpresa} from "../components/screens/Empresa/Empresa.tsx";
+import UnidadMedida from '../components/screens/UnidadMedida/UnidadMedida.tsx';
 
 
 const AppRouter = () => {
@@ -23,10 +24,10 @@ const AppRouter = () => {
       <Route path="/productos/lista/:sucursalId" element={<ListaProductos />} /> ta
       <Route path="/categorias/:sucursalId" element={<Categoria />} /> ta
       {/* <Route path="/cupones/lista" element={<ListaCupones />} /> */}
+      <Route path='/unidadMedida' element={<UnidadMedida/>}/>
       <Route path="/promociones/lista/:sucursalId" element={<ListaPromocion />} />
       <Route path="/sucursal/:empresaId" element={<><BaseNavBar title="Sucursales" /><ListaSucursal /></>} />
     </Routes>
   );
 };
-
 export default AppRouter;
