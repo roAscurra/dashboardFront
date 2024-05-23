@@ -84,8 +84,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, s
           }
         }
       };
-
-
   const modal = useAppSelector((state) => state.modal[modalName]);
   const dispatch = useAppDispatch();
 
