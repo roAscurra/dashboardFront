@@ -86,7 +86,7 @@ const CategoriaLista: React.FC<CategoriaListaProps> = ({ categorias, onEditar, o
         aria-labelledby="nested-list-subheader"
         subheader={
           <ListSubheader component="div" id="nested-list-subheader">
-            Categorías
+            {/* Categorías */}
           </ListSubheader>
         }
       >
