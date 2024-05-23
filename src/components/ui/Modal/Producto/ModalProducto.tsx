@@ -1,8 +1,8 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Button, Modal, Row, Col } from 'react-bootstrap';
-import { Formik, Form, Field, ErrorMessage, FieldArray } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloManufacturadoDetalleService.ts";
+// import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloManufacturadoDetalleService.ts";
 import ArticuloManufacturadoService from "../../../../services/ArticuloManufacturadoService.ts";
 import UnidadMedidaService from "../../../../services/UnidadMedidaService.ts";
 import ArticuloInsumoService from "../../../../services/ArticuloInsumoService.ts";
@@ -13,6 +13,8 @@ import ArticuloManufacturado from "../../../../types/ArticuloManufacturado.ts";
 import UnidadMedida from "../../../../types/UnidadMedida.ts";
 import ArticuloInsumoType from "../../../../types/ArticuloInsumoType.ts";
 import Categoria from "../../../../types/Categoria.ts";
+import ModalInsumo from './ModalInsumo.tsx';
+import ArticuloManufacturadoDetalle from '../../../../types/ArticuloManufacturadoDetalle.ts';
 
 interface ModalProductProps {
     getProducts: () => void;
@@ -24,12 +26,14 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     const unidadService = new UnidadMedidaService();
     const insumoService = new ArticuloInsumoService();
     const categoriaService = new CategoriaService();
-    const articuloManufacturadoDetalles = new ArticuloManufacturadoDetalleService();
+    // const articuloManufacturadoDetalles = new ArticuloManufacturadoDetalleService();
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
     const [insumos, setInsumos] = useState<ArticuloInsumoType[]>([]);
     const [categorias, setCategoria] = useState<Categoria[]>([]);
-    const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
+    // const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
+    const [showInsumoModal, setShowInsumoModal] = useState(false);
     const [file, setFile] = useState<File | null>(null);
+    const [articuloManufacturadoDetalles, setArticuloManufacturadoDetalles] = useState<ArticuloManufacturadoDetalle[]>(productToEdit?.articuloManufacturadoDetalles || []);
     const url = import.meta.env.VITE_API_URL;
 
     const initialValues: ArticuloManufacturado = {
@@ -49,8 +53,10 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
         tiempoEstimadoMinutos: productToEdit ? productToEdit.tiempoEstimadoMinutos : 0,
         preparacion: productToEdit ? productToEdit.preparacion : '',
         articuloManufacturadoDetalles: productToEdit && productToEdit.articuloManufacturadoDetalles
-        ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({ ...detalle }))
-        : [],
+            ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({ ...detalle }))
+            : [],
+        categoria: productToEdit && productToEdit.categoria ? productToEdit.categoria :
+            { id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategorias: [], sucursales: [] }
     };
 
     const modal = useAppSelector((state) => state.modal.modal);
@@ -100,38 +106,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
         fetchArticuloInsumo();
         fetchUnidadesMedida();
         fetchCategorias();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleAddInsumo = async (arrayHelpers: any, values: ArticuloManufacturado) => {
-        if (selectedInsumo !== null) {
-            const insumo = insumos.find(insumo => insumo.id === selectedInsumo);
-
-            if (insumo) {
-                try {
-                    const nuevaCantidad = values.articuloManufacturadoDetalles.find(detalle => detalle.articuloInsumo.id === selectedInsumo)?.cantidad || 0;
-        
-                    // Crear el nuevo detalle mediante el servicio
-                    const nuevoDetalle = await articuloManufacturadoDetalles.post(url + 'articuloManufacturadoDetalle', {
-                        id: 0, // Este ID será ignorado por el backend y se generará uno nuevo
-                        eliminado: false,
-                        cantidad: nuevaCantidad, // Utiliza la cantidad ingresada por el usuario
-                        articuloInsumo: insumo,
-                        articuloManufacturadoId: values.id, // Asume que el ID del artículo manufacturado está disponible
-                    });
-
-                    console.log("Nuevo detalle creado:", nuevoDetalle);
-
-                    // Agregar el detalle creado a la lista de detalles
-                    arrayHelpers.push(nuevoDetalle);
-                    console.log("Detalle agregado. Nuevos detalles:", values.articuloManufacturadoDetalles);
-
-                    setSelectedInsumo(null); // Resetea el insumo seleccionado
-                } catch (error) {
-                    console.error("Error al crear el detalle:", error);
-                }
-            }
-        }
+    const handleAddInsumo = (detalles: ArticuloManufacturadoDetalle[]) => {
+        console.log("Detalles a guardar:", detalles);
+        setArticuloManufacturadoDetalles(detalles);
     };
 
     return (
@@ -158,7 +138,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                     initialValues={initialValues}
                     onSubmit={async (values: ArticuloManufacturado) => {
                         try {
-
                             let productoId: string | null = null;
 
                             if (productToEdit) {
@@ -184,7 +163,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                         }
                     }}
                 >
-                    {({ values, setFieldValue }) => (
+                    {({ setFieldValue }) => (
                         <Form autoComplete="off">
                             <Row>
                                 <Col>
@@ -206,16 +185,16 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                     />
                                     <ErrorMessage name="precioVenta" className="error-message" component="div" />
 
-                                    <label htmlFor="preparacion">Preparacion:</label>
+                                    <label htmlFor="preparacion">Preparación:</label>
                                     <Field
                                         name="preparacion"
                                         type="text"
-                                        placeholder="Preparacion"
+                                        placeholder="Preparación"
                                         className="form-control my-2"
                                     />
                                     <ErrorMessage name="preparacion" className="error-message" component="div" />
 
-                                    <label htmlFor="categoria">Categoria:</label>
+                                    <label htmlFor="categoria">Categoría:</label>
                                     <Field
                                         name="categoria"
                                         as="select"
@@ -225,7 +204,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                             setFieldValue('categoria', categoriaId);
                                         }}
                                     >
-                                        <option value="">Seleccionar Categoria</option>
+                                        <option value="">Seleccionar Categoría</option>
                                         {categorias.map((categoria) => (
                                             <option key={categoria.id} value={categoria.id}>
                                                 {categoria.denominacion}
@@ -243,112 +222,71 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                     />
                                     <ErrorMessage name="tiempoEstimadoMinutos" className="error-message" component="div" />
 
-                                    <label htmlFor="descripcion">Descripcion:</label>
+                                    <label htmlFor="descripcion">Descripción:</label>
                                     <Field
                                         name="descripcion"
                                         type="text"
-                                        placeholder="Descripcion"
+                                        placeholder="Descripción"
                                         className="form-control my-2"
                                     />
                                     <ErrorMessage name="descripcion" className="error-message" component="div" />
 
                                     <label htmlFor="unidadMedida">Unidad de Medida:</label>
                                     <Field
-                                        name="unidadMedida.id"
+                                        name="unidadMedida.denominacion"
                                         as="select"
                                         className="form-control"
                                         onChange={(e: { target: { value: string; }; }) => {
-                                            const unidadMedidaId = parseInt(e.target.value);
-                                            const unidad = unidadesMedida.find(
-                                                (unidad) => unidad.id === unidadMedidaId
-                                            );
+                                            const unidad = unidadesMedida.find((u) => u.denominacion === e.target.value);
                                             setFieldValue('unidadMedida', unidad);
                                         }}
                                     >
                                         <option value="">Seleccionar Unidad de Medida</option>
                                         {unidadesMedida.map((unidad) => (
-                                            <option key={unidad.id} value={unidad.id}>
+                                            <option key={unidad.id} value={unidad.denominacion}>
                                                 {unidad.denominacion}
                                             </option>
                                         ))}
                                     </Field>
-                                </Col>
-                            </Row>
-                            <Row className="mt-3">
-                                <Col>
-                                    <label htmlFor="nuevaImagen">Seleccionar imagen</label>
+
+                                    <label htmlFor="imagen">Imagen:</label>
                                     <input
-                                        name="imagenes"
+                                        name="imagen"
                                         type="file"
-                                        className="form-control"
-                                        onChange={handleFileChange}
-                                        multiple
+                                        onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                                            handleFileChange(event);
+                                        }}
+                                        className="form-control my-2"
                                     />
+                                    <ErrorMessage name="imagen" className="error-message" component="div" />
                                 </Col>
                             </Row>
-                            <Row className="mt-3">
-                                <FieldArray name="articuloManufacturadoDetalles">
-                                    {(arrayHelpers) => (
-                                        <div>
-                                            <h3>Insumos</h3>
-                                            <Row>
-                                                <Col>
-                                                    <select
-                                                        className="form-select"
-                                                        value={selectedInsumo || ''}
-                                                        onChange={(e) => {
-                                                            setSelectedInsumo(parseInt(e.target.value));
-                                                        }}
-                                                    >
-                                                        <option value="">Seleccionar Insumo</option>
-                                                        {insumos.map((insumo) => (
-                                                            <option key={insumo.id} value={insumo.id}>
-                                                                {insumo.denominacion}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </Col>
-                                                <Col>
-                                                    <Button
-                                                        onClick={() => handleAddInsumo(arrayHelpers, values)}
-                                                    >
-                                                        Agregar Insumo
-                                                    </Button>
-                                                </Col>
-                                            </Row>
-                                            {values.articuloManufacturadoDetalles.map((detalle, index) => (
-                                                <Row key={index}>
-                                                    <Col>{detalle.articuloInsumo.denominacion}</Col>
-                                                    <Col>
-                                                        <Field
-                                                            name={`articuloManufacturadoDetalles[${index}].cantidad`}
-                                                            type="number"
-                                                            placeholder="Cantidad"
-                                                            className="form-control"
-                                                        />
-                                                    </Col>
-                                                    <Col>
-                                                        <Button
-                                                            variant="danger"
-                                                            onClick={() => arrayHelpers.remove(index)}
-                                                        >
-                                                            Eliminar
-                                                        </Button>
-                                                    </Col>
-                                                </Row>
-                                            ))}
-                                        </div>
-                                    )}
-                                </FieldArray>
+                            <Row>
+                                <Col className="d-flex justify-content-between align-items-center my-2">
+                                    <label htmlFor="articuloManufacturadoDetalle">Insumos:</label>
+                                    <Button type="button" variant="primary" size="sm" onClick={() => setShowInsumoModal(true)}>Agregar Insumo</Button>
+                                </Col>
+                                <Col>
+                                    <ul className="list-group">
+                                        {articuloManufacturadoDetalles.map((detalle, index) => (
+                                            <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>{detalle.articuloInsumo.denominacion}</span>
+                                                <span>Cantidad: {detalle.cantidad}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </Col>
                             </Row>
-                            <Modal.Footer>
-                                <Button variant="secondary" onClick={handleClose}>
-                                    Cancelar
-                                </Button>
-                                <Button variant="primary" type="submit">
-                                    Guardar
-                                </Button>
-                            </Modal.Footer>
+                            <ModalInsumo
+                                insumos={insumos}
+                                show={showInsumoModal}
+                                handleClose={() => setShowInsumoModal(false)}
+                                handleAddInsumo={handleAddInsumo}
+                                initialDetalles={articuloManufacturadoDetalles}
+                            />
+                            <Button type="submit" className="btn btn-primary mt-3">
+                                {productToEdit ? 'Guardar Cambios' : 'Agregar Producto'}
+                            </Button>
                         </Form>
                     )}
                 </Formik>
