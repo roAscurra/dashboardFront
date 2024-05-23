@@ -1,4 +1,4 @@
-import { Button, Modal } from "react-bootstrap";
+import { Button, Col, Modal, Row } from "react-bootstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
@@ -204,70 +204,74 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, s
                   ))}
                 </Field>
               </div>
-              <div className="mb-4">
-                <label htmlFor="domicilio.calle">Calle:</label>
-                <Field
-                  name="domicilio.calle"
-                  type="text"
-                  placeholder="calle"
-                  className="form-control mt-2"
-                />
-                <ErrorMessage
-                  name="domicilio.calle"
-                  className="error-message"
-                  component="div"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="cp">Codigo Postal:</label>
-                <Field
-                  name="domicilio.cp"
-                  type="number"
-                  placeholder="cp"
-                  className="form-control mt-2"
-                />
-                <ErrorMessage
-                  name="cp"
-                  className="error-message"
-                  component="div"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="horarioApertura">Horario apertura:</label>
-                <Field
-                  name="horarioApertura"
-                  type="time"
-                  step="1"
-                  className="form-control mt-2"
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    const value = e.target.value;
-                    setFieldValue("horarioApertura", value);
-                  }}
-                />
-                <ErrorMessage
-                  name="horarioApertura"
-                  className="error-message"
-                  component="div"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="horarioCierre">Horario cierre:</label>
-                <Field
-                  name="horarioCierre"
-                  type="time"
-                  step="1"
-                  className="form-control mt-2"
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    const value = e.target.value;
-                    setFieldValue("horarioCierre", value);
-                  }}
-                />
-                <ErrorMessage
-                  name="horarioCierre"
-                  className="error-message"
-                  component="div"
-                />
-              </div>
+              <Row>
+                <Col md={6} className="mb-4">
+                  <label htmlFor="domicilio.calle">Calle:</label>
+                  <Field
+                    name="domicilio.calle"
+                    type="text"
+                    placeholder="calle"
+                    className="form-control mt-2"
+                  />
+                  <ErrorMessage
+                    name="domicilio.calle"
+                    className="error-message"
+                    component="div"
+                  />
+                </Col>
+                <Col md={6} className="mb-4">
+                  <label htmlFor="domicilio.cp">Código Postal:</label>
+                  <Field
+                    name="domicilio.cp"
+                    type="number"
+                    placeholder="cp"
+                    className="form-control mt-2"
+                  />
+                  <ErrorMessage
+                    name="domicilio.cp"
+                    className="error-message"
+                    component="div"
+                  />
+                </Col>
+              </Row>
+              <Row>
+                <Col md={6} className="mb-4">
+                  <label htmlFor="horarioApertura">Horario apertura:</label>
+                  <Field
+                    name="horarioApertura"
+                    type="time"
+                    step="1"
+                    className="form-control mt-2"
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      const value = e.target.value;
+                      setFieldValue("horarioApertura", value);
+                    }}
+                  />
+                  <ErrorMessage
+                    name="horarioApertura"
+                    className="error-message"
+                    component="div"
+                  />
+                </Col>
+                <Col md={6} className="mb-4">
+                  <label htmlFor="horarioCierre">Horario cierre:</label>
+                  <Field
+                    name="horarioCierre"
+                    type="time"
+                    step="1"
+                    className="form-control mt-2"
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      const value = e.target.value;
+                      setFieldValue("horarioCierre", value);
+                    }}
+                  />
+                  <ErrorMessage
+                    name="horarioCierre"
+                    className="error-message"
+                    component="div"
+                  />
+                </Col>
+              </Row>
               <div className="mb-4">
                 <label htmlFor="logo">Logo:</label>
                 <br />
