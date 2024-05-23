@@ -10,6 +10,7 @@ import { sucursalSlice } from './slices/Sucursal';
 import {empresasSlice} from './slices/Empresa';
 import {articuloInsumoSlice} from "./slices/ArticuloInsumo.ts";
 import {cuponesSlice} from "./slices/Cupones.ts";
+import { unidadMedidaSlice } from "./slices/UnidaMedia.ts";
 
 
 // Configuración de la tienda de Redux
@@ -22,6 +23,7 @@ export const store = configureStore({
     //articuloManufacturadoDetalle
     categoria: categoriaSlice.reducer,
     cupones: cuponesSlice.reducer,
+    unidadMedida: unidadMedidaSlice.reducer,
     usuario: usuarioSlice.reducer,
     promocion: promocionSlice.reducer,
     sucursales: sucursalSlice.reducer,

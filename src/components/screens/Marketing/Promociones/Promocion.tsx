@@ -181,8 +181,6 @@ const onSearch = (query: string) => {
                 
               />
               <ModalEliminarPromocion show={deleteModalOpen} onHide={handleCloseDeleteModal} promocion={promocionToEdit} onDelete={handleDelete} />
-
-
               {/* Llamando a ModalPromocion con la prop fetchPromocion y promocionToEdit */}
               <ModalPromocion getPromocion={fetchPromocion} promocionToEdit={promocionToEdit !== null ? promocionToEdit : undefined} />
             </Container>

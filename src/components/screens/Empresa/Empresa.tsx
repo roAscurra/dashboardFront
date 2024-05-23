@@ -1,8 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
-import { Box, Typography, Container, Card, CardMedia, CardContent, Grid } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Container,
+  Card,
+  CardMedia,
+  CardContent,
+  Grid,
+} from "@mui/material";
 // import { Box, Typography, Button, Container, IconButton, Card, CardMedia, CardContent, CardActions, Grid } from "@mui/material";
 // import { Add } from "@mui/icons-material";
-import {useAppDispatch} from "../../../hooks/redux";
+import { useAppDispatch } from "../../../hooks/redux";
 // import {useAppSelector} from "../../../hooks/redux";
 // import SearchBar from "../../ui/SearchBar/SearchBar";
 import { setEmpresa } from "../../../redux/slices/Empresa";
@@ -17,7 +25,6 @@ import { Link } from "react-router-dom";
 // import {handleSearch} from "../../../utils.ts/utils.ts";
 // import DeleteIcon from '@mui/icons-material/Delete';
 // import EditIcon from '@mui/icons-material/Edit';
-
 
 interface Row {
   [key: string]: any;
@@ -35,26 +42,32 @@ export const ListaEmpresa = () => {
   //     (state) => state.empresas.data
   // );
 
-  const fetchImages = useCallback(async (empresaId: string) => {
-    try {
-        const response = await empresaService.get(url + 'empresa/getAllImagesByEmpresaId', empresaId);
-        
+  const fetchImages = useCallback(
+    async (empresaId: string) => {
+      try {
+        const response = await empresaService.get(
+          url + "empresa/getAllImagesByEmpresaId",
+          empresaId
+        );
+
         if (Array.isArray(response) && response.length > 0) {
-            // console.log('Get successful:', response.map(image => image.url));
-            return response[0].url; // Devuelve la URL de la primera imagen
+          // console.log('Get successful:', response.map(image => image.url));
+          return response[0].url; // Devuelve la URL de la primera imagen
         }
         // Si no se encuentra ninguna imagen, devuelve una imagen placeholder
-        return 'https://via.placeholder.com/150';
-    } catch (error) {
+        return "https://via.placeholder.com/150";
+      } catch (error) {
         // console.error('Error fetching images:', error);
         // En caso de error, devuelve una imagen placeholder
-        return 'https://via.placeholder.com/150';
-    }
-  }, [empresaService, url]);
+        return "https://via.placeholder.com/150";
+      }
+    },
+    [empresaService, url]
+  );
 
   const fetchEmpresa = useCallback(async () => {
     try {
-      const empresas = await empresaService.getAll(url + 'empresa');
+      const empresas = await empresaService.getAll(url + "empresa");
       const empresasConImagenes = await Promise.all(
         empresas.map(async (empresa) => {
           const imagenUrl = await fetchImages(empresa.id.toString());
@@ -67,7 +80,6 @@ export const ListaEmpresa = () => {
       // console.error("Error al obtener las empresas:", error);
     }
   }, [dispatch, empresaService, url, fetchImages]);
-
 
   useEffect(() => {
     fetchEmpresa();
@@ -89,22 +101,26 @@ export const ListaEmpresa = () => {
   const handleDelete = async () => {
     try {
       if (empresaToEdit && empresaToEdit.id) {
-        await empresaService.delete(url + 'empresa', empresaToEdit.id.toString());
-        console.log('Se ha eliminado correctamente.');
-        handleCloseDeleteModal(); 
-        fetchEmpresa(); 
+        await empresaService.delete(
+          url + "empresa",
+          empresaToEdit.id.toString()
+        );
+        console.log("Se ha eliminado correctamente.");
+        handleCloseDeleteModal();
+        fetchEmpresa();
       } else {
-        console.error('No se puede eliminar la empresa porque no se proporcionó un ID válido.');
+        console.error(
+          "No se puede eliminar la empresa porque no se proporcionó un ID válido."
+        );
       }
     } catch (error) {
-      console.error('Error al eliminar la empresa:', error);
+      console.error("Error al eliminar la empresa:", error);
     }
   };
-  
+
   const handleCloseDeleteModal = () => {
     setDeleteModalOpen(false); // Utiliza el estado directamente para cerrar la modal de eliminación
   };
-
 
   const handleAddEmpresa = () => {
     setEmpresaToEdit(null);
@@ -112,25 +128,24 @@ export const ListaEmpresa = () => {
   };
 
   // Función para abrir la modal de edición
-// const handleOpenEditModal = (rowData: Row) => {
-//   setEmpresaToEdit({
-//     id: rowData.id,
-//     eliminado: rowData.eliminado,
-//     nombre: rowData.nombre,
-//     razonSocial: rowData.razonSocial,
-//     cuil: rowData.cuil,
-//     imagen: rowData.imagen.url
-//   });
-//   dispatch(toggleModal({ modalName: 'modal' }));
-// };
+  // const handleOpenEditModal = (rowData: Row) => {
+  //   setEmpresaToEdit({
+  //     id: rowData.id,
+  //     eliminado: rowData.eliminado,
+  //     nombre: rowData.nombre,
+  //     razonSocial: rowData.razonSocial,
+  //     cuil: rowData.cuil,
+  //     imagen: rowData.imagen.url
+  //   });
+  //   dispatch(toggleModal({ modalName: 'modal' }));
+  // };
 
-// const onSearch = (query: string) => {
-//   handleSearch(query, globalEmpresas, setFilterData);
-// };
-
+  // const onSearch = (query: string) => {
+  //   handleSearch(query, globalEmpresas, setFilterData);
+  // };
 
   return (
-      <Box
+    <Box
       component="main"
       sx={{
         flexGrow: 1,
@@ -140,7 +155,7 @@ export const ListaEmpresa = () => {
         justifyContent: "center",
         my: 2,
       }}
-      >
+    >
       <Container maxWidth="lg">
         {/* <Box sx={{ display: "flex",ustifyContent: "space-between",alignItems: "center",my: 1,}}>
           <Typography variant="h5" gutterBottom>
@@ -153,14 +168,15 @@ export const ListaEmpresa = () => {
         <Box sx={{ mt: 2 }}>
           <SearchBar onSearch={onSearch} />
         </Box>  */}
-      <Grid container spacing={4}
+        <Grid
+          container
+          spacing={4}
           direction="row"
           justifyContent="space-evenly"
           alignItems="center"
-          style={{ minHeight: '80vh', paddingTop: '1rem' }}
-      >
-        {
-          filterData.map((empresa) => {
+          style={{ minHeight: "80vh", paddingTop: "1rem" }}
+        >
+          {filterData.map((empresa) => {
             return (
               <Grid item xs={3} sm={6} md={4}>
                 <Link to={`/sucursal/${empresa.id}`}>
@@ -191,18 +207,18 @@ export const ListaEmpresa = () => {
                 </Link>
               </Grid>
             );
-          })
-        }
+          })}
 
           {/* Tarjeta vacía */}
           <Grid item xs={3} sm={6} md={4} onClick={handleAddEmpresa}>
-            <Card sx={{ maxWidth: 345 }}>
-              <CardMedia
-                component="img"
-                alt={"Crear empresa"}
-                height="140"
-                image={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFJd8e-dfvZFuUNjVpjo0HSaGAuansjA2SI9lfEAbXcw&s"}
-              />
+  <Card sx={{ maxWidth: 345 }}>
+    <CardMedia
+      component="img"
+      alt={"Crear empresa"}
+      height="140"
+      image={"https://objetivoligar.com/wp-content/uploads/2017/03/blank-profile-picture-973460_1280-768x768.jpg"}
+      sx={{ objectFit: 'contain', borderRadius: '50%' }} // Agregar borderRadius para redondear la imagen
+    />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                   Agregar Empresa
@@ -212,14 +228,18 @@ export const ListaEmpresa = () => {
           </Grid>
         </Grid>
 
-        
-        <ModalEliminarEmpresa show={deleteModalOpen} onHide={handleCloseDeleteModal} empresa={empresaToEdit} onDelete={handleDelete} />
-        <ModalEmpresa modalName="modal" getEmpresa={fetchEmpresa} empresaToEdit={empresaToEdit !== null ? empresaToEdit : undefined} />
+        <ModalEliminarEmpresa
+          show={deleteModalOpen}
+          onHide={handleCloseDeleteModal}
+          empresa={empresaToEdit}
+          onDelete={handleDelete}
+        />
+        <ModalEmpresa
+          modalName="modal"
+          getEmpresa={fetchEmpresa}
+          empresaToEdit={empresaToEdit !== null ? empresaToEdit : undefined}
+        />
       </Container>
     </Box>
-
   );
-}
-
-
-
+};
