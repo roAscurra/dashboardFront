@@ -87,6 +87,7 @@ export const ListaArticulosInsumo = () => {
       stockMaximo: rowData.stockMaximo,
       esParaElaborar: rowData.esParaElaborar,
       unidadMedida: rowData.unidadMedida?.denominacion,
+      categoria: rowData.categoria?.denominacion
     });
     setDeleteModalOpen(true);
   };
@@ -133,6 +134,7 @@ export const ListaArticulosInsumo = () => {
       stockMaximo: rowData.stockMaximo,
       esParaElaborar: rowData.esParaElaborar,
       unidadMedida: rowData.unidadMedida?.denominacion,
+      categoria: rowData.categoria?.denominacion
     });
     dispatch(toggleModal({ modalName: "modal" }));
   };

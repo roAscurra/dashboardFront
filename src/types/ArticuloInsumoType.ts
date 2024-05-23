@@ -1,3 +1,4 @@
+import Categoria from "./Categoria";
 import DataModel from "./DataModel";
 import ImagenArticulo from "./ImagenArticulo";
 import UnidadMedida from "./UnidadMedida";
@@ -12,6 +13,7 @@ interface IArticuloInsumo extends DataModel<IArticuloInsumo>{
     stockActual: number;
     stockMaximo: number;
     esParaElaborar: boolean;
+    categoria: Categoria;
 }
 
 export default IArticuloInsumo;
