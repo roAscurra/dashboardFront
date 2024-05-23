@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import Categoria from '../../../../types/Categoria';
 import CategoriaService from '../../../../services/CategoriaService';
 import { useAppDispatch } from '../../../../hooks/redux';
 import { toggleModal } from '../../../../redux/slices/Modal';
+import { useParams } from 'react-router-dom';
+import SucursalService from '../../../../services/SucursalService';
+import Sucursal from '../../../../types/Sucursal';
 
 interface ModalCategoriaProps {
     open: boolean;
@@ -17,15 +20,35 @@ interface ModalCategoriaProps {
 const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCategories, categoryToEdit }) => {
     const categoriaService = new CategoriaService();
     const url = import.meta.env.VITE_API_URL;
-
-    const initialValues: Categoria = categoryToEdit
-        ? categoryToEdit
-        : {
-            id: 0,
-            denominacion: '',
-            articulos: [],
-            subCategorias: [],
-        };
+    const { sucursalId } = useParams(); // Obtén el ID de la URL
+    const sucursalService = new SucursalService();
+    const [sucursal, setSucursal] = useState<Sucursal | null>(null); // Variable de estado para almacenar el nombre de la sucursal
+  
+    const fetchSucursalData = async () => {
+        try {
+            if (sucursalId) {
+                const sucursal2 = await sucursalService.get(url + 'sucursal', sucursalId);
+                setSucursal(sucursal2)
+            }
+        } catch (error) {
+            console.error("Error al obtener los datos de la sucursal:", error);
+        }
+    };
+    useEffect(() => {
+        fetchSucursalData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);      
+    
+      const initialValues: Categoria = categoryToEdit
+    ? categoryToEdit
+    : {
+        id: 0,
+        eliminado: false,
+        denominacion: '',
+        subCategorias: [],
+        sucursales: [],
+        esInsumo: false
+    };
 
     const dispatch = useAppDispatch();
 
@@ -56,6 +79,11 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                                 await categoriaService.put(url + 'categoria', values.id.toString(), values);
                                 console.log('Categoría actualizada correctamente.');
                             } else {
+                                console.log(values)
+                            
+                                if (sucursal) {
+                                    values.sucursales = [sucursal];
+                                }                                
                                 await categoriaService.post(url + 'categoria', values);
                                 console.log('Categoría agregada correctamente.');
                             }
@@ -66,7 +94,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                         }
                     }}
                 >
-                    {({ values }) => (
+                    {() => (
                         <>
                             <Form autoComplete="off">
                                 <div className="mb-4">
@@ -74,7 +102,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                                     <Field name="denominacion" type="text" placeholder="Nombre de la Categoría" className="form-control mt-2" />
                                     <ErrorMessage name="denominacion" className="error-message" component="div" />
                                 </div>
-                                <FieldArray name="subCategorias">
+                                {/* <FieldArray name="subCategorias">
                                     {({ push, remove }) => (
                                         <div className="mb-4">
                                             <label>Subcategorías:</label>
@@ -105,7 +133,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                                             </Button>
                                         </div>
                                     )}
-                                </FieldArray>
+                                </FieldArray> */}
                                 <div className="d-flex justify-content-end">
                                     <Button variant="outline-success" type="submit" className="custom-button">
                                         Enviar
