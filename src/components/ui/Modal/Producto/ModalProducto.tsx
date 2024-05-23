@@ -49,8 +49,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
         tiempoEstimadoMinutos: productToEdit ? productToEdit.tiempoEstimadoMinutos : 0,
         preparacion: productToEdit ? productToEdit.preparacion : '',
         articuloManufacturadoDetalles: productToEdit && productToEdit.articuloManufacturadoDetalles
-            ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({ ...detalle }))
-            : [],
+        ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({ ...detalle }))
+        : [],
     };
 
     const modal = useAppSelector((state) => state.modal.modal);
@@ -109,7 +109,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
             if (insumo) {
                 try {
-                    const nuevaCantidad = values.articuloManufacturadoDetalles.find(detalle => detalle.articuloInsumo.id === selectedInsumo)?.cantidad || 0;
+                    // Obtener la cantidad ingresada por el usuario
+                    const nuevaCantidad = parseInt(prompt('Ingrese la cantidad del insumo') || '0');
+
+                    if (isNaN(nuevaCantidad)) {
+                        throw new Error('La cantidad ingresada no es válida.');
+                    }
 
                     // Crear el nuevo detalle mediante el servicio
                     const nuevoDetalle = await articuloManufacturadoDetalles.post(url + 'articuloManufacturadoDetalle', {

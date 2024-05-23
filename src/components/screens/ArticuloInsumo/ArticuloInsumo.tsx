@@ -1,16 +1,16 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import {useAppDispatch } from "../../../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import ArticuloInsumoService from "../../../services/ArticuloInsumoService";
 import { toggleModal } from "../../../redux/slices/Modal";
-// import SearchBar from "../../ui/SearchBar/SearchBar";
+import SearchBar from "../../ui/SearchBar/SearchBar";
 import TableComponent from "../../ui/Table/Table";
 import ModalEliminarArticuloInsumo from "../../ui/Modal/ArticuloInsumo/ModalEliminarArticuloInsumo.tsx";
 import ModalArticuloInsumo from "../../ui/Modal/ArticuloInsumo/ModalArticuloInsumo.tsx";
 import ArticuloInsumo from "../../../types/ArticuloInsumoType";
-// import {handleSearch} from "../../../utils.ts/utils.ts";
-import {setArticuloInsumo} from "../../../redux/slices/ArticuloInsumo.ts";
+import {handleSearch} from "../../../utils.ts/utils.ts";
+import { setArticuloInsumo } from "../../../redux/slices/ArticuloInsumo.ts";
 import UnidadMedida from "../../../types/UnidadMedida.ts";
 import Sidebar from "../../ui/Sider/SideBar.tsx";
 import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
@@ -29,37 +29,37 @@ interface Column {
 export const ListaArticulosInsumo = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const articuloInsumoService = new ArticuloInsumoService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [articuloToEdit, setArticuloToEdit] = useState<ArticuloInsumo | null>(
     null
   );
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  // const globalArticuloInsumo = useAppSelector(
-  //     (state) => state.articuloInsumo.data
-  // );
+  const globalArticuloInsumo = useAppSelector(
+    (state) => state.articuloInsumo.data
+  );
 
-  const fetchImages = useCallback(async (articuloInsumoId: string) =>{
-    try{
+  const fetchImages = useCallback(async (articuloInsumoId: string) => {
+    try {
       const response = await articuloInsumoService.get(url + 'articuloInsumo/getAllImagesByInsumoId', articuloInsumoId);
 
-      if(Array.isArray(response) && response.length > 0){
+      if (Array.isArray(response) && response.length > 0) {
         return response[0].url;
       }
       return 'https://via.placeholder.com/150';
-    }catch(error){
+    } catch (error) {
       return 'https://via.placeholder.com/150';
     }
-  },[articuloInsumoService, url]);
+  }, [articuloInsumoService, url]);
 
   const fetchArticulosInsumo = useCallback(async () => {
     try {
       const articulosInsumo = await articuloInsumoService.getAll(url + "articuloInsumo");
       const artInsumoConImagenes = await Promise.all(
-        articulosInsumo.map(async(articuloInsumo) => {
+        articulosInsumo.map(async (articuloInsumo) => {
           const imagenUrl = await fetchImages(articuloInsumo.id.toString());
-          return {...articuloInsumo, imagen: imagenUrl};
+          return { ...articuloInsumo, imagen: imagenUrl };
         })
       )
       console.log(articulosInsumo)
@@ -72,7 +72,7 @@ export const ListaArticulosInsumo = () => {
 
   useEffect(() => {
     fetchArticulosInsumo();
-    // onSearch('');
+    onSearch('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -91,7 +91,7 @@ export const ListaArticulosInsumo = () => {
     setDeleteModalOpen(true);
   };
 
- {/* const handleDelete = async () => {
+  {/* const handleDelete = async () => {
     try {
       if (articuloToEdit && articuloToEdit.id) {
         await articuloInsumoService.delete(
@@ -137,9 +137,9 @@ export const ListaArticulosInsumo = () => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
-  // const onSearch = (query: string) => {
-  //   handleSearch(query, globalArticuloInsumo, setFilterData);
-  // };
+  const onSearch = (query: string) => {
+    handleSearch(query, globalArticuloInsumo, setFilterData);
+  };
 
 
   const columns: Column[] = [
@@ -182,10 +182,10 @@ export const ListaArticulosInsumo = () => {
         }
       }
     },
-   
+
   ];
 
-   {/*
+  {/*
     {
       id: "imagenes",
       label: "Imágenes",
@@ -206,7 +206,7 @@ export const ListaArticulosInsumo = () => {
     },
      */}
 
-  return (  
+  return (
     <React.Fragment>
       <BaseNavBar title="" />
       <CContainer fluid>
@@ -218,16 +218,16 @@ export const ListaArticulosInsumo = () => {
           {/* Contenido principal */}
           <CCol>
             <Box
-                component="main"
-                sx={{
-                  flexGrow: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  my: 2,
-                }}
-              >
+              component="main"
+              sx={{
+                flexGrow: 1,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                my: 2,
+              }}
+            >
               <Container maxWidth="lg">
                 <Box
                   sx={{
@@ -255,7 +255,7 @@ export const ListaArticulosInsumo = () => {
                   </Button>
                 </Box>
                 <Box sx={{ mt: 2 }}>
-                  {/* <SearchBar onSearch={onSearch} /> */}
+                  <SearchBar onSearch={onSearch} /> 
                 </Box>
                 <TableComponent
                   data={filterData}
@@ -267,7 +267,7 @@ export const ListaArticulosInsumo = () => {
                   show={deleteModalOpen}
                   onHide={handleCloseDeleteModal}
                   articuloInsumo={articuloToEdit}
-                  //onDelete={handleDelete}
+                //onDelete={handleDelete}
                 />
                 <ModalArticuloInsumo
                   getArticulosInsumo={fetchArticulosInsumo}
@@ -277,7 +277,7 @@ export const ListaArticulosInsumo = () => {
             </Box>
           </CCol>
         </CRow>
-        </CContainer>
+      </CContainer>
     </React.Fragment>
 
   );
