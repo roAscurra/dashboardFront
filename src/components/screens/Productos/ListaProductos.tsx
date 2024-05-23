@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { useAppDispatch } from "../../../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { setArticuloManufacturado } from "../../../redux/slices/ArticuloManufacturado";
 import { toggleModal } from "../../../redux/slices/Modal";
 import ArticuloManufacturadoService from "../../../services/ArticuloManufacturadoService.ts";
@@ -15,6 +15,8 @@ import { CCol, CContainer, CRow } from "@coreui/react";
 import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import Sidebar from "../../ui/Sider/SideBar.tsx";
 import UnidadMedida from "../../../types/UnidadMedida.ts";
+import { handleSearch } from "../../../utils.ts/utils.ts";
+import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
 
 interface Row {
   [key: string]: any;
@@ -36,9 +38,9 @@ export const ListaProductos = () => {
   const [productToEdit, setProductToEdit] = useState<AManufacturado | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  // const globalArticuloManufacturado = useAppSelector(
-  //     (state) => state.articuloManufacturado.data
-  // );
+  const globalArticuloManufacturado = useAppSelector(
+      (state) => state.articuloManufacturado.data
+  );
 
   const fetchImages = useCallback(async (productoId: string) =>{
     try{
@@ -72,7 +74,7 @@ export const ListaProductos = () => {
 
   useEffect(() => {
     fetchProductos();
-    // onSearch('');
+    onSearch('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -135,9 +137,9 @@ export const ListaProductos = () => {
 
 
   // Función para manejar la búsqueda de artículos manufacturados
-  // const onSearch = (query: string) => {
-  //   handleSearch(query, globalArticuloManufacturado, setFilterData);
-  // };
+  const onSearch = (query: string) => {
+    handleSearch(query, globalArticuloManufacturado, setFilterData);
+  };
 
   // Definición de las columnas para la tabla de artículos manufacturados
   const columns: Column[] = [
@@ -233,7 +235,7 @@ export const ListaProductos = () => {
               </Box>
               {/* Barra de búsqueda */}
               <Box sx={{ mt: 2 }}>
-                {/* <SearchBar onSearch={onSearch} /> */}
+                <SearchBar onSearch={onSearch} />
               </Box>
               {/* Componente de tabla para mostrar los artículos manufacturados */}
               <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />
