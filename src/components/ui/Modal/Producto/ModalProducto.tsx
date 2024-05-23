@@ -109,13 +109,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
             if (insumo) {
                 try {
-                    // Obtener la cantidad ingresada por el usuario
-                    const nuevaCantidad = parseInt(prompt('Ingrese la cantidad del insumo') || '0');
-
-                    if (isNaN(nuevaCantidad)) {
-                        throw new Error('La cantidad ingresada no es válida.');
-                    }
-
+                    const nuevaCantidad = values.articuloManufacturadoDetalles.find(detalle => detalle.articuloInsumo.id === selectedInsumo)?.cantidad || 0;
+        
                     // Crear el nuevo detalle mediante el servicio
                     const nuevoDetalle = await articuloManufacturadoDetalles.post(url + 'articuloManufacturadoDetalle', {
                         id: 0, // Este ID será ignorado por el backend y se generará uno nuevo
