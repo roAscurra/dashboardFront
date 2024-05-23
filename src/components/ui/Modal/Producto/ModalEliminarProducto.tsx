@@ -16,7 +16,7 @@ const ModalEliminarProducto: React.FC<ModalDeleteProductsProps> = ({ show, onHid
     const handleDelete = async () => {
         try {
             if (product && product.id) {
-                await productService.delete(url + 'articulosManufacturados', product.id.toString());
+                await productService.delete(url + 'articuloInsumo', product.id.toString());
                 console.log('Se ha eliminado correctamente.');
                 onHide(); // Cerramos el modal
             } else {

@@ -62,11 +62,11 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({ getPromocion, promocion
             try {
               if (promocionToEdit) {
                 // Lógica para editar la promoción existente
-                await promocionService.put(url + "promociones", values.id.toString(), values);
+                await promocionService.put(url + "promocion", values.id.toString(), values);
                 console.log("Se ha actualizado correctamente.");
               } else {
                 // Lógica para agregar una nueva promoción
-                await promocionService.post(url + "promociones", values);
+                await promocionService.post(url + "promocion", values);
                 console.log("Se ha agregado correctamente.");
               }
               getPromocion(); 

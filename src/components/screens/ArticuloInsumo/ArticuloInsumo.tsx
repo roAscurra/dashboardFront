@@ -92,7 +92,7 @@ export const ListaArticulosInsumo = () => {
     setDeleteModalOpen(true);
   };
 
-  {/* const handleDelete = async () => {
+  const handleDelete = async () => {
     try {
       if (articuloToEdit && articuloToEdit.id) {
         await articuloInsumoService.delete(
@@ -112,7 +112,6 @@ export const ListaArticulosInsumo = () => {
     }
   };
 
-*/}
   const handleCloseDeleteModal = () => {
     setDeleteModalOpen(false);
   };

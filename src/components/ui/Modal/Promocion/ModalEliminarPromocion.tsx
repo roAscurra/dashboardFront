@@ -17,7 +17,7 @@ interface ModalEliminarPromocionProps {
     const handleDelete = async () => {
       try {
         if (promocion && promocion.id) {
-          await promocionService.delete(url + 'promociones', promocion.id.toString());
+          await promocionService.delete(url + 'promocion', promocion.id.toString());
           console.log(promocion.id.toString())
           console.log('Se ha eliminado correctamente.');
           onHide(); // Cerramos el modal

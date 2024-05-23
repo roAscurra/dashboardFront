@@ -10,6 +10,7 @@ import UnidadMedidaService from "../../../../services/UnidadMedidaService";
 import { useEffect, useState, ChangeEvent } from "react";
 import CategoriaService from "../../../../services/CategoriaService";
 import Categoria from "../../../../types/Categoria";
+import ImagenArticulo from "../../../../types/ImagenArticulo";
 
 interface ModalArticuloInsumoProps {
   getArticulosInsumo: () => void;
@@ -34,7 +35,10 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
     stockActual: articuloToEdit ? articuloToEdit.stockActual : 0,
     stockMaximo: articuloToEdit ? articuloToEdit.stockMaximo : 0,
     esParaElaborar: articuloToEdit ? articuloToEdit.esParaElaborar : false,
-    imagenes: articuloToEdit ? articuloToEdit.imagenes?.map((imagen: any) => imagen.url) : [],
+    imagenes: articuloToEdit ? articuloToEdit.imagenes?.map((imagen: any) => ({
+      url: imagen.url,
+      name: 'image'
+    } as ImagenArticulo)) : [],
     unidadMedida: articuloToEdit && articuloToEdit.unidadMedida
       ? { ...articuloToEdit.unidadMedida }
       : {

@@ -54,7 +54,7 @@ const handleOpenDeleteModal = (rowData: Row) => {
   const handleDelete = async () => {
     try {
       if (promocionToEdit && promocionToEdit.id) {
-        await promocionService.delete(url + 'promociones', promocionToEdit.id.toString());
+        await promocionService.delete(url + 'promocion', promocionToEdit.id.toString());
         console.log('Se ha eliminado correctamente.');
         handleCloseDeleteModal(); // Cerrar el modal de eliminación
         fetchPromocion(); // Actualizar la lista de promociones después de la eliminación
@@ -73,7 +73,7 @@ const handleOpenDeleteModal = (rowData: Row) => {
    // Definiendo fetchSucursal con useCallback
    const fetchPromocion = useCallback(async () => {
     try {
-      const sucursales = await promocionService.getAll(url + 'promociones');
+      const sucursales = await promocionService.getAll(url + 'promocion');
       dispatch(setPromocion(sucursales));
       setFilterData(sucursales);
 
