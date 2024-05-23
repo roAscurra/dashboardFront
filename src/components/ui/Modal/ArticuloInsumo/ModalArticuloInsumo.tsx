@@ -64,6 +64,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
 
   useEffect(() => {
     fetchUnidadesMedida();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 

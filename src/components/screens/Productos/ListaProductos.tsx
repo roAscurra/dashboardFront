@@ -43,7 +43,7 @@ export const ListaProductos = () => {
   const fetchImages = useCallback(async (productoId: string) =>{
     try{
       const response = await productoService.get(url + 'articuloManufacturado/getAllImagesByArticuloManufacturadoId', productoId);
-
+      console.log(response)
       if(Array.isArray(response) && response.length > 0){
         return response[0].url;
       }
@@ -73,6 +73,7 @@ export const ListaProductos = () => {
   useEffect(() => {
     fetchProductos();
     // onSearch('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 

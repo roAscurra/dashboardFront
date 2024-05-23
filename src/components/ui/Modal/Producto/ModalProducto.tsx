@@ -100,6 +100,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
         fetchArticuloInsumo();
         fetchUnidadesMedida();
         fetchCategorias();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleAddInsumo = async (arrayHelpers: any, values: ArticuloManufacturado) => {
@@ -171,7 +172,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                             }
 
                             if (file && productoId) {
-                                const response = await productoService.uploadFile(url + 'articuloManufacturado/uploadImages', file, productoId);
+                                const response = await productoService.uploadFile(url + 'articuloManufacturado/uploads', file, productoId);
                                 console.log('Upload successful:', response);
                             }
 
