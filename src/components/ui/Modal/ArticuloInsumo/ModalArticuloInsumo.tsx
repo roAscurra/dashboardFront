@@ -8,6 +8,8 @@ import { toggleModal } from "../../../../redux/slices/Modal";
 import ArticuloInsumo from "../../../../types/ArticuloInsumoType";
 import UnidadMedidaService from "../../../../services/UnidadMedidaService";
 import { useEffect, useState, ChangeEvent } from "react";
+import CategoriaService from "../../../../services/CategoriaService";
+import Categoria from "../../../../types/Categoria";
 
 interface ModalArticuloInsumoProps {
   getArticulosInsumo: () => void;
@@ -18,7 +20,9 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
 
   const articuloInsumoService = new ArticuloInsumoService();
   const unidadService = new UnidadMedidaService();
+  const categoriaService = new CategoriaService();
   const [unidadesMedida, setUnidadesMedida] = useState<IUnidadMedida[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const url = import.meta.env.VITE_API_URL;
 
@@ -38,7 +42,10 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
         eliminado: false,
         denominacion: '',
       },
-  };
+      categoria: articuloToEdit && articuloToEdit.categoria ? articuloToEdit.categoria : 
+      { id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategorias: [], sucursales: [] }
+
+    };
 
   const modal = useAppSelector((state) => state.modal.modal);
   const dispatch = useAppDispatch();
@@ -52,7 +59,14 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
       setFile(e.target.files[0]);
     }
   };
-
+  const fetchCategorias = async () => {
+    try {
+      const categoria = await categoriaService.getAll(url + 'categoria');
+      setCategorias(categoria);
+    } catch (error) {
+      console.error('Error al obtener las unidades de medida:', error);
+    }
+  };
   const fetchUnidadesMedida = async () => {
     try {
       const unidades = await unidadService.getAll(url + 'unidadMedida');
@@ -64,6 +78,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
 
   useEffect(() => {
     fetchUnidadesMedida();
+    fetchCategorias();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -100,6 +115,8 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                 await articuloInsumoService.put(url + "articuloInsumo", values.id.toString(), values);
                 console.log("Se ha actualizado correctamente.");
               } else {
+                console.log(values)
+               
                 const response = await articuloInsumoService.post(url + "articuloInsumo", values);
                 
                 console.log("Se ha agregado correctamente.");
@@ -240,7 +257,32 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                   />
                 </Col>
               </Row>
+              <Row>
+                  <label htmlFor="categoria">Categoria:</label>
+                  <Field
+                    name="categoria"
+                    as="select"
+                    className="form-control"
+                    onChange={(event: { target: { value: string; }; }) => {
+                      const categoriaSelect = parseInt(event.target.value);
+                      const selectedCategoria = categorias.find((categoria) => categoria.id === categoriaSelect);
 
+                      if (selectedCategoria) {
+                        setFieldValue('categoria', selectedCategoria);
+                      } else {
+                        console.error("No se encontró la categoria seleccionada");
+                      }
+                    }}
+                    value={values.categoria ? values.categoria.id : ''}
+                  >
+                    <option value="">Seleccionar categoria</option>
+                    {categorias.map((categoria) => (
+                      <option key={categoria.id} value={categoria.id}>
+                        {categoria.denominacion}
+                      </option>
+                    ))}
+                  </Field>
+              </Row>
               <Row className="mt-4">
                 <Col className="text-end">
                   <Button
