@@ -92,25 +92,25 @@ export const ListaArticulosInsumo = () => {
     setDeleteModalOpen(true);
   };
 
-  const handleDelete = async () => {
-    try {
-      if (articuloToEdit && articuloToEdit.id) {
-        await articuloInsumoService.delete(
-          url + "articuloInsumo",
-          articuloToEdit.id.toString()
-        );
-        console.log("Artículo de insumo eliminado correctamente.");
-        handleCloseDeleteModal();
-        fetchArticulosInsumo();
-      } else {
-        console.error(
-          "No se puede eliminar el artículo de insumo porque no se proporcionó un ID válido."
-        );
-      }
-    } catch (error) {
-      console.error("Error al eliminar el artículo de insumo:", error);
-    }
-  };
+  // const handleDelete = async () => {
+  //   try {
+  //     if (articuloToEdit && articuloToEdit.id) {
+  //       await articuloInsumoService.delete(
+  //         url + "articuloInsumo",
+  //         articuloToEdit.id.toString()
+  //       );
+  //       console.log("Artículo de insumo eliminado correctamente.");
+  //       handleCloseDeleteModal();
+  //       fetchArticulosInsumo();
+  //     } else {
+  //       console.error(
+  //         "No se puede eliminar el artículo de insumo porque no se proporcionó un ID válido."
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error("Error al eliminar el artículo de insumo:", error);
+  //   }
+  // };
 
   const handleCloseDeleteModal = () => {
     setDeleteModalOpen(false);
