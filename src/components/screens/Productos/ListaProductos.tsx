@@ -10,10 +10,11 @@ import TableComponent from "../../ui/Table/Table.tsx";
 //import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
 import ModalProducto from "../../ui/Modal/Producto/ModalProducto.tsx";
 import ModalEliminarProducto from "../../ui/Modal/Producto/ModalEliminarProducto.tsx";
-import {handleSearch} from "../../../utils.ts/utils.ts";
+//import {handleSearch} from "../../../utils.ts/utils.ts";
 import { CCol, CContainer, CRow } from "@coreui/react";
 import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import Sidebar from "../../ui/Sider/SideBar.tsx";
+import UnidadMedida from "../../../types/UnidadMedida.ts";
 
 interface Row {
   [key: string]: any;
@@ -109,22 +110,6 @@ export const ListaProductos = () => {
     }
   };
 
-
-  const fetchProductos = useCallback(async () => {
-    try {
-      const productos = await productoService.getAll(url + 'articuloManufacturado');
-      dispatch(setArticuloManufacturado(productos));
-      setFilterData(productos);
-    } catch (error) {
-      console.error("Error al obtener los productos:", error);
-    }
-  }, [dispatch, productoService, url]);
-
-  useEffect(() => {
-    fetchProductos();
-    onSearch('');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleAddProduct = () => {
     // Reset cuponToEdit to null when adding a new cupon
@@ -247,7 +232,7 @@ export const ListaProductos = () => {
               </Box>
               {/* Barra de búsqueda */}
               <Box sx={{ mt: 2 }}>
-                <SearchBar onSearch={onSearch} />
+                {/* <SearchBar onSearch={onSearch} /> */}
               </Box>
               {/* Componente de tabla para mostrar los artículos manufacturados */}
               <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />
