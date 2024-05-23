@@ -29,7 +29,7 @@ interface Column {
 export const ListaArticulosInsumo = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   const articuloInsumoService = new ArticuloInsumoService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [articuloToEdit, setArticuloToEdit] = useState<ArticuloInsumo | null>(
@@ -215,67 +215,66 @@ export const ListaArticulosInsumo = () => {
           <CCol xs="auto" className="sidebar">
             <Sidebar />
           </CCol>
-
           {/* Contenido principal */}
           <CCol>
-          <Box
-              component="main"
-              sx={{
-                flexGrow: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                my: 2,
-              }}
-            >
-            <Container maxWidth="lg">
-              <Box
+            <Box
+                component="main"
                 sx={{
+                  flexGrow: 1,
                   display: "flex",
-                  justifyContent: "space-between",
+                  flexDirection: "column",
                   alignItems: "center",
-                  my: 1,
+                  justifyContent: "center",
+                  my: 2,
                 }}
               >
-                <Typography variant="h5" gutterBottom>
-                  Artículos de Insumo
-                </Typography>
-                <Button
+              <Container maxWidth="lg">
+                <Box
                   sx={{
-                    bgcolor: "#9c27b0",
-                    "&:hover": {
-                      bgcolor: "#9c27b0",
-                    },
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    my: 1,
                   }}
-                  variant="contained"
-                  startIcon={<Add />}
-                  onClick={handleAddArticuloInsumo}
                 >
-                  Nuevo Artículo
-                </Button>
-              </Box>
-              <Box sx={{ mt: 2 }}>
-                {/* <SearchBar onSearch={onSearch} /> */}
-              </Box>
-              <TableComponent
-                data={filterData}
-                columns={columns}
-                handleOpenEditModal={handleOpenEditModal}
-                handleOpenDeleteModal={handleOpenDeleteModal}
-              />
-              <ModalEliminarArticuloInsumo
-                show={deleteModalOpen}
-                onHide={handleCloseDeleteModal}
-                articuloInsumo={articuloToEdit}
-                //onDelete={handleDelete}
-              />
-              <ModalArticuloInsumo
-                getArticulosInsumo={fetchArticulosInsumo}
-                articuloToEdit={articuloToEdit !== null ? articuloToEdit : undefined}
-              />
-            </Container>
-          </Box>
+                  <Typography variant="h5" gutterBottom>
+                    Artículos de Insumo
+                  </Typography>
+                  <Button
+                    sx={{
+                      bgcolor: "#9c27b0",
+                      "&:hover": {
+                        bgcolor: "#9c27b0",
+                      },
+                    }}
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={handleAddArticuloInsumo}
+                  >
+                    Nuevo Artículo
+                  </Button>
+                </Box>
+                <Box sx={{ mt: 2 }}>
+                  {/* <SearchBar onSearch={onSearch} /> */}
+                </Box>
+                <TableComponent
+                  data={filterData}
+                  columns={columns}
+                  handleOpenEditModal={handleOpenEditModal}
+                  handleOpenDeleteModal={handleOpenDeleteModal}
+                />
+                <ModalEliminarArticuloInsumo
+                  show={deleteModalOpen}
+                  onHide={handleCloseDeleteModal}
+                  articuloInsumo={articuloToEdit}
+                  //onDelete={handleDelete}
+                />
+                <ModalArticuloInsumo
+                  getArticulosInsumo={fetchArticulosInsumo}
+                  articuloToEdit={articuloToEdit !== null ? articuloToEdit : undefined}
+                />
+              </Container>
+            </Box>
           </CCol>
         </CRow>
         </CContainer>
