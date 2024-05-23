@@ -14,7 +14,7 @@ import DomicilioService from "../../../../services/DomicilioService";
 
 interface ModalSucursalProps {
   getSucursal: () => void;
-  sucursalToEdit?: Sucursal;
+  sucursalToEdit?: Sucursal | null;
   modalName: string;
 }
 
