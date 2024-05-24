@@ -193,6 +193,9 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                         denominacion: Yup.string().required('Campo requerido'),
                         precioVenta: Yup.number().required('Campo requerido'),
                         descripcion: Yup.string().required('Campo requerido'),
+                        preparacion: Yup.string().required('Campo requerido'),
+                        // categoria: Yup.number().required('Campo requerido'), // Agregar validación para la categoría
+                        // unidadMedida: Yup.string().required('Campo requerido'), // Agregar validación para la unidad de medida
                         tiempoEstimadoMinutos: Yup.number().required('Campo requerido'),
                     })}
                     initialValues={initialValues}
@@ -305,14 +308,16 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                             const categoriaId = parseInt(e.target.value);
                                             setFieldValue('categoria', categoriaId);
                                         }}
+                                        required // Agregar el atributo required para hacer que la selección sea obligatoria
                                     >
-                                        <option value="">Seleccionar Categoría</option>
+                                        <option value="" disabled>Seleccionar Categoría</option>
                                         {categorias.map((categoria) => (
                                             <option key={categoria.id} value={categoria.id}>
                                                 {categoria.denominacion}
                                             </option>
                                         ))}
                                     </Field>
+                                    <ErrorMessage name="categoria" className="error-message" component="div" />
                                 </Col>
                                 <Col>
                                     <label htmlFor="tiempoEstimadoMinutos">Tiempo Estimado (en minutos):</label>
@@ -342,14 +347,17 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                             const unidad = unidadesMedida.find((u) => u.denominacion === e.target.value);
                                             setFieldValue('unidadMedida', unidad);
                                         }}
+                                        required // Agregar el atributo required para hacer que la selección sea obligatoria
                                     >
-                                        <option value="">Seleccionar Unidad de Medida</option>
+                                        <option value="" disabled>Seleccionar Unidad de Medida</option>
                                         {unidadesMedida.map((unidad) => (
                                             <option key={unidad.id} value={unidad.denominacion}>
                                                 {unidad.denominacion}
                                             </option>
                                         ))}
                                     </Field>
+
+                                    <ErrorMessage name="unidadMedida" className="error-message" component="div" />
 
                                     <label htmlFor="imagen">Imagen:</label>
                                     <input
@@ -364,11 +372,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 </Col>
                             </Row>
                             <Row>
-                                <Col className="d-flex justify-content-between align-items-center my-2">
-                                    <label htmlFor="articuloManufacturadoDetalle">Insumos:</label>
-                                    <Button type="button" variant="primary" size="sm" onClick={() => setShowInsumoModal(true)}>Agregar Insumo</Button>
-                                </Col>
                                 <Col>
+                                    <Button type="button" variant="primary" onClick={() => setShowInsumoModal(true)}>
+                                    {productToEdit ? 'Editar Insumos' : 'Agregar insumos'}
+                                    </Button>
+                                </Col>
+                                {/* <Col>
                                     <ul className="list-group">
                                         {productToEdit ? (
                                             productToEdit.articuloManufacturadoDetalles.map((detalle, index) => (
@@ -387,7 +396,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                         )}
                                     </ul>
 
-                                </Col>
+                                </Col> */}
                             </Row>
                             <ModalInsumo
                                 insumos={insumos}
