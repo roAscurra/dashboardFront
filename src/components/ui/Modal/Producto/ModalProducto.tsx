@@ -202,9 +202,32 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                             let productoId: string | null = null;
 
                             if (productToEdit) {
+                                const respuestas = await Promise.all(detalles.map(async (detalle) => {
+                                    try {
+                                        // Verificar si el detalle ya existe
+                                        if (detalle.id) {
+                                            // Si el detalle tiene un ID, intenta actualizarlo
+                                            const respuesta2 = await articuloDetalleService.put(url + "articuloManufacturadoDetalle", detalle.id.toString(), detalle);
+                                            console.log('Detalle actualizado:', respuesta2);
+                                            return respuesta2; // Devolver la respuesta para procesamiento adicional
+                                        } else {
+                                            // Si el detalle no tiene un ID, insertarlo como nuevo
+                                            const respuesta2 = await articuloDetalleService.post(url + "articuloManufacturadoDetalle", detalle);
+                                            console.log('Nuevo detalle insertado:', respuesta2);
+                                            return respuesta2; // Devolver la respuesta para procesamiento adicional
+                                        }
+                                    } catch (error) {
+                                        console.error('Error en articuloDetalleService:', error);
+                                        throw error; // Volver a lanzar el error para asegurar que Promise.all() falle
+                                    }
+                                }));
+                            
+                                values.articuloManufacturadoDetalles = respuestas;
+                            
+                                // Actualizar el producto después de manejar los detalles
                                 await productoService.put(url + "articuloManufacturado", values.id.toString(), values);
                                 console.log('Producto actualizado correctamente.');
-                            } else {
+                            }else {
                                 console.log(detalles)
                                 // Realizar todas las solicitudes 'post' de manera concurrente y recolectar sus respuestas
                                 const respuestas = await Promise.all(detalles.map(async (detalle) => {
