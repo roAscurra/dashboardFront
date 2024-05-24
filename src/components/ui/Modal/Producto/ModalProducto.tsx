@@ -403,7 +403,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 show={showInsumoModal}
                                 handleClose={() => setShowInsumoModal(false)}
                                 handleAddInsumo={handleAddInsumo}
-                                initialDetalles={productToEdit ? productToEdit.articuloManufacturadoDetalles : articuloManufacturadoDetalles} // Pasar los detalles de los productos manufacturados al modal de ArticuloInsumo
+                                initialDetalles={productToEdit ? productToEdit.articuloManufacturadoDetalles : articuloManufacturadoDetalles || []}
                                 />
                             <Button type="submit" className="btn btn-primary mt-3">
                                 {productToEdit ? 'Guardar Cambios' : 'Agregar Producto'}
