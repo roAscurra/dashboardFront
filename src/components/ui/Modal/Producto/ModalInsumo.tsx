@@ -252,9 +252,9 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
         </Modal.Body>
   
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          {/* <Button variant="secondary" onClick={handleClose}>
             Cerrar
-          </Button>
+          </Button> */}
           <Button variant="primary" onClick={handleGuardarInsumo}>
             Guardar Insumo
           </Button>
