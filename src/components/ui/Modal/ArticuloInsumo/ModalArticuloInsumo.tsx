@@ -29,6 +29,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
 
   const initialValues: ArticuloInsumo = {
     id: articuloToEdit ? articuloToEdit.id : 0,
+    eliminado: articuloToEdit ? articuloToEdit.eliminado : false,
     denominacion: articuloToEdit ? articuloToEdit.denominacion : "",
     precioVenta: articuloToEdit ? articuloToEdit.precioVenta : 0,
     precioCompra: articuloToEdit ? articuloToEdit.precioCompra : 0,

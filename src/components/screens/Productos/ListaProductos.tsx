@@ -131,7 +131,7 @@ export const ListaProductos = () => {
       descripcion: rowData.descripcion,
       tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
       preparacion: rowData.preparacion,
-      articuloManufacturadoDetalles: rowData.articuloManufacturado,
+      articuloManufacturadoDetalles: rowData.articuloManufacturadoDetalles,
       categoria: rowData.categoria?.categoria
     });
     dispatch(toggleModal({ modalName: 'modal' }));
