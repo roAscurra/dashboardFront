@@ -193,6 +193,9 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                         denominacion: Yup.string().required('Campo requerido'),
                         precioVenta: Yup.number().required('Campo requerido'),
                         descripcion: Yup.string().required('Campo requerido'),
+                        preparacion: Yup.string().required('Campo requerido'),
+                        // categoria: Yup.number().required('Campo requerido'), // Agregar validación para la categoría
+                        // unidadMedida: Yup.string().required('Campo requerido'), // Agregar validación para la unidad de medida
                         tiempoEstimadoMinutos: Yup.number().required('Campo requerido'),
                     })}
                     initialValues={initialValues}
@@ -202,9 +205,32 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                             let productoId: string | null = null;
 
                             if (productToEdit) {
+                                const respuestas = await Promise.all(detalles.map(async (detalle) => {
+                                    try {
+                                        // Verificar si el detalle ya existe
+                                        if (detalle.id) {
+                                            // Si el detalle tiene un ID, intenta actualizarlo
+                                            const respuesta2 = await articuloDetalleService.put(url + "articuloManufacturadoDetalle", detalle.id.toString(), detalle);
+                                            console.log('Detalle actualizado:', respuesta2);
+                                            return respuesta2; // Devolver la respuesta para procesamiento adicional
+                                        } else {
+                                            // Si el detalle no tiene un ID, insertarlo como nuevo
+                                            const respuesta2 = await articuloDetalleService.post(url + "articuloManufacturadoDetalle", detalle);
+                                            console.log('Nuevo detalle insertado:', respuesta2);
+                                            return respuesta2; // Devolver la respuesta para procesamiento adicional
+                                        }
+                                    } catch (error) {
+                                        console.error('Error en articuloDetalleService:', error);
+                                        throw error; // Volver a lanzar el error para asegurar que Promise.all() falle
+                                    }
+                                }));
+                            
+                                values.articuloManufacturadoDetalles = respuestas;
+                            
+                                // Actualizar el producto después de manejar los detalles
                                 await productoService.put(url + "articuloManufacturado", values.id.toString(), values);
                                 console.log('Producto actualizado correctamente.');
-                            } else {
+                            }else {
                                 console.log(detalles)
                                 // Realizar todas las solicitudes 'post' de manera concurrente y recolectar sus respuestas
                                 const respuestas = await Promise.all(detalles.map(async (detalle) => {
@@ -282,14 +308,16 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                             const categoriaId = parseInt(e.target.value);
                                             setFieldValue('categoria', categoriaId);
                                         }}
+                                        required // Agregar el atributo required para hacer que la selección sea obligatoria
                                     >
-                                        <option value="">Seleccionar Categoría</option>
+                                        <option value="" disabled>Seleccionar Categoría</option>
                                         {categorias.map((categoria) => (
                                             <option key={categoria.id} value={categoria.id}>
                                                 {categoria.denominacion}
                                             </option>
                                         ))}
                                     </Field>
+                                    <ErrorMessage name="categoria" className="error-message" component="div" />
                                 </Col>
                                 <Col>
                                     <label htmlFor="tiempoEstimadoMinutos">Tiempo Estimado (en minutos):</label>
@@ -319,14 +347,17 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                             const unidad = unidadesMedida.find((u) => u.denominacion === e.target.value);
                                             setFieldValue('unidadMedida', unidad);
                                         }}
+                                        required // Agregar el atributo required para hacer que la selección sea obligatoria
                                     >
-                                        <option value="">Seleccionar Unidad de Medida</option>
+                                        <option value="" disabled>Seleccionar Unidad de Medida</option>
                                         {unidadesMedida.map((unidad) => (
                                             <option key={unidad.id} value={unidad.denominacion}>
                                                 {unidad.denominacion}
                                             </option>
                                         ))}
                                     </Field>
+
+                                    <ErrorMessage name="unidadMedida" className="error-message" component="div" />
 
                                     <label htmlFor="imagen">Imagen:</label>
                                     <input
@@ -341,11 +372,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 </Col>
                             </Row>
                             <Row>
-                                <Col className="d-flex justify-content-between align-items-center my-2">
-                                    <label htmlFor="articuloManufacturadoDetalle">Insumos:</label>
-                                    <Button type="button" variant="primary" size="sm" onClick={() => setShowInsumoModal(true)}>Agregar Insumo</Button>
-                                </Col>
                                 <Col>
+                                    <Button type="button" variant="primary" onClick={() => setShowInsumoModal(true)}>
+                                    {productToEdit ? 'Editar Insumos' : 'Agregar insumos'}
+                                    </Button>
+                                </Col>
+                                {/* <Col>
                                     <ul className="list-group">
                                         {productToEdit ? (
                                             productToEdit.articuloManufacturadoDetalles.map((detalle, index) => (
@@ -364,7 +396,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                         )}
                                     </ul>
 
-                                </Col>
+                                </Col> */}
                             </Row>
                             <ModalInsumo
                                 insumos={insumos}

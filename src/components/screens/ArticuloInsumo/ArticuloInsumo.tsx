@@ -79,6 +79,7 @@ export const ListaArticulosInsumo = () => {
   const handleOpenDeleteModal = (rowData: Row) => {
     setArticuloToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
@@ -118,13 +119,26 @@ export const ListaArticulosInsumo = () => {
 
 
   const handleAddArticuloInsumo = () => {
+    // Verificar si el insumo ya existe en la lista mostrada
+    const insumoExistente = filterData.find((articulo) => articulo.id === articuloToEdit?.id);
+    
+    // Si el insumo existe, no permitir agregarlo
+    if (insumoExistente) {
+      // Mostrar un mensaje de error o realizar alguna otra acción, como alertar al usuario
+      console.error("No se puede agregar un insumo que ya existe.");
+      return;
+    }
+    
+    // Si el insumo no existe, abrir el modal para agregar un nuevo artículo
     setArticuloToEdit(null);
     dispatch(toggleModal({ modalName: "modal" }));
   };
+  
 
   const handleOpenEditModal = (rowData: Row) => {
     setArticuloToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
