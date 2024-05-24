@@ -56,15 +56,24 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
   };
 
   const handleAgregarInsumos = () => {
-    const newDetalles = selectedInsumos.map((insumo) => ({
-      cantidad: 1,
-      eliminado: false,
-      articuloInsumo: insumo,
-      id: 0,
-    }));
-    setDetalles([...detalles, ...newDetalles]);
-    setSelectedInsumos([]);
+    const existingInsumos = selectedInsumos.filter(insumo => detalles.some(detalle => detalle.articuloInsumo.id === insumo.id));
+    
+    if (existingInsumos.length > 0) {
+      alert(`Los siguientes insumos ya están agregados: ${existingInsumos.map(insumo => insumo.denominacion).join(", ")}`);
+    } else {
+      const newDetalles = selectedInsumos.map((insumo) => ({
+        cantidad: 1,
+        eliminado: false,
+        articuloInsumo: insumo,
+        id: 0,
+      }));
+    
+      setDetalles([...detalles, ...newDetalles]);
+      setSelectedInsumos([]);
+    }
   };
+  
+  
 
   const handleCantidadChange = (
     e: React.ChangeEvent<HTMLInputElement>,
