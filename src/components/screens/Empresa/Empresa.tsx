@@ -7,12 +7,10 @@ import {
   CardMedia,
   CardContent,
   Grid,
+  CardActions,
+  Button,
 } from "@mui/material";
-// import { Box, Typography, Button, Container, IconButton, Card, CardMedia, CardContent, CardActions, Grid } from "@mui/material";
-// import { Add } from "@mui/icons-material";
 import { useAppDispatch } from "../../../hooks/redux";
-// import {useAppSelector} from "../../../hooks/redux";
-// import SearchBar from "../../ui/SearchBar/SearchBar";
 import { setEmpresa } from "../../../redux/slices/Empresa";
 import ModalEmpresa from "../../ui/Modal/Empresa/ModalEmpresa.tsx";
 import { toggleModal } from "../../../redux/slices/Modal";
@@ -20,12 +18,6 @@ import EmpresaService from "../../../services/EmpresaService";
 import Empresa from "../../../types/Empresa";
 import ModalEliminarEmpresa from "../../ui/Modal/Empresa/ModalEliminarEmpresa.tsx";
 import { Link } from "react-router-dom";
-// import ModalSucursal from "../../ui/Modal/Sucursal/ModalSucursal.tsx";
-// import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
-// import {handleSearch} from "../../../utils.ts/utils.ts";
-// import DeleteIcon from '@mui/icons-material/Delete';
-// import EditIcon from '@mui/icons-material/Edit';
-
 interface Row {
   [key: string]: any;
 }
@@ -33,14 +25,10 @@ interface Row {
 export const ListaEmpresa = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const empresaService = new EmpresaService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [empresaToEdit, setEmpresaToEdit] = useState<Empresa | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  // const globalEmpresas = useAppSelector(
-  //     (state) => state.empresas.data
-  // );
 
   const fetchImages = useCallback(
     async (empresaId: string) => {
@@ -51,14 +39,10 @@ export const ListaEmpresa = () => {
         );
 
         if (Array.isArray(response) && response.length > 0) {
-          // console.log('Get successful:', response.map(image => image.url));
-          return response[0].url; // Devuelve la URL de la primera imagen
+          return response[0].url;
         }
-        // Si no se encuentra ninguna imagen, devuelve una imagen placeholder
         return "https://via.placeholder.com/150";
       } catch (error) {
-        // console.error('Error fetching images:', error);
-        // En caso de error, devuelve una imagen placeholder
         return "https://via.placeholder.com/150";
       }
     },
@@ -77,49 +61,28 @@ export const ListaEmpresa = () => {
       dispatch(setEmpresa(empresasConImagenes));
       setFilterData(empresasConImagenes);
     } catch (error) {
-      // console.error("Error al obtener las empresas:", error);
+      console.error("Error al obtener las empresas:", error);
     }
   }, [dispatch, empresaService, url, fetchImages]);
 
   useEffect(() => {
     fetchEmpresa();
-    // onSearch('');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // Función para abrir la modal de eliminación
-  // const handleOpenDeleteModal = (rowData: Row) => {
-  //   setEmpresaToEdit({
-  //     id: rowData.id,
-  //     eliminado: rowData.eliminado,
-  //     nombre: rowData.nombre,
-  //     razonSocial: rowData.razonSocial,
-  //     cuil: rowData.cuil,
-  //     imagen: rowData.imagen.url
-  //   });
-  //   setDeleteModalOpen(true); // Utiliza el estado directamente para abrir la modal de eliminación
-  // };
-  const handleDelete = async () => {
-    try {
-      if (empresaToEdit && empresaToEdit.id) {
-        await empresaService.delete(
-          url + "empresa",
-          empresaToEdit.id.toString()
-        );
-        console.log("Se ha eliminado correctamente.");
-        handleCloseDeleteModal();
-        fetchEmpresa();
-      } else {
-        console.error(
-          "No se puede eliminar la empresa porque no se proporcionó un ID válido."
-        );
-      }
-    } catch (error) {
-      console.error("Error al eliminar la empresa:", error);
-    }
+
+  const handleOpenDeleteModal = (rowData: Row) => {
+    setEmpresaToEdit({
+      id: rowData.id,
+      eliminado: rowData.eliminado,
+      nombre: rowData.nombre,
+      razonSocial: rowData.razonSocial,
+      cuil: rowData.cuil,
+      imagen: rowData.imagen.url
+    });
+    setDeleteModalOpen(true);
   };
 
   const handleCloseDeleteModal = () => {
-    setDeleteModalOpen(false); // Utiliza el estado directamente para cerrar la modal de eliminación
+    setDeleteModalOpen(false);
   };
 
   const handleAddEmpresa = () => {
@@ -127,22 +90,17 @@ export const ListaEmpresa = () => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
-  // Función para abrir la modal de edición
-  // const handleOpenEditModal = (rowData: Row) => {
-  //   setEmpresaToEdit({
-  //     id: rowData.id,
-  //     eliminado: rowData.eliminado,
-  //     nombre: rowData.nombre,
-  //     razonSocial: rowData.razonSocial,
-  //     cuil: rowData.cuil,
-  //     imagen: rowData.imagen.url
-  //   });
-  //   dispatch(toggleModal({ modalName: 'modal' }));
-  // };
-
-  // const onSearch = (query: string) => {
-  //   handleSearch(query, globalEmpresas, setFilterData);
-  // };
+  const handleOpenEditModal = (rowData: Row) => {
+    setEmpresaToEdit({
+      id: rowData.id,
+      eliminado: rowData.eliminado,
+      nombre: rowData.nombre,
+      razonSocial: rowData.razonSocial,
+      cuil: rowData.cuil,
+      imagen: rowData.imagen
+    });
+    dispatch(toggleModal({ modalName: 'modal' }));
+  };
 
   return (
     <Box
@@ -157,17 +115,6 @@ export const ListaEmpresa = () => {
       }}
     >
       <Container maxWidth="lg">
-        {/* <Box sx={{ display: "flex",ustifyContent: "space-between",alignItems: "center",my: 1,}}>
-          <Typography variant="h5" gutterBottom>
-            Empresas
-          </Typography>
-          <Button sx={{bgcolor: "#9c27b0","&:hover": {bgcolor: "#9c27b0",},}} variant="contained" startIcon={<Add />} onClick={handleAddEmpresa}>
-            Empresa
-          </Button>
-        </Box>
-        <Box sx={{ mt: 2 }}>
-          <SearchBar onSearch={onSearch} />
-        </Box>  */}
         <Grid
           container
           spacing={4}
@@ -178,47 +125,54 @@ export const ListaEmpresa = () => {
         >
           {filterData.map((empresa) => {
             return (
-              <Grid item xs={3} sm={6} md={4}>
-                <Link to={`/sucursal/${empresa.id}`}>
-                  <Card sx={{ maxWidth: 345 }}>
-                    <CardMedia
-                      component="img"
-                      alt={empresa.nombre}
-                      height="140"
-                      image={empresa.imagen}
-                    />
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
-                        {empresa.nombre}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {empresa.denominacion}
-                      </Typography>
-                    </CardContent>
-                    {/* <CardActions>
-                      <IconButton onClick={() => handleOpenDeleteModal(empresa)} aria-label="delete">
-                        <DeleteIcon />
-                      </IconButton>
-                      <IconButton onClick={() => handleOpenEditModal(empresa)} aria-label="delete">
-                        <EditIcon />
-                      </IconButton>
-                    </CardActions> */}
-                  </Card>
-                </Link>
+
+              <Grid item xs={12} sm={6} md={4} key={empresa.id}>
+                <Card sx={{ maxWidth: 345 }}>
+                  <CardMedia
+                    component="img"
+                    alt={empresa.nombre}
+                    height="140"
+                    image={empresa.imagen}
+                    sx={{ objectFit: 'contain', borderRadius: '50%' }}
+                  />
+                  <CardContent>
+                  <Link to={`/sucursal/${empresa.id}`}>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {empresa.nombre}
+                    </Typography>
+                    </Link>
+                    <Typography variant="body2" color="text.secondary">
+                      {empresa.denominacion}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      onClick={() => handleOpenDeleteModal(empresa)}
+                    >
+                      Eliminar
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => handleOpenEditModal(empresa)}
+                    >
+                      Editar
+                    </Button>
+                  </CardActions>
+                </Card>
               </Grid>
             );
           })}
 
-          {/* Tarjeta vacía */}
-          <Grid item xs={3} sm={6} md={4} onClick={handleAddEmpresa}>
-  <Card sx={{ maxWidth: 345 }}>
-    <CardMedia
-      component="img"
-      alt={"Crear empresa"}
-      height="140"
-      image={"https://objetivoligar.com/wp-content/uploads/2017/03/blank-profile-picture-973460_1280-768x768.jpg"}
-      sx={{ objectFit: 'contain', borderRadius: '50%' }} // Agregar borderRadius para redondear la imagen
-    />
+          <Grid item xs={12} sm={6} md={4} onClick={handleAddEmpresa}>
+            <Card sx={{ maxWidth: 345 }}>
+              <CardMedia
+                component="img"
+                alt={"Crear empresa"}
+                height="140"
+                image={"https://objetivoligar.com/wp-content/uploads/2017/03/blank-profile-picture-973460_1280-768x768.jpg"}
+                sx={{ objectFit: 'contain', borderRadius: '50%' }}
+              />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                   Agregar Empresa
@@ -232,7 +186,7 @@ export const ListaEmpresa = () => {
           show={deleteModalOpen}
           onHide={handleCloseDeleteModal}
           empresa={empresaToEdit}
-          onDelete={handleDelete}
+          //onDelete={fetchEmpresa}
         />
         <ModalEmpresa
           modalName="modal"

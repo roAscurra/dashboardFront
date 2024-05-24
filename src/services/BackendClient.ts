@@ -98,7 +98,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
       await this.request(path, options);
       console.log('Eliminación lógica realizada correctamente.');
     } catch (error) {
-      console.error('Error al eliminar el artículo de insumo:', error);
+      console.error('Error al eliminar:', error);
       throw error;
     }
   }

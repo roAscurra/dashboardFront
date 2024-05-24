@@ -7,7 +7,6 @@ interface ModalEliminarEmpresaProps {
   show: boolean;
   onHide: () => void;
   empresa: Empresa | null;
-  onDelete: () => void;
 }
 
 const ModalEliminarEmpresa: React.FC<ModalEliminarEmpresaProps> = ({ show, onHide, empresa }) => {
@@ -17,7 +16,7 @@ const ModalEliminarEmpresa: React.FC<ModalEliminarEmpresaProps> = ({ show, onHid
     const handleDelete = async () => {
       try {
         if (empresa && empresa.id) {
-          await empresaService.delete(url + 'empresas', empresa.id.toString());
+          await empresaService.delete(url + 'empresa',empresa.id.toString());
           console.log('Se ha eliminado correctamente.');
           onHide(); // Cerramos el modal
         } else {
