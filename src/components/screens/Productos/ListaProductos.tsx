@@ -41,6 +41,7 @@ export const ListaProductos = () => {
   const globalArticuloManufacturado = useAppSelector(
       (state) => state.articuloManufacturado.data
   );
+  
 
   const fetchImages = useCallback(async (productoId: string) =>{
     try{
