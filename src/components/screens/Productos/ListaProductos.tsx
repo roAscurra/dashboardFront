@@ -57,7 +57,7 @@ export const ListaProductos = () => {
 
   const fetchProductos = useCallback(async () => {
     try {
-      const productos = await productoService.getAll(url + 'articuloManufacturado');
+      const productos = (await productoService.getAll(url + 'articuloManufacturado')).filter((v) => !v.eliminado);
       const productoConImagenes = await Promise.all(
         productos.map(async(product) => {
           const imagenUrl = await fetchImages(product.id.toString());
@@ -96,7 +96,11 @@ export const ListaProductos = () => {
   };
 
   const handleCloseDeleteModal = () => {
+
+    console.log(deleteModalOpen)
+
     setDeleteModalOpen(false); // Utiliza el estado directamente para cerrar la modal de eliminación
+    fetchProductos();
   };
 
   const handleDelete = async () => {

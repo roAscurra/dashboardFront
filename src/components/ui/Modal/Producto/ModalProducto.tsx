@@ -306,7 +306,9 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                         className="form-control"
                                         onChange={(e: { target: { value: string; }; }) => {
                                             const categoriaId = parseInt(e.target.value);
-                                            setFieldValue('categoria', categoriaId);
+                                            const categoria = categorias.find((v) => v.id === categoriaId);
+
+                                            setFieldValue('categoria', categoria);
                                         }}
                                         required // Agregar el atributo required para hacer que la selección sea obligatoria
                                     >
