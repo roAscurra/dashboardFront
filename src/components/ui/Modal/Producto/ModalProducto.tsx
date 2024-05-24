@@ -99,7 +99,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
             esInsumo: false
         }
     };
-    
+    console.log(productToEdit)
     const modal = useAppSelector((state) => state.modal.modal);
     const dispatch = useAppDispatch();
 
@@ -142,7 +142,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
             console.error('Error al obtener las categorias:', error);
         }
     };
-console.log(categorias)
     useEffect(() => {
         fetchArticuloInsumo();
         fetchUnidadesMedida();
@@ -174,6 +173,7 @@ console.log(categorias)
     //     console.log("Detalles a guardar:", detalles);
     //     setDetalles(detalles); // Guardar los detalles en el estado
     // };
+    
     return (
         <Modal
         id={'modal'}
@@ -347,13 +347,23 @@ console.log(categorias)
                                 </Col>
                                 <Col>
                                     <ul className="list-group">
-                                        {articuloManufacturadoDetalles.map((detalle, index) => (
-                                            <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>{detalle.articuloInsumo.denominacion}</span>
-                                                <span>Cantidad: {detalle.cantidad}</span>
-                                            </li>
-                                        ))}
+                                        {productToEdit ? (
+                                            productToEdit.articuloManufacturadoDetalles.map((detalle, index) => (
+                                                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>{detalle.articuloInsumo.denominacion}</span>
+                                                    <span>Cantidad: {detalle.cantidad}</span>
+                                                </li>
+                                            ))
+                                        ) : (
+                                            articuloManufacturadoDetalles.map((detalle, index) => (
+                                                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>{detalle.articuloInsumo.denominacion}</span>
+                                                    <span>Cantidad: {detalle.cantidad}</span>
+                                                </li>
+                                            ))
+                                        )}
                                     </ul>
+
                                 </Col>
                             </Row>
                             <ModalInsumo
@@ -361,8 +371,8 @@ console.log(categorias)
                                 show={showInsumoModal}
                                 handleClose={() => setShowInsumoModal(false)}
                                 handleAddInsumo={handleAddInsumo}
-                                initialDetalles={articuloManufacturadoDetalles}
-                            />
+                                initialDetalles={productToEdit ? productToEdit.articuloManufacturadoDetalles : articuloManufacturadoDetalles} // Pasar los detalles de los productos manufacturados al modal de ArticuloInsumo
+                                />
                             <Button type="submit" className="btn btn-primary mt-3">
                                 {productToEdit ? 'Guardar Cambios' : 'Agregar Producto'}
                             </Button>
