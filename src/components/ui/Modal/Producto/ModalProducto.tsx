@@ -50,56 +50,65 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     const initialValues: ArticuloManufacturado = {
         id: productToEdit ? productToEdit.id : 0,
         eliminado: productToEdit ? productToEdit.eliminado : false,
-        denominacion: productToEdit ? productToEdit.denominacion : '',
-        precioVenta: productToEdit ? productToEdit.precioVenta : 0,
-        imagenes: productToEdit ? productToEdit.imagenes.map((imagen: any) => imagen.denominacion) : [],
-        unidadMedida: productToEdit && productToEdit.unidadMedida
+        denominacion: productToEdit?.denominacion || '',
+        precioVenta: productToEdit?.precioVenta || 0,
+        imagenes: productToEdit?.imagenes?.map((imagen: any) => imagen.denominacion) || [],
+        unidadMedida: productToEdit?.unidadMedida
             ? { ...productToEdit.unidadMedida }
             : {
                 id: 0,
                 eliminado: false,
                 denominacion: '',
             },
-        descripcion: productToEdit ? productToEdit.descripcion : '',
-        tiempoEstimadoMinutos: productToEdit ? productToEdit.tiempoEstimadoMinutos : 0,
-        preparacion: productToEdit ? productToEdit.preparacion : '',
-        articuloManufacturadoDetalles: productToEdit && productToEdit.articuloManufacturadoDetalles
-        ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({
-            id: 0, // Asignar un ID temporal si el detalle no tiene uno
-            cantidad: detalle.cantidad,
-            eliminado: detalle.eliminado,
-            articuloInsumo: {
-                id: detalle.articuloInsumo.id,
+        descripcion: productToEdit?.descripcion || '',
+        tiempoEstimadoMinutos: productToEdit?.tiempoEstimadoMinutos || 0,
+        preparacion: productToEdit?.preparacion || '',
+        articuloManufacturadoDetalles: productToEdit?.articuloManufacturadoDetalles
+            ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({
+                id: 0,
+                cantidad: detalle.cantidad,
                 eliminado: detalle.eliminado,
-                denominacion: detalle.articuloInsumo.denominacion,
-                precioVenta: detalle.articuloInsumo.precioVenta,
-                unidadMedida: detalle.unidadMedida,
-                precioCompra: detalle.precioCompra,
-                stockActual: detalle.stockActual,
-                stockMaximo: detalle.stockMaximo,
-                esParaElaborar: detalle.esParaElaborar,
-                categoria: {
-                    id: detalle.articuloInsumo.categoria.id, // Asegúrate de que id está presente
-                    eliminado: detalle.articuloInsumo.categoria.eliminado,
-                    denominacion: detalle.articuloInsumo.categoria.denominacion,
-                    esInsumo: detalle.articuloInsumo.categoria.esInsumo
-                }
+                articuloInsumo: {
+                    id: detalle.articuloInsumo.id,
+                    eliminado: detalle.eliminado,
+                    denominacion: detalle.articuloInsumo.denominacion,
+                    precioVenta: detalle.articuloInsumo.precioVenta,
+                    unidadMedida: detalle.unidadMedida,
+                    precioCompra: detalle.precioCompra,
+                    stockActual: detalle.stockActual,
+                    stockMaximo: detalle.stockMaximo,
+                    esParaElaborar: detalle.esParaElaborar,
+                    categoria: detalle.articuloInsumo.categoria
+                ? {
+                        id: detalle.articuloInsumo.categoria.id,
+                        eliminado: detalle.articuloInsumo.categoria.eliminado,
+                        denominacion: detalle.articuloInsumo.categoria.denominacion,
+                        esInsumo: detalle.articuloInsumo.categoria.esInsumo,
+                    }: {
+                        id: 0,
+                        eliminado: false,
+                        denominacion: '',
+                        esInsumo: false,
+                    },
+                },
+            }))
+            : [],
+        categoria: productToEdit?.categoria
+            ? {
+                id: productToEdit.categoria.id,
+                eliminado: productToEdit.categoria.eliminado,
+                denominacion: productToEdit.categoria.denominacion,
+                esInsumo: productToEdit.categoria.esInsumo,
             }
-        }))
-        : [],
-        categoria: productToEdit && productToEdit.categoria ? {
-            id: productToEdit.categoria.id,
-            eliminado: productToEdit.categoria.eliminado,
-            denominacion: productToEdit.categoria.denominacion,
-            esInsumo: productToEdit.categoria.esInsumo
-        } : {
-            id: 0,
-            eliminado: false,
-            denominacion: '',
-            esInsumo: false
-        }
+            : {
+                id: 0,
+                eliminado: false,
+                denominacion: '',
+                esInsumo: false,
+            },
     };
-    console.log(productToEdit)
+
+    //console.log(productToEdit)
     const modal = useAppSelector((state) => state.modal.modal);
     const dispatch = useAppDispatch();
 
@@ -157,7 +166,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
             setModalColor(''); // Si no, dejar el color de fondo predeterminado
         }
     }, [showInsumoModal]);
-    
+
     const handleAddInsumo = (detalles: ArticuloManufacturadoDetalle[]) => {
         console.log("Detalles a guardar:", detalles);
         setArticuloManufacturadoDetalles(detalles);
@@ -173,21 +182,21 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     //     console.log("Detalles a guardar:", detalles);
     //     setDetalles(detalles); // Guardar los detalles en el estado
     // };
-    
+
     return (
         <Modal
-        id={'modal'}
-        show={modal}
-        onHide={handleClose}
-        size={'lg'}
-        backdrop="static"
-        keyboard={false}
-        centered
+            id={'modal'}
+            show={modal}
+            onHide={handleClose}
+            size={'lg'}
+            backdrop="static"
+            keyboard={false}
+            centered
         >
-            <Modal.Header closeButton  style={{ backgroundColor: modalColor }}>
+            <Modal.Header closeButton style={{ backgroundColor: modalColor }}>
                 <Modal.Title>{productToEdit ? 'Editar Producto' : 'Agregar Producto'}</Modal.Title>
             </Modal.Header>
-            <Modal.Body  style={{ backgroundColor: modalColor }}>
+            <Modal.Body style={{ backgroundColor: modalColor }}>
                 <Formik
                     validationSchema={Yup.object({
                         denominacion: Yup.string().required('Campo requerido'),
@@ -224,13 +233,13 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                         throw error; // Volver a lanzar el error para asegurar que Promise.all() falle
                                     }
                                 }));
-                            
+
                                 values.articuloManufacturadoDetalles = respuestas;
-                            
+
                                 // Actualizar el producto después de manejar los detalles
                                 await productoService.put(url + "articuloManufacturado", values.id.toString(), values);
                                 console.log('Producto actualizado correctamente.');
-                            }else {
+                            } else {
                                 console.log(detalles)
                                 // Realizar todas las solicitudes 'post' de manera concurrente y recolectar sus respuestas
                                 const respuestas = await Promise.all(detalles.map(async (detalle) => {
@@ -374,7 +383,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                             <Row>
                                 <Col>
                                     <Button type="button" variant="primary" onClick={() => setShowInsumoModal(true)}>
-                                    {productToEdit ? 'Editar Insumos' : 'Agregar insumos'}
+                                        {productToEdit ? 'Editar Insumos' : 'Agregar insumos'}
                                     </Button>
                                 </Col>
                                 {/* <Col>
@@ -404,7 +413,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 handleClose={() => setShowInsumoModal(false)}
                                 handleAddInsumo={handleAddInsumo}
                                 initialDetalles={productToEdit ? productToEdit.articuloManufacturadoDetalles : articuloManufacturadoDetalles || []}
-                                />
+                            />
                             <Button type="submit" className="btn btn-primary mt-3">
                                 {productToEdit ? 'Guardar Cambios' : 'Agregar Producto'}
                             </Button>
