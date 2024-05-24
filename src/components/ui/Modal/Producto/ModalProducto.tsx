@@ -6,17 +6,20 @@ import * as Yup from 'yup';
 import ArticuloManufacturadoService from "../../../../services/ArticuloManufacturadoService.ts";
 import UnidadMedidaService from "../../../../services/UnidadMedidaService.ts";
 // import ArticuloInsumoService from "../../../../services/ArticuloInsumoService.ts";
-import CategoriaService from "../../../../services/CategoriaService.ts";
+// import CategoriaService from "../../../../services/CategoriaService.ts";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux.ts";
 import { toggleModal } from "../../../../redux/slices/Modal.ts";
 import ArticuloManufacturado from "../../../../types/ArticuloManufacturado.ts";
 import UnidadMedida from "../../../../types/UnidadMedida.ts";
 // import ArticuloInsumoType from "../../../../types/ArticuloInsumoType.ts";
-import Categoria from "../../../../types/Categoria.ts";
+// import Categoria from "../../../../types/Categoria.ts";
 import ModalInsumo from './ModalInsumo.tsx';
 import ArticuloManufacturadoDetalle from '../../../../types/ArticuloManufacturadoDetalle.ts';
 import ArticuloInsumoShortDto from '../../../../types/dto/ArticuloInsumoShortDto.ts';
 import ArticuloInsumoShortService from '../../../../services/dtos/ArticuloInsumoShortService.ts';
+import CategoriaShorService from '../../../../services/dtos/CategoriaShorService.ts';
+import CategoriaShorDto from '../../../../types/dto/CategoriaShorDto.ts';
+import ArticuloManufacturadoDetalleService from '../../../../services/ArticuloManufacturadoDetalleService.ts';
 
 interface ModalProductProps {
     getProducts: () => void;
@@ -29,11 +32,14 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     // const insumoService = new ArticuloInsumoService();
     const insumoService = new ArticuloInsumoShortService();
 
-    const categoriaService = new CategoriaService();
+    // const categoriaService = new CategoriaService();
+    const categoriaService = new CategoriaShorService();
+    const articuloDetalleService = new ArticuloManufacturadoDetalleService();
+
     // const articuloManufacturadoDetalles = new ArticuloManufacturadoDetalleService();
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
     const [insumos, setInsumos] = useState<ArticuloInsumoShortDto[]>([]);
-    const [categorias, setCategoria] = useState<Categoria[]>([]);
+    const [categorias, setCategoria] = useState<CategoriaShorDto[]>([]);
     // const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
     const [showInsumoModal, setShowInsumoModal] = useState(false);
     const [file, setFile] = useState<File | null>(null);
@@ -66,21 +72,34 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                 id: detalle.articuloInsumo.id,
                 eliminado: detalle.eliminado,
                 denominacion: detalle.articuloInsumo.denominacion,
-                precioVenta: detalle.precioVenta,
+                precioVenta: detalle.articuloInsumo.precioVenta,
                 unidadMedida: detalle.unidadMedida,
                 precioCompra: detalle.precioCompra,
                 stockActual: detalle.stockActual,
                 stockMaximo: detalle.stockMaximo,
                 esParaElaborar: detalle.esParaElaborar,
-                categoria: detalle.categoria
-                // Otros campos necesarios del objeto ArticuloInsumoShortDto
+                categoria: {
+                    id: detalle.articuloInsumo.categoria.id, // Asegúrate de que id está presente
+                    eliminado: detalle.articuloInsumo.categoria.eliminado,
+                    denominacion: detalle.articuloInsumo.categoria.denominacion,
+                    esInsumo: detalle.articuloInsumo.categoria.esInsumo
+                }
             }
         }))
         : [],
-        categoria: productToEdit && productToEdit.categoria ? productToEdit.categoria :
-            { id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategorias: [], sucursales: [] }
+        categoria: productToEdit && productToEdit.categoria ? {
+            id: productToEdit.categoria.id,
+            eliminado: productToEdit.categoria.eliminado,
+            denominacion: productToEdit.categoria.denominacion,
+            esInsumo: productToEdit.categoria.esInsumo
+        } : {
+            id: 0,
+            eliminado: false,
+            denominacion: '',
+            esInsumo: false
+        }
     };
-
+    
     const modal = useAppSelector((state) => state.modal.modal);
     const dispatch = useAppDispatch();
 
@@ -123,7 +142,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
             console.error('Error al obtener las categorias:', error);
         }
     };
-
+console.log(categorias)
     useEffect(() => {
         fetchArticuloInsumo();
         fetchUnidadesMedida();
@@ -146,6 +165,9 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
         setDetalles(detalles); // Guardar los detalles en el estado
 
     };
+    useEffect(() => {
+        setDetalles(productToEdit?.articuloManufacturadoDetalles || []);
+    }, [productToEdit]);
     const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
 
     // const handleAddD = (detalles: ArticuloManufacturadoDetalle[]) => {
@@ -183,7 +205,23 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 await productoService.put(url + "articuloManufacturado", values.id.toString(), values);
                                 console.log('Producto actualizado correctamente.');
                             } else {
-                                values.articuloManufacturadoDetalles = detalles;
+                                console.log(detalles)
+                                // Realizar todas las solicitudes 'post' de manera concurrente y recolectar sus respuestas
+                                const respuestas = await Promise.all(detalles.map(async (detalle) => {
+                                    try {
+                                        // Realizar la solicitud 'post' para cada detalle
+                                        const respuesta2 = await articuloDetalleService.post(url + "articuloManufacturadoDetalle", detalle);
+                                        console.log('Respuesta:', respuesta2);
+                                        return respuesta2; // Devolver la respuesta para procesamiento adicional
+                                    } catch (error) {
+                                        console.error('Error en articuloDetalleService.post():', error);
+                                        throw error; // Volver a lanzar el error para asegurar que Promise.all() falle
+                                    }
+                                }));
+                                // Una vez que se recolectan todas las respuestas, actualizar el objeto 'values'
+                                values.articuloManufacturadoDetalles = respuestas;
+                                console.log('Valores actualizados:', values);
+
                                 console.log(values.articuloManufacturadoDetalles)
                                 const response = await productoService.post(url + "articuloManufacturado", values);
                                 console.log('Producto agregado correctamente.', values);
