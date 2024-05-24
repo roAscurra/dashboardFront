@@ -5,16 +5,21 @@ import * as Yup from 'yup';
 // import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloManufacturadoDetalleService.ts";
 import ArticuloManufacturadoService from "../../../../services/ArticuloManufacturadoService.ts";
 import UnidadMedidaService from "../../../../services/UnidadMedidaService.ts";
-import ArticuloInsumoService from "../../../../services/ArticuloInsumoService.ts";
-import CategoriaService from "../../../../services/CategoriaService.ts";
+// import ArticuloInsumoService from "../../../../services/ArticuloInsumoService.ts";
+// import CategoriaService from "../../../../services/CategoriaService.ts";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux.ts";
 import { toggleModal } from "../../../../redux/slices/Modal.ts";
 import ArticuloManufacturado from "../../../../types/ArticuloManufacturado.ts";
 import UnidadMedida from "../../../../types/UnidadMedida.ts";
-import ArticuloInsumoType from "../../../../types/ArticuloInsumoType.ts";
-import Categoria from "../../../../types/Categoria.ts";
+// import ArticuloInsumoType from "../../../../types/ArticuloInsumoType.ts";
+// import Categoria from "../../../../types/Categoria.ts";
 import ModalInsumo from './ModalInsumo.tsx';
 import ArticuloManufacturadoDetalle from '../../../../types/ArticuloManufacturadoDetalle.ts';
+import ArticuloInsumoShortDto from '../../../../types/dto/ArticuloInsumoShortDto.ts';
+import ArticuloInsumoShortService from '../../../../services/dtos/ArticuloInsumoShortService.ts';
+import CategoriaShorService from '../../../../services/dtos/CategoriaShorService.ts';
+import CategoriaShorDto from '../../../../types/dto/CategoriaShorDto.ts';
+import ArticuloManufacturadoDetalleService from '../../../../services/ArticuloManufacturadoDetalleService.ts';
 
 interface ModalProductProps {
     getProducts: () => void;
@@ -24,17 +29,23 @@ interface ModalProductProps {
 const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit }) => {
     const productoService = new ArticuloManufacturadoService();
     const unidadService = new UnidadMedidaService();
-    const insumoService = new ArticuloInsumoService();
-    const categoriaService = new CategoriaService();
+    // const insumoService = new ArticuloInsumoService();
+    const insumoService = new ArticuloInsumoShortService();
+
+    // const categoriaService = new CategoriaService();
+    const categoriaService = new CategoriaShorService();
+    const articuloDetalleService = new ArticuloManufacturadoDetalleService();
+
     // const articuloManufacturadoDetalles = new ArticuloManufacturadoDetalleService();
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
-    const [insumos, setInsumos] = useState<ArticuloInsumoType[]>([]);
-    const [categorias, setCategoria] = useState<Categoria[]>([]);
+    const [insumos, setInsumos] = useState<ArticuloInsumoShortDto[]>([]);
+    const [categorias, setCategoria] = useState<CategoriaShorDto[]>([]);
     // const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
     const [showInsumoModal, setShowInsumoModal] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [articuloManufacturadoDetalles, setArticuloManufacturadoDetalles] = useState<ArticuloManufacturadoDetalle[]>(productToEdit?.articuloManufacturadoDetalles || []);
     const url = import.meta.env.VITE_API_URL;
+    const [modalColor, setModalColor] = useState<string>(''); // Estado para controlar el color de fondo de la modal
 
     const initialValues: ArticuloManufacturado = {
         id: productToEdit ? productToEdit.id : 0,
@@ -53,12 +64,42 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
         tiempoEstimadoMinutos: productToEdit ? productToEdit.tiempoEstimadoMinutos : 0,
         preparacion: productToEdit ? productToEdit.preparacion : '',
         articuloManufacturadoDetalles: productToEdit && productToEdit.articuloManufacturadoDetalles
-            ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({ ...detalle }))
-            : [],
-        categoria: productToEdit && productToEdit.categoria ? productToEdit.categoria :
-            { id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategorias: [], sucursales: [] }
+        ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({
+            id: 0, // Asignar un ID temporal si el detalle no tiene uno
+            cantidad: detalle.cantidad,
+            eliminado: detalle.eliminado,
+            articuloInsumo: {
+                id: detalle.articuloInsumo.id,
+                eliminado: detalle.eliminado,
+                denominacion: detalle.articuloInsumo.denominacion,
+                precioVenta: detalle.articuloInsumo.precioVenta,
+                unidadMedida: detalle.unidadMedida,
+                precioCompra: detalle.precioCompra,
+                stockActual: detalle.stockActual,
+                stockMaximo: detalle.stockMaximo,
+                esParaElaborar: detalle.esParaElaborar,
+                categoria: {
+                    id: detalle.articuloInsumo.categoria.id, // Asegúrate de que id está presente
+                    eliminado: detalle.articuloInsumo.categoria.eliminado,
+                    denominacion: detalle.articuloInsumo.categoria.denominacion,
+                    esInsumo: detalle.articuloInsumo.categoria.esInsumo
+                }
+            }
+        }))
+        : [],
+        categoria: productToEdit && productToEdit.categoria ? {
+            id: productToEdit.categoria.id,
+            eliminado: productToEdit.categoria.eliminado,
+            denominacion: productToEdit.categoria.denominacion,
+            esInsumo: productToEdit.categoria.esInsumo
+        } : {
+            id: 0,
+            eliminado: false,
+            denominacion: '',
+            esInsumo: false
+        }
     };
-
+    
     const modal = useAppSelector((state) => state.modal.modal);
     const dispatch = useAppDispatch();
 
@@ -101,7 +142,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
             console.error('Error al obtener las categorias:', error);
         }
     };
-
+console.log(categorias)
     useEffect(() => {
         fetchArticuloInsumo();
         fetchUnidadesMedida();
@@ -109,25 +150,44 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    useEffect(() => {
+        // Si la modal de insumos está abierta, establecer el color de fondo de la modal de producto
+        if (showInsumoModal) {
+            setModalColor('#f0f0f0');
+        } else {
+            setModalColor(''); // Si no, dejar el color de fondo predeterminado
+        }
+    }, [showInsumoModal]);
+    
     const handleAddInsumo = (detalles: ArticuloManufacturadoDetalle[]) => {
         console.log("Detalles a guardar:", detalles);
         setArticuloManufacturadoDetalles(detalles);
-    };
+        setDetalles(detalles); // Guardar los detalles en el estado
 
+    };
+    useEffect(() => {
+        setDetalles(productToEdit?.articuloManufacturadoDetalles || []);
+    }, [productToEdit]);
+    const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
+
+    // const handleAddD = (detalles: ArticuloManufacturadoDetalle[]) => {
+    //     console.log("Detalles a guardar:", detalles);
+    //     setDetalles(detalles); // Guardar los detalles en el estado
+    // };
     return (
         <Modal
-            id={'modal'}
-            show={modal}
-            onHide={handleClose}
-            size={'lg'}
-            backdrop="static"
-            keyboard={false}
-            centered
+        id={'modal'}
+        show={modal}
+        onHide={handleClose}
+        size={'lg'}
+        backdrop="static"
+        keyboard={false}
+        centered
         >
-            <Modal.Header closeButton>
+            <Modal.Header closeButton  style={{ backgroundColor: modalColor }}>
                 <Modal.Title>{productToEdit ? 'Editar Producto' : 'Agregar Producto'}</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body  style={{ backgroundColor: modalColor }}>
                 <Formik
                     validationSchema={Yup.object({
                         denominacion: Yup.string().required('Campo requerido'),
@@ -137,6 +197,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                     })}
                     initialValues={initialValues}
                     onSubmit={async (values: ArticuloManufacturado) => {
+                        console.log(values)
                         try {
                             let productoId: string | null = null;
 
@@ -144,6 +205,24 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 await productoService.put(url + "articuloManufacturado", values.id.toString(), values);
                                 console.log('Producto actualizado correctamente.');
                             } else {
+                                console.log(detalles)
+                                // Realizar todas las solicitudes 'post' de manera concurrente y recolectar sus respuestas
+                                const respuestas = await Promise.all(detalles.map(async (detalle) => {
+                                    try {
+                                        // Realizar la solicitud 'post' para cada detalle
+                                        const respuesta2 = await articuloDetalleService.post(url + "articuloManufacturadoDetalle", detalle);
+                                        console.log('Respuesta:', respuesta2);
+                                        return respuesta2; // Devolver la respuesta para procesamiento adicional
+                                    } catch (error) {
+                                        console.error('Error en articuloDetalleService.post():', error);
+                                        throw error; // Volver a lanzar el error para asegurar que Promise.all() falle
+                                    }
+                                }));
+                                // Una vez que se recolectan todas las respuestas, actualizar el objeto 'values'
+                                values.articuloManufacturadoDetalles = respuestas;
+                                console.log('Valores actualizados:', values);
+
+                                console.log(values.articuloManufacturadoDetalles)
                                 const response = await productoService.post(url + "articuloManufacturado", values);
                                 console.log('Producto agregado correctamente.', values);
 
