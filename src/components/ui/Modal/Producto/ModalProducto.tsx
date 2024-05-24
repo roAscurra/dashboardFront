@@ -301,12 +301,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
                                     <label htmlFor="categoria">Categoría:</label>
                                     <Field
-                                        name="categoria"
+                                        name="categoria.denominacion"
                                         as="select"
                                         className="form-control"
                                         onChange={(e: { target: { value: string; }; }) => {
-                                            const categoriaId = parseInt(e.target.value);
-                                            setFieldValue('categoria', categoriaId);
+                                            const unidad = categorias.find((u) => u.denominacion === e.target.value);
+                                            setFieldValue('categoria', unidad);
                                         }}
                                         required // Agregar el atributo required para hacer que la selección sea obligatoria
                                     >
@@ -403,7 +403,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 show={showInsumoModal}
                                 handleClose={() => setShowInsumoModal(false)}
                                 handleAddInsumo={handleAddInsumo}
-                                initialDetalles={productToEdit ? productToEdit.articuloManufacturadoDetalles : articuloManufacturadoDetalles} // Pasar los detalles de los productos manufacturados al modal de ArticuloInsumo
+                                initialDetalles={productToEdit ? productToEdit.articuloManufacturadoDetalles : articuloManufacturadoDetalles || []}
                                 />
                             <Button type="submit" className="btn btn-primary mt-3">
                                 {productToEdit ? 'Guardar Cambios' : 'Agregar Producto'}
