@@ -3,7 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import * as icon from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 import {
-  CNavGroup,
   CNavItem,
   CNavTitle,
   CSidebar,
@@ -22,7 +21,7 @@ const Sidebar: React.FC = () => {
       >
         <CSidebarNav style={{ display: "flex", flexDirection: "column" }}>
           <CNavTitle style={{ marginBottom: "10px" }}>Dashboard</CNavTitle>
-          <div
+          {/* <div
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -43,47 +42,31 @@ const Sidebar: React.FC = () => {
                 Usuarios
               </Link>
             </CNavItem>
-          </div>
+          </div> */}
           <CNavItem>
             <Link to="/" className="nav-link">
               <CIcon customClassName="nav-icon" icon={icon.cilHamburgerMenu} />
               Inicio
             </Link>
           </CNavItem>
-          <CNavGroup
-            toggler={
-              <>
-                <CIcon customClassName="nav-icon" icon={icon.cilFastfood} />
+          <CNavItem>
+            <Link to={`/productos/lista/${sucursalId}`} className="nav-link">
+              <CIcon customClassName="nav-icon" icon={icon.cilFastfood} />
                 Productos
-              </>
-            }
-          >
-            <CNavItem>
-              <Link to={`/productos/lista/${sucursalId}`} className="nav-link">
-                <span className="nav-icon">
-                  <span className="nav-icon-bullet"></span>
-                </span>
-                Lista de Productos
               </Link>
-            </CNavItem>
-            <CNavItem>
-              <Link to={`/categorias/${sucursalId}`} className="nav-link">
-                <span className="nav-icon">
-                  <span className="nav-icon-bullet"></span>
-                </span>
-                Categorías
-              </Link>
-            </CNavItem>
-            <CNavItem>
-              <Link to={"/unidadMedida"} className="nav-link">
-                <span className="nav-icon">
-                  <span className="nav-icon-bullet"></span>
-                </span>
-                  Unidad de Medida
-              </Link>
-            </CNavItem>
-            
-          </CNavGroup>
+          </CNavItem>
+          <CNavItem>          
+            <Link to={`/categorias/${sucursalId}`} className="nav-link">
+            <CIcon customClassName="nav-icon" icon={icon.cilSitemap} />
+              Categorías
+            </Link>
+          </CNavItem>
+          <CNavItem>
+            <Link to={"/unidadMedida"} className="nav-link">
+              <CIcon customClassName="nav-icon" icon={icon.cilMediaStop} />
+                Unidad de Medida
+            </Link>
+          </CNavItem>
           <CNavItem>
               <Link
                 to={`/articuloInsumo/Lista/${sucursalId}`}className="nav-link">
@@ -91,24 +74,12 @@ const Sidebar: React.FC = () => {
                 Articulo Insumo
               </Link>
           </CNavItem>
-          <CNavGroup
-            toggler={
-              <>
-                <CIcon customClassName="nav-icon" icon={icon.cilBarChart} />
-                Marketing
-              </>
-            }
-          >
-            <CNavItem>
+          <CNavItem>
               <Link to={`/promociones/lista/${sucursalId}`} className="nav-link">
-                <span className="nav-icon">
-                  <span className="nav-icon-bullet"></span>
-                </span>
+              <CIcon customClassName="nav-icon" icon={icon.cilCash} />
                 Promociones
               </Link>
             </CNavItem>
-          </CNavGroup>
-          
         </CSidebarNav>
       </CSidebar>
     </div>
