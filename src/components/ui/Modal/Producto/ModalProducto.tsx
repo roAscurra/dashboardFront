@@ -6,19 +6,19 @@ import * as Yup from 'yup';
 import ArticuloManufacturadoService from "../../../../services/ArticuloManufacturadoService.ts";
 import UnidadMedidaService from "../../../../services/UnidadMedidaService.ts";
 // import ArticuloInsumoService from "../../../../services/ArticuloInsumoService.ts";
-// import CategoriaService from "../../../../services/CategoriaService.ts";
+import CategoriaService from "../../../../services/CategoriaService.ts";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux.ts";
 import { toggleModal } from "../../../../redux/slices/Modal.ts";
 import ArticuloManufacturado from "../../../../types/ArticuloManufacturado.ts";
 import UnidadMedida from "../../../../types/UnidadMedida.ts";
 // import ArticuloInsumoType from "../../../../types/ArticuloInsumoType.ts";
-// import Categoria from "../../../../types/Categoria.ts";
+import Categoria from "../../../../types/Categoria.ts";
 import ModalInsumo from './ModalInsumo.tsx';
 import ArticuloManufacturadoDetalle from '../../../../types/ArticuloManufacturadoDetalle.ts';
 import ArticuloInsumoShortDto from '../../../../types/dto/ArticuloInsumoShortDto.ts';
 import ArticuloInsumoShortService from '../../../../services/dtos/ArticuloInsumoShortService.ts';
-import CategoriaShorService from '../../../../services/dtos/CategoriaShorService.ts';
-import CategoriaShorDto from '../../../../types/dto/CategoriaShorDto.ts';
+// import CategoriaShorService from '../../../../services/dtos/CategoriaShorService.ts';
+// import CategoriaShorDto from '../../../../types/dto/CategoriaShorDto.ts';
 import ArticuloManufacturadoDetalleService from '../../../../services/ArticuloManufacturadoDetalleService.ts';
 
 interface ModalProductProps {
@@ -32,14 +32,14 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     // const insumoService = new ArticuloInsumoService();
     const insumoService = new ArticuloInsumoShortService();
 
-    // const categoriaService = new CategoriaService();
-    const categoriaService = new CategoriaShorService();
+    const categoriaService = new CategoriaService();
+    // const categoriaService = new CategoriaShorService();
     const articuloDetalleService = new ArticuloManufacturadoDetalleService();
 
     // const articuloManufacturadoDetalles = new ArticuloManufacturadoDetalleService();
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
     const [insumos, setInsumos] = useState<ArticuloInsumoShortDto[]>([]);
-    const [categorias, setCategoria] = useState<CategoriaShorDto[]>([]);
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
     // const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
     const [showInsumoModal, setShowInsumoModal] = useState(false);
     const [file, setFile] = useState<File | null>(null);
@@ -94,21 +94,11 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
             }))
             : [],
         categoria: productToEdit?.categoria
-            ? {
-                id: productToEdit.categoria.id,
-                eliminado: productToEdit.categoria.eliminado,
-                denominacion: productToEdit.categoria.denominacion,
-                esInsumo: productToEdit.categoria.esInsumo,
-            }
-            : {
-                id: 0,
-                eliminado: false,
-                denominacion: '',
-                esInsumo: false,
-            },
+        ? { ...productToEdit.categoria } :
+        { id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategorias: [], sucursales: [] }
     };
 
-    //console.log(productToEdit)
+    console.log(productToEdit)
     const modal = useAppSelector((state) => state.modal.modal);
     const dispatch = useAppDispatch();
 
@@ -144,13 +134,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
     const fetchCategorias = async () => {
         try {
-            const categorias = await categoriaService.getAll(`${url}categoria`);
-            setCategoria(categorias);
-            console.log(categorias);
+          const categoria = await categoriaService.getAll(url + 'categoria');
+          setCategorias(categoria);
         } catch (error) {
-            console.error('Error al obtener las categorias:', error);
+          console.error('Error al obtener las unidades de medida:', error);
         }
-    };
+      };
     useEffect(() => {
         fetchArticuloInsumo();
         fetchUnidadesMedida();
@@ -277,7 +266,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                         }
                     }}
                 >
-                    {({ setFieldValue }) => (
+                    {({ values, setFieldValue }) => (
                         <Form autoComplete="off">
                             <Row>
                                 <Col>
@@ -308,22 +297,28 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                     />
                                     <ErrorMessage name="preparacion" className="error-message" component="div" />
 
-                                    <label htmlFor="categoria">Categoría:</label>
+                                    <label htmlFor="categoria">Categoria:</label>
                                     <Field
-                                        name="categoria.denominacion"
+                                        name="categoria"
                                         as="select"
                                         className="form-control"
-                                        onChange={(e: { target: { value: string; }; }) => {
-                                            const unidad = categorias.find((u) => u.denominacion === e.target.value);
-                                            setFieldValue('categoria', unidad);
+                                        onChange={(event: { target: { value: string; }; }) => {
+                                        const categoriaSelect = parseInt(event.target.value);
+                                        const selectedCategoria = categorias.find((categoria) => categoria.id === categoriaSelect);
+
+                                        if (selectedCategoria) {
+                                            setFieldValue('categoria', selectedCategoria);
+                                        } else {
+                                            console.error("No se encontró la categoria seleccionada");
+                                        }
                                         }}
-                                        required // Agregar el atributo required para hacer que la selección sea obligatoria
+                                        value={values.categoria ? values.categoria.id : ''}
                                     >
-                                        <option value="" disabled>Seleccionar Categoría</option>
+                                        <option value="">Seleccionar categoria</option>
                                         {categorias.map((categoria) => (
-                                            <option key={categoria.id} value={categoria.id}>
-                                                {categoria.denominacion}
-                                            </option>
+                                        <option key={categoria.id} value={categoria.id}>
+                                            {categoria.denominacion}
+                                        </option>
                                         ))}
                                     </Field>
                                     <ErrorMessage name="categoria" className="error-message" component="div" />
@@ -349,20 +344,26 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
                                     <label htmlFor="unidadMedida">Unidad de Medida:</label>
                                     <Field
-                                        name="unidadMedida.denominacion"
+                                        name="unidadMedida"
                                         as="select"
                                         className="form-control"
-                                        onChange={(e: { target: { value: string; }; }) => {
-                                            const unidad = unidadesMedida.find((u) => u.denominacion === e.target.value);
-                                            setFieldValue('unidadMedida', unidad);
+                                        onChange={(event: { target: { value: string; }; }) => {
+                                        const selectedUnitId = parseInt(event.target.value);
+                                        const selectedUnidad = unidadesMedida.find((unidad) => unidad.id === selectedUnitId);
+
+                                        if (selectedUnidad) {
+                                            setFieldValue('unidadMedida', selectedUnidad);
+                                        } else {
+                                            console.error("No se encontró la unidad seleccionada");
+                                        }
                                         }}
-                                        required // Agregar el atributo required para hacer que la selección sea obligatoria
+                                        value={values.unidadMedida ? values.unidadMedida.id : ''}
                                     >
-                                        <option value="" disabled>Seleccionar Unidad de Medida</option>
+                                        <option value="">Seleccionar Unidad de Medida</option>
                                         {unidadesMedida.map((unidad) => (
-                                            <option key={unidad.id} value={unidad.denominacion}>
-                                                {unidad.denominacion}
-                                            </option>
+                                        <option key={unidad.id} value={unidad.id}>
+                                            {unidad.denominacion}
+                                        </option>
                                         ))}
                                     </Field>
 
