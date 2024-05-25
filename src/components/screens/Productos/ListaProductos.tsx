@@ -83,6 +83,7 @@ export const ListaProductos = () => {
   const handleOpenDeleteModal = (rowData: Row) => {
     setProductToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
@@ -91,7 +92,7 @@ export const ListaProductos = () => {
       tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
       preparacion: rowData.preparacion,
       articuloManufacturadoDetalles: rowData.articuloManufacturado,
-      categoria: rowData.categoria?.categoria
+      categoria: rowData.categoria
     });
     setDeleteModalOpen(true);
   };
@@ -129,6 +130,7 @@ export const ListaProductos = () => {
   const handleOpenEditModal = (rowData: Row) => {
     setProductToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
@@ -137,7 +139,7 @@ export const ListaProductos = () => {
       tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
       preparacion: rowData.preparacion,
       articuloManufacturadoDetalles: rowData.articuloManufacturadoDetalles,
-      categoria: rowData.categoria?.categoria
+      categoria: rowData.categoria
     });
     dispatch(toggleModal({ modalName: 'modal' }));
   };
@@ -152,6 +154,7 @@ export const ListaProductos = () => {
   const columns: Column[] = [
     { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
+    { id: "categoria", label: "Categoria", renderCell: (rowData) => <>{rowData.categoria.denominacion}</> },
     { id: "precioVenta", label: "Precio", renderCell: (rowData) => <>{rowData.precioVenta}</> },
     { id: "descripcion", label: "Descripción", renderCell: (rowData) => <>{rowData.descripcion}</> },
     {
