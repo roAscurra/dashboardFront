@@ -29,9 +29,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const [modalColor, setModalColor] = useState<string>(""); // Estado para controlar el color de fondo de la modal
   const [articulosManufacturados, setArticulosManufacturados] = useState<ArticuloManufacturadoShorDto[]>([]);
   const articuloManufacturadoService = new ArticuloManufacturadoShorDtoService();
-  const [promocionDetalles, setPromocionDetalle] = useState<PromocionDetalle[]>(
-    promocionToEdit?.articuloManufacturadoDetalles || []
-  );
+  const [promocionDetalles, setPromocionDetalles] = useState<PromocionDetalle[]>(promocionToEdit?.promocionDetalle || []);
+
   const [detalles, setDetalles] = useState<PromocionDetalle[]>([]);
   const url = import.meta.env.VITE_API_URL;
   const today = new Date();
@@ -59,7 +58,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
             id: 0,
             cantidad: detalle.cantidad,
             eliminado: detalle.eliminado || false, 
-            articulosManufacturados: [
+            articuloManufacturado: 
                 {
                     id: detalle.articuloManufacturado.id,
                     eliminado: detalle.articuloManufacturado.eliminado,
@@ -71,7 +70,6 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     categoria: detalle.articuloManufacturado.categoria,
                     preparacion: detalle.articuloManufacturado.preparacion, 
                 }
-            ]
         }))
         : [],
     imagenes: promocionToEdit
@@ -121,9 +119,12 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   }, [showInsumoModal]);
   const handelAddArticulosManufacturados = (detalles: PromocionDetalle[]) => {
     console.log("Detalles a guardar:", detalles);
-    setPromocionDetalle(detalles);
+    setPromocionDetalles(detalles);
     setDetalles(detalles); // Guardar los detalles en el estado
   };
+  useEffect(() => {
+    setDetalles(promocionToEdit?.promocionDetalle || []);
+}, [promocionToEdit]);
   return (
     <Modal
       id="modal"
@@ -202,21 +203,24 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                       return respuesta2; // Devolver la respuesta para procesamiento adicional
                     } catch (error) {
                       console.error(
-                        "Error en articuloDetalleService.post():",
+                        "Error en promocionDetalleService.post():",
                         error
                       );
                       throw error; // Volver a lanzar el error para asegurar que Promise.all() falle
                     }
                   })
                 );
+                const respuesta3 = await sucursalService.get(url + "sucursal", "1");
+                console.log("Respuesta:", respuesta3);
                 // Una vez que se recolectan todas las respuestas, actualizar el objeto 'values'
                 values.promocionDetalle = respuestas;
+                console.log('Valores actualizados:', values);
 
-                // await promocionService.post(url + "promocion", values);
-                // console.log("Se ha agregado correctamente.");
+                await promocionService.post(url + "promocion", values);
+                console.log("Se ha agregado correctamente.");
               }
               getPromocion();
-              // handleClose();
+              handleClose();
             } catch (error) {
               console.error("Error al realizar la operación:", error);
             }
@@ -349,18 +353,14 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 </div>
                 <div className="col-md-4 mb-4">
                   <label htmlFor="sucursales">Sucursales:</label>
-                  <Field
-                    name="sucursales"
-                    as="select"
-                    multiple
-                    className="form-control mt-2"
-                  >
+                  <Field name="sucursales" as="select" multiple className="custom-select">
                     {sucursales.map((sucursal) => (
                       <option key={sucursal.id} value={sucursal.id}>
                         {sucursal.nombre}
                       </option>
                     ))}
                   </Field>
+
                   <ErrorMessage
                     name="sucursales"
                     className="error-message"
@@ -393,11 +393,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 show={showInsumoModal}
                 handleClose={() => setShowInsumoModal(false)}
                 handleAddInsumo={handelAddArticulosManufacturados}
-                initialDetalles={
-                  promocionToEdit
-                    ? promocionToEdit.promocionDetalle
-                    : promocionDetalles || []
-                }
+                initialDetalles={promocionToEdit ? promocionToEdit.promocionDetalle : promocionDetalles || []}
               />
             </Form>
           )}

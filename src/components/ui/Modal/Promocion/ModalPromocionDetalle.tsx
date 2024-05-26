@@ -20,7 +20,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
   handleAddInsumo,
   initialDetalles,
 }) => {
-  const [detalles, setDetalles] = useState<PromocionDetalle[]>(initialDetalles);
+  const [detalles, setDetalles] = useState<PromocionDetalle[]>(initialDetalles || []);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 5;
@@ -49,26 +49,21 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
     }
   };
 
+  
   const handleAgregarInsumos = () => {
-    const existingInsumos = selectedInsumos.filter((insumo) =>
-      detalles.some((detalle) => detalle.articulosManufacturados[0].id === insumo.id)
-    );
-
+    const existingInsumos = selectedInsumos.filter(insumo => detalles.some(detalle => detalle.articuloInsumo.id === insumo.id));
+    
     if (existingInsumos.length > 0) {
-      alert(
-        `Los siguientes articulosManufacturados ya están agregados: ${existingInsumos
-          .map((insumo) => insumo.denominacion)
-          .join(", ")}`
-      );
+      alert(`Los siguientes insumos ya están agregados: ${existingInsumos.map(insumo => insumo.denominacion).join(", ")}`);
     } else {
       const newDetalles = selectedInsumos.map((insumo) => ({
         cantidad: 1,
         eliminado: false,
-        articulosManufacturados: [insumo], // Wrap insumo in an array
+        articuloManufacturado: insumo,
         id: 0,
       }));
-
-      setDetalles((prevDetalles) => [...prevDetalles, ...newDetalles]);
+    
+      setDetalles([...detalles, ...newDetalles]);
       setSelectedInsumos([]);
     }
   };
@@ -114,7 +109,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
     const updatedDetalles = detalles.filter((_, index) => index !== detalleIndex);
     setDetalles(updatedDetalles);
   };
-
+  console.log(detalles)
   return (
     <Modal
       id={"modal"}
@@ -163,18 +158,18 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
             </tr>
           </thead>
           <tbody>
-            {paginatedInsumos.map((articuloManufacturado, index) => (
+            {paginatedInsumos.map((producto, index) => (
               <tr key={index}>
-                <td>{articuloManufacturado.denominacion}</td>
-                <td>{articuloManufacturado.precioVenta}</td>
-                <td>{articuloManufacturado.stockActual}</td>
-                <td>{articuloManufacturado.categoria.denominacion}</td>
-                <td>{articuloManufacturado.unidadMedida.denominacion}</td>
+                <td>{producto.denominacion}</td>
+                <td>{producto.precioVenta}</td>
+                <td>{producto.stockActual}</td>
+                <td>{producto.categoria.denominacion}</td>
+                <td>{producto.unidadMedida.denominacion}</td>
                 <td>
                   <input
                     type="checkbox"
                     id={`insumo-${index}`}
-                    onChange={(e) => handleCheckboxChange(e, articuloManufacturado)}
+                    onChange={(e) => handleCheckboxChange(e, producto)}
                   />
                 </td>
               </tr>
@@ -190,7 +185,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
-        {detalles.length > 0 && (
+        {detalles && detalles.length > 0 && (
           <div>
             <h3>Artículos Manufacturados Agregados</h3>
             <table className="table">
@@ -203,7 +198,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
               <tbody>
                 {detalles.map((detalle, index) => (
                   <tr key={index}>
-                    <td>{detalle.articulosManufacturados[0]?.denominacion}</td>
+                    <td>{detalle.articuloManufacturado.denominacion}</td>
                     <td>
                       <input
                         type="number"
@@ -226,6 +221,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
             </table>
           </div>
         )}
+
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleGuardarInsumo}>
