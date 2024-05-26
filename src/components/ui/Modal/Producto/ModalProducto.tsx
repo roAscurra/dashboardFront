@@ -46,7 +46,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     const [articuloManufacturadoDetalles, setArticuloManufacturadoDetalles] = useState<ArticuloManufacturadoDetalle[]>(productToEdit?.articuloManufacturadoDetalles || []);
     const url = import.meta.env.VITE_API_URL;
     const [modalColor, setModalColor] = useState<string>(''); // Estado para controlar el color de fondo de la modal
-
+    const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
+    
     const initialValues: ArticuloManufacturado = {
         id: productToEdit ? productToEdit.id : 0,
         eliminado: productToEdit ? productToEdit.eliminado : false,
@@ -165,7 +166,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     useEffect(() => {
         setDetalles(productToEdit?.articuloManufacturadoDetalles || []);
     }, [productToEdit]);
-    const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
+
 
     // const handleAddD = (detalles: ArticuloManufacturadoDetalle[]) => {
     //     console.log("Detalles a guardar:", detalles);

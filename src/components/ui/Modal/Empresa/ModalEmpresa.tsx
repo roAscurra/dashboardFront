@@ -25,6 +25,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
       imagen: {
         name: "",
         url: "",
+        eliminado: false,
         id: 0  // Asegúrate de proporcionar un valor para 'id'
       }
     }
@@ -37,6 +38,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
       imagen: {
         name: "",
         url: "",
+        eliminado: false,
         id: 0  // Asegúrate de proporcionar un valor para 'id'
       }
     };
