@@ -20,7 +20,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
   handleAddInsumo,
   initialDetalles,
 }) => {
-  const [detalles, setDetalles] = useState<PromocionDetalle[]>(initialDetalles);
+  const [detalles, setDetalles] = useState<PromocionDetalle[]>(initialDetalles || []);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 5;
@@ -109,7 +109,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
     const updatedDetalles = detalles.filter((_, index) => index !== detalleIndex);
     setDetalles(updatedDetalles);
   };
-
+  console.log(detalles)
   return (
     <Modal
       id={"modal"}
@@ -185,7 +185,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
-        {detalles.length > 0 && (
+        {detalles && detalles.length > 0 && (
           <div>
             <h3>Artículos Manufacturados Agregados</h3>
             <table className="table">
@@ -221,6 +221,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
             </table>
           </div>
         )}
+
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleGuardarInsumo}>

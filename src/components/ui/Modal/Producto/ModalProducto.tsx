@@ -35,8 +35,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     const categoriaService = new CategoriaService();
     // const categoriaService = new CategoriaShorService();
     const articuloDetalleService = new ArticuloManufacturadoDetalleService();
-
-    // const articuloManufacturadoDetalles = new ArticuloManufacturadoDetalleService();
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
     const [insumos, setInsumos] = useState<ArticuloInsumoShortDto[]>([]);
     const [categorias, setCategorias] = useState<Categoria[]>([]);

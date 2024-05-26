@@ -122,6 +122,9 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
     setPromocionDetalles(detalles);
     setDetalles(detalles); // Guardar los detalles en el estado
   };
+  useEffect(() => {
+    setDetalles(promocionToEdit?.promocionDetalle || []);
+}, [promocionToEdit]);
   return (
     <Modal
       id="modal"
@@ -207,14 +210,17 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     }
                   })
                 );
+                const respuesta3 = await sucursalService.get(url + "sucursal", "1");
+                console.log("Respuesta:", respuesta3);
                 // Una vez que se recolectan todas las respuestas, actualizar el objeto 'values'
                 values.promocionDetalle = respuestas;
+                console.log('Valores actualizados:', values);
 
-                // await promocionService.post(url + "promocion", values);
-                // console.log("Se ha agregado correctamente.");
+                await promocionService.post(url + "promocion", values);
+                console.log("Se ha agregado correctamente.");
               }
               getPromocion();
-              // handleClose();
+              handleClose();
             } catch (error) {
               console.error("Error al realizar la operación:", error);
             }
@@ -347,18 +353,14 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 </div>
                 <div className="col-md-4 mb-4">
                   <label htmlFor="sucursales">Sucursales:</label>
-                  <Field
-                    name="sucursales"
-                    as="select"
-                    multiple
-                    className="form-control mt-2"
-                  >
+                  <Field name="sucursales" as="select" multiple className="custom-select">
                     {sucursales.map((sucursal) => (
                       <option key={sucursal.id} value={sucursal.id}>
                         {sucursal.nombre}
                       </option>
                     ))}
                   </Field>
+
                   <ErrorMessage
                     name="sucursales"
                     className="error-message"
@@ -391,11 +393,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 show={showInsumoModal}
                 handleClose={() => setShowInsumoModal(false)}
                 handleAddInsumo={handelAddArticulosManufacturados}
-                initialDetalles={
-                  promocionToEdit
-                    ? promocionToEdit.promocionDetalle
-                    : promocionDetalles || []
-                }
+                initialDetalles={promocionToEdit ? promocionToEdit.promocionDetalle : promocionDetalles || []}
               />
             </Form>
           )}
