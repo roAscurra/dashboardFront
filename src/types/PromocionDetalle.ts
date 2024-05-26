@@ -4,7 +4,7 @@ import ArticuloManufacturadoShorDto from "./dto/ArticuloManufacturadoShorDto";
 
 interface PromocionDetalle extends DataModel<PromocionDetalle>{
   cantidad: number,
-  articulosManufacturados: ArticuloManufacturadoShorDto[]
+  articuloManufacturado: ArticuloManufacturadoShorDto
 }
 
 export default PromocionDetalle;

@@ -29,9 +29,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const [modalColor, setModalColor] = useState<string>(""); // Estado para controlar el color de fondo de la modal
   const [articulosManufacturados, setArticulosManufacturados] = useState<ArticuloManufacturadoShorDto[]>([]);
   const articuloManufacturadoService = new ArticuloManufacturadoShorDtoService();
-  const [promocionDetalles, setPromocionDetalle] = useState<PromocionDetalle[]>(
-    promocionToEdit?.articuloManufacturadoDetalles || []
-  );
+  const [promocionDetalles, setPromocionDetalles] = useState<PromocionDetalle[]>(promocionToEdit?.promocionDetalle || []);
+
   const [detalles, setDetalles] = useState<PromocionDetalle[]>([]);
   const url = import.meta.env.VITE_API_URL;
   const today = new Date();
@@ -59,7 +58,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
             id: 0,
             cantidad: detalle.cantidad,
             eliminado: detalle.eliminado || false, 
-            articulosManufacturados: [
+            articuloManufacturado: 
                 {
                     id: detalle.articuloManufacturado.id,
                     eliminado: detalle.articuloManufacturado.eliminado,
@@ -71,7 +70,6 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     categoria: detalle.articuloManufacturado.categoria,
                     preparacion: detalle.articuloManufacturado.preparacion, 
                 }
-            ]
         }))
         : [],
     imagenes: promocionToEdit
@@ -121,7 +119,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   }, [showInsumoModal]);
   const handelAddArticulosManufacturados = (detalles: PromocionDetalle[]) => {
     console.log("Detalles a guardar:", detalles);
-    setPromocionDetalle(detalles);
+    setPromocionDetalles(detalles);
     setDetalles(detalles); // Guardar los detalles en el estado
   };
   return (
@@ -202,7 +200,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                       return respuesta2; // Devolver la respuesta para procesamiento adicional
                     } catch (error) {
                       console.error(
-                        "Error en articuloDetalleService.post():",
+                        "Error en promocionDetalleService.post():",
                         error
                       );
                       throw error; // Volver a lanzar el error para asegurar que Promise.all() falle
