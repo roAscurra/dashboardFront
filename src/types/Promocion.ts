@@ -1,13 +1,19 @@
-// import ArticuloInsumo from "./ArticuloInsumoType";
 import DataModel from "./DataModel";
-// import Imagen from "./Imagen";
+import Imagen from "./Imagen";
+import PromocionDetalle from "./PromocionDetalle";
+import Sucursal from "./Sucursal";
 
 interface Promocion extends DataModel<Promocion>{
-  denominacion: "",
+  denominacion: string,
   fechaDesde: Date,
   fechaHasta: Date,
-  descripcionDescuento: "",
-  precioPromocional: ""
-  }
-
-  export default Promocion;
+  horaDesde: string,
+  horaHasta: string,
+  descripcionDescuento: string,
+  precioPromocional: number,
+  tipoPromocion: string,
+  imagenes: Imagen[],
+  sucursales: Sucursal[],
+  promocionDetalle: PromocionDetalle[]
+}
+export default Promocion;

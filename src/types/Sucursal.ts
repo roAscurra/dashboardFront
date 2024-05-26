@@ -5,8 +5,6 @@ import Imagen from "./Imagen";
 
 
 interface Sucursal extends DataModel<Sucursal>{
-    id: number;
-    eliminado: boolean;
     nombre: string;
     horarioApertura: string;
     horarioCierre: string;
