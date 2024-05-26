@@ -1,11 +1,16 @@
 import DataModel from "../DataModel";
-import ArticuloInsumoShortDto from "./ArticuloInsumoShortDto";
+import IUnidadMedida from "../UnidadMedida";
+import CategoriaShorDto from "./CategoriaShorDto";
 
 
-interface IArticuloManufacturadoDetalle extends  DataModel<IArticuloManufacturadoDetalle> {
-    id: number;
-    cantidad: number;
-    articuloInsumo: ArticuloInsumoShortDto;
+interface ArticuloManufacturadoShorDto extends  DataModel<ArticuloManufacturadoShorDto> {
+    denominacion: string;
+    precioVenta: number;
+    descripcion: string;
+    tiempoEstimadoMinutos: number;
+    preparacion: string;
+    unidadMedida: IUnidadMedida;
+    categoria: CategoriaShorDto;
 }
 
-export default IArticuloManufacturadoDetalle;
+export default ArticuloManufacturadoShorDto;

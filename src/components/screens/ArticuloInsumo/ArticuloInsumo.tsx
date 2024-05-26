@@ -87,8 +87,8 @@ export const ListaArticulosInsumo = () => {
       stockActual: rowData.stockActual,
       stockMaximo: rowData.stockMaximo,
       esParaElaborar: rowData.esParaElaborar,
-      unidadMedida: rowData.unidadMedida?.denominacion,
-      categoria: rowData.categoria?.denominacion
+      unidadMedida: rowData.unidadMedida,
+      categoria: rowData.categoria
     });
     setDeleteModalOpen(true);
   };
@@ -146,8 +146,8 @@ export const ListaArticulosInsumo = () => {
       stockActual: rowData.stockActual,
       stockMaximo: rowData.stockMaximo,
       esParaElaborar: rowData.esParaElaborar,
-      unidadMedida: rowData.unidadMedida?.denominacion,
-      categoria: rowData.categoria?.denominacion
+      unidadMedida: rowData.unidadMedida,
+      categoria: rowData.categoria
     });
     dispatch(toggleModal({ modalName: "modal" }));
   };
@@ -160,6 +160,7 @@ export const ListaArticulosInsumo = () => {
   const columns: Column[] = [
     { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
+    { id: "categoria", label: "Categoría", renderCell: (rowData) => <>{rowData.categoria.denominacion}</> },
     { id: "precioVenta", label: "Precio Venta", renderCell: (rowData) => <>{rowData.precioVenta}</> },
     { id: "precioCompra", label: "Precio Compra", renderCell: (rowData) => <>{rowData.precioCompra}</> },
     { id: "stockActual", label: "Stock Actual", renderCell: (rowData) => <>{rowData.stockActual}</> },

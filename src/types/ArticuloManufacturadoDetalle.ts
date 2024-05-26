@@ -6,7 +6,6 @@ import ArticuloInsumoShortDto from "./dto/ArticuloInsumoShortDto";
 // import ArticuloInsumoShortDto from "./dto/ArticuloInsumoShortDto";
 
 interface IArticuloManufacturadoDetalle extends  DataModel<IArticuloManufacturadoDetalle> {
-    eliminado: boolean,
     cantidad: number;
     articuloInsumo: ArticuloInsumoShortDto
 }
