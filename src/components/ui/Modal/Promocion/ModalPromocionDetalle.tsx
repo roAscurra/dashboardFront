@@ -109,7 +109,6 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
     const updatedDetalles = detalles.filter((_, index) => index !== detalleIndex);
     setDetalles(updatedDetalles);
   };
-  console.log(detalles)
   return (
     <Modal
       id={"modal"}

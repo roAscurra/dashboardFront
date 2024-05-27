@@ -9,11 +9,13 @@ import Imagen from "../../../../types/Imagen";
 import { ChangeEvent, useEffect, useState } from "react";
 import PromocionDetalle from "../../../../types/PromocionDetalle";
 import PromocionDetalleService from "../../../../services/PromocionDetalleService";
-import SucursalService from "../../../../services/SucursalService";
-import Sucursal from "../../../../types/Sucursal";
+// import SucursalService from "../../../../services/SucursalService";
+// import Sucursal from "../../../../types/Sucursal";
 import ModalPromocionDetalle from "./ModalPromocionDetalle";
 import ArticuloManufacturadoShorDto from "../../../../types/dto/ArticuloManufacturadoShorDto";
 import ArticuloManufacturadoShorDtoService from "../../../../services/dtos/ArticuloManufacturadoShorDtoService";
+import SucursalShortDtoService from "../../../../services/dtos/SucursalShortDtoService";
+import SucursalShorDto from "../../../../types/dto/SucursalShortDto";
 
 interface ModalPromocionProps {
   getPromocion: () => void;
@@ -35,8 +37,10 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const url = import.meta.env.VITE_API_URL;
   const today = new Date();
   const promocionDetalleService = new PromocionDetalleService();
-  const sucursalService = new SucursalService();
-  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
+  // const sucursalService = new SucursalService();
+  const sucursalService = new SucursalShortDtoService();
+  // const [sucursales, setSucursales] = useState<Sucursal[]>([]);
+  const [sucursales, setSucursales] = useState<SucursalShorDto[]>([]);
   const modal = useAppSelector((state) => state.modal.modal);
   const dispatch = useAppDispatch();
   const initialValues: Promocion = {
@@ -232,6 +236,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     }
                   })
                 );
+              //-------FALTA ASIGNAR LAS SUCURSALES QUE SE SELECCIONAN Y NO LA DEL ID 1 QUE ESTÁ HARCODEADA ------------
                 const respuesta3 = await sucursalService.get(url + "sucursal", "1");
                 console.log("Respuesta:", respuesta3);
                 values.sucursales.push(respuesta3);
@@ -364,10 +369,12 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   <label htmlFor="tipoPromocion">Tipo Promoción:</label>
                   <Field
                     name="tipoPromocion"
-                    type="text"
-                    placeholder="Tipo Promoción"
+                    as="select" // Render as a select input
                     className="form-control mt-2"
-                  />
+                  >
+                    <option value="HAPPY_HOUR">HAPPY_HOUR</option>
+                    <option value="PROMOCION">PROMOCION</option>
+                  </Field>
                   <ErrorMessage
                     name="tipoPromocion"
                     className="error-message"
