@@ -27,6 +27,8 @@ const ModalEliminarSucursal: React.FC<ModalEliminarSucursalProps> = ({ show, onH
         console.error('Error al eliminar la sucursal:', error);
       }
     };
+
+    
   
     return (
       <Modal show={show} onHide={onHide}>
