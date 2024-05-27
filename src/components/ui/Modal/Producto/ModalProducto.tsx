@@ -98,7 +98,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     };
 
     console.log(productToEdit)
-    const modal = useAppSelector((state) => state.modal.modal);
+    const modal = useAppSelector((state : any) => state.modal.modal);
     const dispatch = useAppDispatch();
 
     const handleClose = () => {
