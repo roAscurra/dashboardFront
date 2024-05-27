@@ -11,6 +11,10 @@ import Localidad from "../../../../types/Localidad";
 import { useParams } from "react-router-dom";
 import EmpresaService from "../../../../services/EmpresaService";
 import DomicilioService from "../../../../services/DomicilioService";
+import ProvinciaService from "../../../../services/ProvinciaService";
+import Provincia from "../../../../types/Provincia";
+import PaisService from "../../../../services/PaisService";
+import Pais from "../../../../types/Pais";
 
 interface ModalSucursalProps {
   getSucursal: () => void;
@@ -32,13 +36,21 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   const [localidades, setLocalidades] = useState<Localidad[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const { empresaId } = useParams();
+  const paisService = new PaisService();
+  const [paises, setPaises] = useState<Pais[]>([]);
+  const provinviaService = new ProvinciaService();
+  const [provincias, setProvincias] = useState<Provincia[]>([]);
+  const [selectedPais, setSelectedPais] = useState<number | null>(null);
+  const [selectedProvincia, setSelectedProvincia] = useState<number | null>(null);
+
+
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   const initialValues: Sucursal = sucursalToEdit
-  ? sucursalToEdit
-  : {
+    ? sucursalToEdit
+    : {
       id: 0,
       eliminado: false,
       nombre: "",
@@ -89,7 +101,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
           eliminado: false,
         },
       },
-  };
+    };
 
   const modal = useAppSelector((state) => state.modal[modalName]);
   const dispatch = useAppDispatch();
@@ -98,13 +110,44 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
     dispatch(toggleModal({ modalName }));
   };
 
-  const fetchLocalidad = async () => {
+  const fetchPais = async () => {
     try {
-      const localidadesData = await localidadService.getAll(url + "localidad");
-      const localidadesNames = localidadesData.map(
-        (localidad: any) => localidad
+      const paisesData = await paisService.getAll(url + 'pais');
+      const paisesName = paisesData.map(
+        (pais: any) => pais
       );
-      setLocalidades(localidadesNames);
+      setPaises(paisesName);
+    } catch (error) {
+      console.error("Error al obtener los paises: ", error);
+      setPaises([]);
+    }
+  }
+  //console.log(paisId);
+
+  const fetchProvinciasData = async (paisId: number | null) => {
+    try {
+      const todasProvincias = await provinviaService.getAll(url + 'provincia');
+      if (paisId) {
+        const provinciaPais = todasProvincias.filter((provincia: any) => provincia.pais.id === paisId);
+        setProvincias(provinciaPais);
+      } else {
+        setProvincias(todasProvincias);
+      }
+    } catch (error) {
+      console.error("Error al obtener las provincias: ", error);
+      setProvincias([]);
+    }
+  };
+
+  const fetchLocalidadesData = async (provinciaId: number | null) => {
+    try {
+      const todasLocalidades = await localidadService.getAll(url + 'localidad');
+      if (provinciaId) {
+        const localidadProvincia = todasLocalidades.filter((localidad: any) => localidad.provincia.id === provinciaId);
+        setLocalidades(localidadProvincia);
+      } else {
+        setLocalidades(todasLocalidades);
+      }
     } catch (error) {
       console.error("Error al obtener las localidades:", error);
       setLocalidades([]);
@@ -112,9 +155,16 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   };
 
   useEffect(() => {
-    fetchLocalidad();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchPais();
   }, []);
+  
+  useEffect(() => {
+    fetchProvinciasData(selectedPais);
+  }, [selectedPais]);
+  
+  useEffect(() => {
+    fetchLocalidadesData(selectedProvincia);
+  }, [selectedProvincia]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -223,20 +273,65 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="localidadId">Localidad:</label>
-                <Field
-                  name="localidadId"
-                  as="select"
-                  className="form-control mt-2"
-                >
-                  <option value="">Seleccione una localidad</option>
-                  {localidades.map((localidad, index) => (
-                    <option key={index} value={localidad.id}>
-                      {localidad.nombre}
-                    </option>
-                  ))}
-                </Field>
-              </div>
+        <label htmlFor="paisId">País:</label>
+        <Field
+          name="paisId"
+          as="select"
+          className="form-control mt-2"
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+            const value = Number(e.target.value);
+            setSelectedPais(value);
+            setFieldValue("paisId", value);
+            setFieldValue("provinciaId", ""); // Resetea el campo de provincia
+            setFieldValue("localidadId", ""); // Resetea el campo de localidad
+          }}
+        >
+          <option value="">Seleccione un país</option>
+          {paises.map((pais, index) => (
+            <option key={index} value={pais.id}>
+              {pais.nombre}
+            </option>
+          ))}
+        </Field>
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="provinciaId">Provincia:</label>
+        <Field
+          name="provinciaId"
+          as="select"
+          className="form-control mt-2"
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+            const value = Number(e.target.value);
+            setSelectedProvincia(value);
+            setFieldValue("provinciaId", value);
+            setFieldValue("localidadId", ""); // Resetea el campo de localidad
+          }}
+        >
+          <option value="">Seleccione una provincia</option>
+          {provincias.map((provincia, index) => (
+            <option key={index} value={provincia.id}>
+              {provincia.nombre}
+            </option>
+          ))}
+        </Field>
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="localidadId">Localidad:</label>
+        <Field
+          name="localidadId"
+          as="select"
+          className="form-control mt-2"
+        >
+          <option value="">Seleccione una localidad</option>
+          {localidades.map((localidad, index) => (
+            <option key={index} value={localidad.id}>
+              {localidad.nombre}
+            </option>
+          ))}
+        </Field>
+      </div>
               <Row>
                 <Col md={6} className="mb-4">
                   <label htmlFor="domicilio.calle">Calle:</label>
