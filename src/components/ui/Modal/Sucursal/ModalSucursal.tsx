@@ -18,72 +18,79 @@ interface ModalSucursalProps {
   modalName: string;
 }
 
-const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, sucursalToEdit }) => {
+const ModalSucursal: React.FC<ModalSucursalProps> = ({
+  modalName,
+  getSucursal,
+  sucursalToEdit,
+}) => {
   const sucursalService = new SucursalService();
   const url = import.meta.env.VITE_API_URL;
 
-  const localidadService = new LocalidaService(); 
+  const localidadService = new LocalidaService();
   const empresaService = new EmpresaService();
   const domicilioService = new DomicilioService();
-  const [localidades, setLocalidades] = useState<Localidad[]>([]); 
+  const [localidades, setLocalidades] = useState<Localidad[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const { empresaId } = useParams();
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   const initialValues: Sucursal = sucursalToEdit
-    ? sucursalToEdit
-    : {
+  ? sucursalToEdit
+  : {
+      id: 0,
+      eliminado: false,
+      nombre: "",
+      horarioApertura: formatTime(new Date()),
+      horarioCierre: formatTime(new Date()),
+      casaMatriz: false,
+      localidadId: 0, // Assuming localidadId is part of Sucursal
+      imagen: {
+        id: 0,
+        name: "",
+        url: "",
+        eliminado: false,
+      },
+      domicilio: {
         id: 0,
         eliminado: false,
-        nombre: "",
-        horarioApertura: formatTime(new Date()),
-        horarioCierre: formatTime(new Date()),
-        casaMatriz: false,
-        localidadId: 0,
-        imagen: {
-          name: "",
-          url: "",
-          id: 0
-        },
-        domicilio: {
-          id: 0,
-          eliminado: false,
-          calle: "",
-          numero: 0,
-          cp: 0,
-          piso: 0,
-          nroDpto: 0,
-          localidad: {
-            id: 0,
-            eliminado: false,
-            nombre: "",
-            provincia: {
-              id: 0,
-              eliminado: false,
-              nombre: "",
-              pais: {
-                id: 0,
-                eliminado: false,
-                nombre: ""
-              }
-            }
-          }
-        },
-        empresa: {
+        calle: "",
+        numero: 0,
+        cp: 0,
+        piso: 0,
+        nroDpto: 0,
+        localidad: {
           id: 0,
           eliminado: false,
           nombre: "",
-          razonSocial: "",
-          cuil: 0,
-          imagen: {
-            name: "",
-            url: "",
-            id: 0  // Asegúrate de proporcionar un valor para 'id'
-          }
-        }
-      };
+          provincia: {
+            id: 0,
+            eliminado: false,
+            nombre: "",
+            pais: {
+              id: 0,
+              eliminado: false,
+              nombre: "",
+            },
+          },
+        },
+      },
+      empresa: {
+        id: 0,
+        eliminado: false,
+        nombre: "",
+        razonSocial: "",
+        cuil: 0,
+        imagen: {
+          id: 0,
+          name: "",
+          url: "",
+          eliminado: false,
+        },
+      },
+  };
+
   const modal = useAppSelector((state) => state.modal[modalName]);
   const dispatch = useAppDispatch();
 
@@ -93,9 +100,11 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, s
 
   const fetchLocalidad = async () => {
     try {
-      const localidadesData = await localidadService.getAll(url + 'localidad');
-      const localidadesNames = localidadesData.map((localidad: any) => localidad);
-      setLocalidades(localidadesNames); 
+      const localidadesData = await localidadService.getAll(url + "localidad");
+      const localidadesNames = localidadesData.map(
+        (localidad: any) => localidad
+      );
+      setLocalidades(localidadesNames);
     } catch (error) {
       console.error("Error al obtener las localidades:", error);
       setLocalidades([]);
@@ -103,7 +112,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, s
   };
 
   useEffect(() => {
-    fetchLocalidad(); 
+    fetchLocalidad();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -124,7 +133,9 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, s
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title>{sucursalToEdit ? "Editar sucursal" : "Agregar sucursal"}</Modal.Title>
+        <Modal.Title>
+          {sucursalToEdit ? "Editar sucursal" : "Agregar sucursal"}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Formik
@@ -135,38 +146,58 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, s
           })}
           initialValues={initialValues}
           onSubmit={async (values: Sucursal, { setSubmitting }) => {
-            console.log(values)
+            console.log(values);
             try {
               let newCompanyId: string | null = null;
 
               if (sucursalToEdit) {
-                await sucursalService.put(url + "sucursal", values.id.toString(), values);
+                await sucursalService.put(
+                  url + "sucursal",
+                  values.id.toString(),
+                  values
+                );
                 console.log("Se ha actualizado correctamente.");
               } else {
                 if (empresaId) {
                   // bussco la empresa por el id
-                  const empresa = await empresaService.get(url + 'empresa', empresaId);
+                  const empresa = await empresaService.get(
+                    url + "empresa",
+                    empresaId
+                  );
                   values.empresa = empresa;
 
-                  const localidad = await localidadService.get(url + 'localidad', values.localidadId);
-                  console.log(localidad)
+                  const localidad = await localidadService.get(
+                    url + "localidad",
+                    values.localidadId
+                  );
+                  console.log(localidad);
                   values.domicilio.localidad = localidad;
 
-                  const domicilio = await domicilioService.post(url + 'domicilio', values.domicilio)
+                  const domicilio = await domicilioService.post(
+                    url + "domicilio",
+                    values.domicilio
+                  );
                   values.domicilio = domicilio;
 
-                  const response = await sucursalService.post(url + "sucursal", values);
+                  const response = await sucursalService.post(
+                    url + "sucursal",
+                    values
+                  );
                   console.log("Se ha agregado correctamente.");
                   newCompanyId = response.id.toString();
                 }
               }
 
               if (file && newCompanyId) {
-                const response = await sucursalService.uploadFile(url + 'sucursal/uploads', file, newCompanyId);
-                console.log('Upload successful:', response);
+                const response = await sucursalService.uploadFile(
+                  url + "sucursal/uploads",
+                  file,
+                  newCompanyId
+                );
+                console.log("Upload successful:", response);
               }
 
-              getSucursal(); 
+              getSucursal();
               handleClose();
             } catch (error) {
               console.error("Error al realizar la operación:", error);
@@ -200,7 +231,9 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, s
                 >
                   <option value="">Seleccione una localidad</option>
                   {localidades.map((localidad, index) => (
-                    <option key={index} value={localidad.id}>{localidad.nombre}</option>
+                    <option key={index} value={localidad.id}>
+                      {localidad.nombre}
+                    </option>
                   ))}
                 </Field>
               </div>
@@ -275,11 +308,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({ modalName, getSucursal, s
               <div className="mb-4">
                 <label htmlFor="logo">Logo:</label>
                 <br />
-                <input
-                  type="file"
-                  onChange={handleFileChange}
-                  multiple
-                />
+                <input type="file" onChange={handleFileChange} multiple />
               </div>
               <div className="d-flex justify-content-end">
                 <Button

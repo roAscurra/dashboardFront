@@ -79,6 +79,7 @@ export const ListaArticulosInsumo = () => {
   const handleOpenDeleteModal = (rowData: Row) => {
     setArticuloToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
@@ -86,8 +87,8 @@ export const ListaArticulosInsumo = () => {
       stockActual: rowData.stockActual,
       stockMaximo: rowData.stockMaximo,
       esParaElaborar: rowData.esParaElaborar,
-      unidadMedida: rowData.unidadMedida?.denominacion,
-      categoria: rowData.categoria?.denominacion
+      unidadMedida: rowData.unidadMedida,
+      categoria: rowData.categoria
     });
     setDeleteModalOpen(true);
   };
@@ -118,13 +119,26 @@ export const ListaArticulosInsumo = () => {
 
 
   const handleAddArticuloInsumo = () => {
+    // Verificar si el insumo ya existe en la lista mostrada
+    const insumoExistente = filterData.find((articulo) => articulo.id === articuloToEdit?.id);
+    
+    // Si el insumo existe, no permitir agregarlo
+    if (insumoExistente) {
+      // Mostrar un mensaje de error o realizar alguna otra acción, como alertar al usuario
+      console.error("No se puede agregar un insumo que ya existe.");
+      return;
+    }
+    
+    // Si el insumo no existe, abrir el modal para agregar un nuevo artículo
     setArticuloToEdit(null);
     dispatch(toggleModal({ modalName: "modal" }));
   };
+  
 
   const handleOpenEditModal = (rowData: Row) => {
     setArticuloToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
@@ -132,8 +146,8 @@ export const ListaArticulosInsumo = () => {
       stockActual: rowData.stockActual,
       stockMaximo: rowData.stockMaximo,
       esParaElaborar: rowData.esParaElaborar,
-      unidadMedida: rowData.unidadMedida?.denominacion,
-      categoria: rowData.categoria?.denominacion
+      unidadMedida: rowData.unidadMedida,
+      categoria: rowData.categoria
     });
     dispatch(toggleModal({ modalName: "modal" }));
   };
@@ -146,6 +160,7 @@ export const ListaArticulosInsumo = () => {
   const columns: Column[] = [
     { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
+    { id: "categoria", label: "Categoría", renderCell: (rowData) => <>{rowData.categoria.denominacion}</> },
     { id: "precioVenta", label: "Precio Venta", renderCell: (rowData) => <>{rowData.precioVenta}</> },
     { id: "precioCompra", label: "Precio Compra", renderCell: (rowData) => <>{rowData.precioCompra}</> },
     { id: "stockActual", label: "Stock Actual", renderCell: (rowData) => <>{rowData.stockActual}</> },

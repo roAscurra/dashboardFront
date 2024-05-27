@@ -14,9 +14,10 @@ const ModalEliminarProducto: React.FC<ModalDeleteProductsProps> = ({ show, onHid
     const url = import.meta.env.VITE_API_URL;
 
     const handleDelete = async () => {
+
         try {
             if (product && product.id) {
-                const deleteUrl = `${url}articulosInsumo/${product.id}`;
+                const deleteUrl = `${url}articuloManufacturado`;
                 console.log(`Eliminando producto con URL: ${deleteUrl}`);
                 await productService.delete(deleteUrl, product.id.toString());
                 console.log('Se ha eliminado correctamente.');
@@ -27,7 +28,8 @@ const ModalEliminarProducto: React.FC<ModalDeleteProductsProps> = ({ show, onHid
             }
         } catch (error) {
             console.error('Error al eliminar el producto:', error);
-            alert('Ocurrió un error al eliminar el producto. Por favor, inténtalo de nuevo.');
+            onDelete(); // Llama a la función onDelete
+            onHide(); // Cerramos el modal
         }
     }
 

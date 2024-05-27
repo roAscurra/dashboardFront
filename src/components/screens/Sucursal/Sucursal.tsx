@@ -81,7 +81,7 @@ export const ListaSucursal = () => {
     fetchEmpresa();
   }, [fetchSucursal, fetchEmpresa]);
 
-  const handleOpenDeleteModal = (rowData: Sucursal) => {
+  const handleOpenDeleteModal = (rowData: Row) => {
     setSucursalToEdit({
       id: rowData.id,
       eliminado: rowData.eliminado,
@@ -115,7 +115,7 @@ export const ListaSucursal = () => {
     }
   };
 
-  const handleOpenEditModal = (rowData: Sucursal) => {
+  const handleOpenEditModal = (rowData: Row) => {
     setSucursalToEdit({
       id: rowData.id,
       eliminado: rowData.eliminado,

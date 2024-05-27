@@ -42,15 +42,21 @@ export const ListaPromocion = () => {
 const handleOpenDeleteModal = (rowData: Row) => {
   setPromocionToEdit({
     id: rowData.id,
+    eliminado: rowData.eliminado,
     denominacion: rowData.denominacion,
+    horaDesde: rowData.horaDesde,
+    horaHasta: rowData.horaHasta,
     fechaDesde: rowData.fechaDesde,
     fechaHasta: rowData.fechaHasta,
     descripcionDescuento: rowData.descripcionDescuento,
-    precioPromocional: rowData.precioPromocional
+    precioPromocional: rowData.precioPromocional,
+    tipoPromocion: rowData.tipoPromocion,
+    imagenes: rowData.imagenes,
+    sucursales: rowData.sucursales,
+    promocionDetalle: rowData.promocionDetalle
     });
   setDeleteModalOpen(true); // Utiliza el estado directamente para abrir la modal de eliminación
 };
-
   const handleDelete = async () => {
     try {
       if (promocionToEdit && promocionToEdit.id) {
@@ -100,11 +106,18 @@ const handleOpenDeleteModal = (rowData: Row) => {
 const handleOpenEditModal = (rowData: Row) => {
   setPromocionToEdit({
     id: rowData.id,
+    eliminado: rowData.eliminado,
     denominacion: rowData.denominacion,
+    horaDesde: rowData.horaDesde,
+    horaHasta: rowData.horaHasta,
     fechaDesde: rowData.fechaDesde,
     fechaHasta: rowData.fechaHasta,
     descripcionDescuento: rowData.descripcionDescuento,
-    precioPromocional: rowData.precioPromocional
+    precioPromocional: rowData.precioPromocional,
+    tipoPromocion: rowData.tipoPromocion,
+    imagenes: rowData.imagenes,
+    sucursales: rowData.sucursales,
+    promocionDetalle: rowData.promocionDetalle
   });
   dispatch(toggleModal({ modalName: 'modal' }));
 };
@@ -112,14 +125,34 @@ const handleOpenEditModal = (rowData: Row) => {
 const onSearch = (query: string) => {
   handleSearch(query, globalPromocion,  setFilterData);
 };
-
   const columns: Column[] = [
     { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
+    { id: "horaDesde", label: "Fecha Desde", renderCell: (rowData) => <>{rowData.horaDesde}</> },
+    { id: "horaHasta", label: "Fecha Desde", renderCell: (rowData) => <>{rowData.horaHasta}</> },
     { id: "fechaDesde", label: "Fecha Desde", renderCell: (rowData) => <>{rowData.fechaDesde}</> },
     { id: "fechaHasta", label: "Fecha Hasta", renderCell: (rowData) => <>{rowData.fechaHasta}</> },
     { id: "descripcionDescuento", label: "Descripcion Descuento", renderCell: (rowData) => <>{rowData.descripcionDescuento}</> },
-    { id: "precioPromocional", label: "Precio Promocional", renderCell: (rowData) => <>{rowData.precioDescuento}</> }
+    { id: "precioPromocional", label: "Precio Promocional", renderCell: (rowData) => <>{rowData.precioPromocional}</> },
+    { id: "tipoPromocion", label: "Tipo Promoción", renderCell: (rowData) => <>{rowData.tipoPromocion}</> },
+    {
+      id: "imagenes",
+      label: "Imágenes",
+      renderCell: (rowData) => {
+        const imagenes = rowData.imagenes;
+        if (imagenes && imagenes.length > 0) {
+          return (
+            <div style={{ display: 'flex', gap: '5px' }}>
+              {imagenes.map((imagen: any, index: number) => (
+                <img key={index} src={imagen.url} alt={`Imagen ${index + 1}`} style={{ width: '100px', height: 'auto' }} />
+              ))}
+            </div>
+          );
+        } else {
+          return <span>No hay imágenes disponibles</span>;
+        }
+      }
+    }
 
   ];
 

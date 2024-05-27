@@ -41,11 +41,12 @@ export const ListaProductos = () => {
   const globalArticuloManufacturado = useAppSelector(
       (state) => state.articuloManufacturado.data
   );
+  
 
   const fetchImages = useCallback(async (productoId: string) =>{
     try{
       const response = await productoService.get(url + 'articuloManufacturado/getAllImagesByArticuloManufacturadoId', productoId);
-      console.log(response)
+
       if(Array.isArray(response) && response.length > 0){
         return response[0].url;
       }
@@ -57,7 +58,7 @@ export const ListaProductos = () => {
 
   const fetchProductos = useCallback(async () => {
     try {
-      const productos = await productoService.getAll(url + 'articuloManufacturado');
+      const productos = (await productoService.getAll(url + 'articuloManufacturado')).filter((v) => !v.eliminado);
       const productoConImagenes = await Promise.all(
         productos.map(async(product) => {
           const imagenUrl = await fetchImages(product.id.toString());
@@ -82,6 +83,7 @@ export const ListaProductos = () => {
   const handleOpenDeleteModal = (rowData: Row) => {
     setProductToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
@@ -90,13 +92,17 @@ export const ListaProductos = () => {
       tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
       preparacion: rowData.preparacion,
       articuloManufacturadoDetalles: rowData.articuloManufacturado,
-      categoria: rowData.categoria?.categoria
+      categoria: rowData.categoria
     });
     setDeleteModalOpen(true);
   };
 
   const handleCloseDeleteModal = () => {
+
+    console.log(deleteModalOpen)
+
     setDeleteModalOpen(false); // Utiliza el estado directamente para cerrar la modal de eliminación
+    fetchProductos();
   };
 
   const handleDelete = async () => {
@@ -124,6 +130,7 @@ export const ListaProductos = () => {
   const handleOpenEditModal = (rowData: Row) => {
     setProductToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
@@ -131,8 +138,8 @@ export const ListaProductos = () => {
       descripcion: rowData.descripcion,
       tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
       preparacion: rowData.preparacion,
-      articuloManufacturadoDetalles: rowData.articuloManufacturado,
-      categoria: rowData.categoria?.categoria
+      articuloManufacturadoDetalles: rowData.articuloManufacturadoDetalles,
+      categoria: rowData.categoria
     });
     dispatch(toggleModal({ modalName: 'modal' }));
   };
@@ -147,6 +154,7 @@ export const ListaProductos = () => {
   const columns: Column[] = [
     { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
+    { id: "categoria", label: "Categoria", renderCell: (rowData) => <>{rowData.categoria.denominacion}</> },
     { id: "precioVenta", label: "Precio", renderCell: (rowData) => <>{rowData.precioVenta}</> },
     { id: "descripcion", label: "Descripción", renderCell: (rowData) => <>{rowData.descripcion}</> },
     {
