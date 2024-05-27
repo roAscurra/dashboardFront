@@ -52,7 +52,19 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
       : "",
     precioPromocional: promocionToEdit ? promocionToEdit.precioPromocional : 0,
     tipoPromocion: promocionToEdit ? promocionToEdit.tipoPromocion : "",
-    sucursales: promocionToEdit ? promocionToEdit.sucursales : [],
+    sucursales: promocionToEdit
+    ? promocionToEdit.sucursales.map((sucursal: any) => ({
+        id: sucursal.id,
+        nombre: sucursal.nombre,
+        horarioApertura: sucursal.horarioApertura,
+        horarioCierre: sucursal.horarioCierre,
+        casaMatriz: sucursal.casaMatriz,
+        imagen: sucursal.imagen,
+        domicilio: sucursal.domicilio,
+        empresa: sucursal.empresa,
+        eliminado: sucursal.eliminado || false,
+      }))
+    : [],
     promocionDetalle: promocionToEdit?.promocionDetalle
         ? promocionToEdit.promocionDetalle.map((detalle: any) => ({
             id: 0,
@@ -67,7 +79,18 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     descripcion: detalle.descripcion,
                     tiempoEstimadoMinutos: detalle.tiempoEstimadoMinutos,
                     unidadMedida: detalle.unidadMedida,
-                    categoria: detalle.articuloManufacturado.categoria,
+                    categoria: detalle.categoria
+                    ? {
+                      id: detalle.articuloInsumo.categoria.id,
+                      eliminado: detalle.articuloInsumo.categoria.eliminado,
+                      denominacion: detalle.articuloInsumo.categoria.denominacion,
+                      esInsumo: detalle.articuloInsumo.categoria.esInsumo,
+                  }: {
+                      id: 0,
+                      eliminado: false,
+                      denominacion: '',
+                      esInsumo: false,
+                  },
                     preparacion: detalle.articuloManufacturado.preparacion, 
                 }
         }))
@@ -181,7 +204,6 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     }
                   })
                 );
-
                 values.promocionDetalle = respuestas;
 
                 await promocionService.put(
@@ -212,6 +234,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 );
                 const respuesta3 = await sucursalService.get(url + "sucursal", "1");
                 console.log("Respuesta:", respuesta3);
+                values.sucursales.push(respuesta3);
                 // Una vez que se recolectan todas las respuestas, actualizar el objeto 'values'
                 values.promocionDetalle = respuestas;
                 console.log('Valores actualizados:', values);
