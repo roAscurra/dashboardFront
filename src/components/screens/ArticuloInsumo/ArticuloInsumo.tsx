@@ -116,8 +116,6 @@ export const ListaArticulosInsumo = () => {
   const handleCloseDeleteModal = () => {
     setDeleteModalOpen(false);
   };
-
-
   const handleAddArticuloInsumo = () => {
     // Verificar si el insumo ya existe en la lista mostrada
     const insumoExistente = filterData.find((articulo) => articulo.id === articuloToEdit?.id);
