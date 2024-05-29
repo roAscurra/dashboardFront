@@ -145,7 +145,7 @@ const onSearch = (query: string) => {
   handleSearch(query, globalPromocion,  setFilterData);
 };
   const columns: Column[] = [
-    { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
+    // { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
     { id: "horaDesde", label: "Fecha Desde", renderCell: (rowData) => <>{rowData.horaDesde}</> },
     { id: "horaHasta", label: "Fecha Desde", renderCell: (rowData) => <>{rowData.horaHasta}</> },

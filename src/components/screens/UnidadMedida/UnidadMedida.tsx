@@ -58,7 +58,8 @@ export const ListaUnidadesMedida = () => {
   const handleOpenEditModal = (rowData: Row) => {
     setUnidadToEdit({
       id: rowData.id,
-      denominacion: rowData.denominacion
+      denominacion: rowData.denominacion,
+      eliminado: rowData.eliminado
     });
     dispatch(toggleModal({ modalName: 'modal' }));
   };
@@ -70,7 +71,8 @@ export const ListaUnidadesMedida = () => {
   const handleOpenDeleteModal = (rowData: Row) => {
     setUnidadToEdit({
       id: rowData.id,
-      denominacion: rowData.denominacion
+      denominacion: rowData.denominacion,
+      eliminado: rowData.eliminado
     });
     setDeleteModalOpen(true);
   };
@@ -94,7 +96,7 @@ export const ListaUnidadesMedida = () => {
   };
 
   const columns: Column[] = [
-    { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id || ""}</> },
+    // { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id || ""}</> },
     { id: "denominacion", label: "Denominación", renderCell: (rowData) => <>{rowData.denominacion || ""}</> }
   ];
 
