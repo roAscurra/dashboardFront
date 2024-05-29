@@ -82,6 +82,7 @@ export const ListaEmpresa = () => {
   };
 
   const handleCloseDeleteModal = () => {
+    fetchEmpresa();
     setDeleteModalOpen(false);
   };
 
