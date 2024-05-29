@@ -17,7 +17,7 @@ const ModalEliminarCategoria: React.FC<ModalEliminarCategoriaProps> = ({ show, c
     const handleEliminar = async () => {
         try {
             if (categoria && categoria.id) {
-                await categoriaService.delete(url + 'categorias', categoria.id.toString());
+                await categoriaService.delete(url + 'categoria', categoria.id.toString());
                 console.log('Se ha eliminado correctamente.');
                 onClose(); // Cerramos el modal después de eliminar
             } else {
@@ -25,6 +25,7 @@ const ModalEliminarCategoria: React.FC<ModalEliminarCategoriaProps> = ({ show, c
             }
         } catch (error) {
             console.error('Error al eliminar la categoría:', error);
+            onClose();
         }
     };
 
