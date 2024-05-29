@@ -22,16 +22,19 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
     const url = import.meta.env.VITE_API_URL;
     const { sucursalId } = useParams();
     const sucursalService = new SucursalService();
-    const [sucursal, setSucursal] = useState<Sucursal | null>(null);
-
+    const [sucursales, setSucursales] = useState<Sucursal[]>([]);
+    
     const fetchSucursalData = async () => {
         try {
             if (sucursalId) {
-                const sucursal2 = await sucursalService.get(url + 'sucursal', sucursalId);
-                setSucursal(sucursal2);
+                const sucursalSeleccionada = await sucursalService.get(url + 'sucursal', sucursalId);
+                const empresaId = sucursalSeleccionada.empresa.id;
+                const todasSucursales = await sucursalService.getAll(url + 'sucursal');
+                const sucursalesEmpresa = todasSucursales.filter(sucursal => sucursal.empresa.id === empresaId);
+                setSucursales(sucursalesEmpresa);
             }
         } catch (error) {
-            console.error("Error al obtener los datos de la sucursal:", error);
+            console.error("Error al obtener los datos de las sucursales:", error);
         }
     };
 
@@ -39,21 +42,20 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
         fetchSucursalData();
     }, []);
 
-    const initialValues: Categoria = categoryToEdit
-        ? categoryToEdit
-        : {
-            id: 0,
-            eliminado: false,
-            denominacion: '',
-            subCategorias: [],
-            sucursales: [],
-            esInsumo: false
-        };
+    const initialValues: Categoria = {
+        id: categoryToEdit ? categoryToEdit.id : 0,
+        eliminado: categoryToEdit ? categoryToEdit.eliminado : false,
+        denominacion: categoryToEdit?.denominacion || '',
+        subCategorias: categoryToEdit?.subCategorias || [],
+        sucursales: categoryToEdit ? categoryToEdit.sucursales : [],
+        esInsumo: categoryToEdit ? categoryToEdit.esInsumo : false
+    };
+    
 
-    const dispatch = useAppDispatch();
+    const dispatchCategory = useAppDispatch();
 
     const handleClose = () => {
-        dispatch(toggleModal({ modalName: 'modal' }));
+        dispatchCategory(toggleModal({ modalName: 'modal' }));
         onClose();
     };
 
@@ -66,24 +68,31 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                 <Formik
                     validationSchema={Yup.object({
                         denominacion: Yup.string().required('Campo requerido'),
-                        subCategorias: Yup.array().of(
-                            Yup.object({
-                                denominacion: Yup.string().required('Campo requerido'),
-                            })
-                        )
+                        // subCategorias: Yup.array().of(
+                        //     Yup.object({
+                        //         denominacion: Yup.string().required('Campo requerido'),
+                        //     })
+                        // ),
+                        // sucursales: Yup.array().of(
+                        //     Yup.object({
+                        //         id: Yup.number().required(),
+                        //         nombre: Yup.string().required(),
+                        //     })
+                        // )
                     })}
                     initialValues={initialValues}
-                    onSubmit={async (values: Categoria) => {
+                    onSubmit={async (values) => {
                         try {
                             if (categoryToEdit) {
                                 await categoriaService.put(url + 'categoria', values.id.toString(), values);
-                                console.log('Categoría actualizada correctamente.');
+                                console.log('Categoría actualizada correctamente.', values);
                             } else {
-                                if (sucursal) {
-                                    values.sucursales = [sucursal];
-                                }
                                 await categoriaService.post(url + 'categoria', values);
-                                console.log('Categoría agregada correctamente.');
+                                console.log('Categoría agregada correctamente.', values);
+
+                                const respuesta = await sucursalService.get(url + 'sucursal', '1');
+                                console.log("Respuesta: ", respuesta);
+                                
                             }
                             getCategories();
                             handleClose();
@@ -92,7 +101,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                         }
                     }}
                 >
-                    {({ values }) => (
+                    {({ values, setFieldValue }) => (
                         <Form autoComplete="off">
                             <div className="mb-4">
                                 <label htmlFor="denominacion">Nombre:</label>
@@ -131,9 +140,34 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                                     </div>
                                 )}
                             </FieldArray>
+                            <div className="mb-4">
+                                <label>Sucursales:</label>
+                                {sucursales.map((sucursal) => (
+                                    <div key={sucursal.id} className="d-flex mb-2">
+                                        <Field
+                                            name="sucursales"
+                                            type="checkbox"
+                                            value={sucursal.id}
+                                            checked={values.sucursales.some(s => s.id === sucursal.id)}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                if (e.target.checked) {
+                                                    setFieldValue("sucursales", [...values.sucursales, sucursal]);
+                                                } else {
+                                                    setFieldValue("sucursales", values.sucursales.filter(s => s.id !== sucursal.id));
+                                                }
+                                            }}
+                                            className="form-check-input mt-2"
+                                        />
+                                        <label className="form-check-label ml-2 mt-2">{sucursal.nombre}</label>
+                                    </div>
+                                ))}
+                            </div>
                             <div className="d-flex justify-content-end">
-                                <Button variant="outline-success" type="submit" className="custom-button">
-                                    Enviar
+                                <Button variant="secondary" onClick={handleClose} className="mr-2">
+                                    Cancelar
+                                </Button>
+                                <Button variant="primary" type="submit">
+                                    Guardar
                                 </Button>
                             </div>
                         </Form>
