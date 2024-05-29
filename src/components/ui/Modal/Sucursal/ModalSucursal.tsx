@@ -49,7 +49,10 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   };
 
   const initialValues: Sucursal = sucursalToEdit
-    ? sucursalToEdit
+    ? {
+      ...sucursalToEdit,
+      localidadId: sucursalToEdit.domicilio.localidad.id,
+    }
     : {
       id: 0,
       eliminado: false,
@@ -103,7 +106,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
       },
     };
 
-  const modal = useAppSelector((state : any) => state.modal[modalName]);
+  const modal = useAppSelector((state: any) => state.modal[modalName]);
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
@@ -113,10 +116,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   const fetchPais = async () => {
     try {
       const paisesData = await paisService.getAll(url + 'pais');
-      const paisesName = paisesData.map(
-        (pais: any) => pais
-      );
-      setPaises(paisesName);
+      setPaises(paisesData);
     } catch (error) {
       console.error("Error al obtener los paises: ", error);
       setPaises([]);
@@ -156,12 +156,17 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
   useEffect(() => {
     fetchPais();
-  }, []);
-  
+    if (sucursalToEdit) {
+      const { domicilio } = sucursalToEdit;
+      setSelectedPais(domicilio.localidad.provincia.pais.id);
+      setSelectedProvincia(domicilio.localidad.provincia.id);
+    }
+  }, [sucursalToEdit]);
+
   useEffect(() => {
     fetchProvinciasData(selectedPais);
   }, [selectedPais]);
-  
+
   useEffect(() => {
     fetchLocalidadesData(selectedProvincia);
   }, [selectedProvincia]);
@@ -193,6 +198,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
             nombre: Yup.string().required("Campo requerido"),
             horarioApertura: Yup.string().required("Campo requerido"),
             horarioCierre: Yup.string().required("Campo requerido"),
+            localidadId: Yup.number().required("Debes seleccionar una localidad")
           })}
           initialValues={initialValues}
           onSubmit={async (values: Sucursal, { setSubmitting }) => {
@@ -209,7 +215,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                 console.log("Se ha actualizado correctamente.");
               } else {
                 if (empresaId) {
-                  // bussco la empresa por el id
                   const empresa = await empresaService.get(
                     url + "empresa",
                     empresaId
@@ -256,171 +261,178 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
             }
           }}
         >
-          {({ setFieldValue, isSubmitting }) => (
-            <Form autoComplete="off">
-              <div className="mb-4">
-                <label htmlFor="nombre">Nombre:</label>
-                <Field
-                  name="nombre"
-                  type="text"
-                  placeholder="nombre"
-                  className="form-control mt-2"
-                />
-                <ErrorMessage
-                  name="nombre"
-                  className="error-message"
-                  component="div"
-                />
-              </div>
-              <div className="mb-4">
-        <label htmlFor="paisId">País:</label>
-        <Field
-          name="paisId"
-          as="select"
-          className="form-control mt-2"
-          onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-            const value = Number(e.target.value);
-            setSelectedPais(value);
-            setFieldValue("paisId", value);
-            setFieldValue("provinciaId", ""); // Resetea el campo de provincia
-            setFieldValue("localidadId", ""); // Resetea el campo de localidad
-          }}
-        >
-          <option value="">Seleccione un país</option>
-          {paises.map((pais, index) => (
-            <option key={index} value={pais.id}>
-              {pais.nombre}
-            </option>
-          ))}
-        </Field>
-      </div>
+{({ setFieldValue, isSubmitting }) => (
+  <Form autoComplete="off">
+    <div className="mb-4">
+      <label htmlFor="nombre">Nombre:</label>
+      <Field
+        name="nombre"
+        type="text"
+        placeholder="nombre"
+        className="form-control mt-2"
+      />
+      <ErrorMessage
+        name="nombre"
+        className="error-message"
+        component="div"
+      />
+    </div>
+    <div className="mb-4">
+      <label htmlFor="paisId">País:</label>
+      <Field
+        name="paisId"
+        as="select"
+        className="form-control mt-2"
+        onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+          const value = Number(e.target.value);
+          setSelectedPais(value);
+          setFieldValue("paisId", value);
+          setFieldValue("provinciaId", ""); // Resetea el campo de provincia
+          setFieldValue("localidadId", ""); // Resetea el campo de localidad
+        }}
+      >
+        <option value="">Seleccione un país</option>
+        {paises.map((pais, index) => (
+          <option key={index} value={pais.id}>
+            {pais.nombre}
+          </option>
+        ))}
+      </Field>
+    </div>
 
-      <div className="mb-4">
-        <label htmlFor="provinciaId">Provincia:</label>
-        <Field
-          name="provinciaId"
-          as="select"
-          className="form-control mt-2"
-          onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-            const value = Number(e.target.value);
-            setSelectedProvincia(value);
-            setFieldValue("provinciaId", value);
-            setFieldValue("localidadId", ""); // Resetea el campo de localidad
-          }}
-        >
-          <option value="">Seleccione una provincia</option>
-          {provincias.map((provincia, index) => (
-            <option key={index} value={provincia.id}>
-              {provincia.nombre}
-            </option>
-          ))}
-        </Field>
-      </div>
+    <div className="mb-4">
+      <label htmlFor="provinciaId">Provincia:</label>
+      <Field
+        name="provinciaId"
+        as="select"
+        className="form-control mt-2"
+        onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+          const value = Number(e.target.value);
+          setSelectedProvincia(value);
+          setFieldValue("provinciaId", value);
+          setFieldValue("localidadId", ""); // Resetea el campo de localidad
+        }}
+      >
+        <option value="">Seleccione una provincia</option>
+        {provincias.map((provincia, index) => (
+          <option key={index} value={provincia.id}>
+            {provincia.nombre}
+          </option>
+        ))}
+      </Field>
+    </div>
 
-      <div className="mb-4">
-        <label htmlFor="localidadId">Localidad:</label>
+    <div className="mb-4">
+      <label htmlFor="localidadId">Localidad:</label>
+      <Field
+        name="localidadId"
+        as="select"
+        className="form-control mt-2"
+        onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+          const value = Number(e.target.value);
+          console.log("Localidad seleccionada:", value);
+          setFieldValue("localidadId", value);
+        }}
+      >
+        <option value="">Seleccione una localidad</option>
+        {localidades.map((localidad, index) => (
+          <option key={index} value={localidad.id}>
+            {localidad.nombre}
+          </option>
+        ))}
+      </Field>
+    </div>
+
+    <Row>
+      <Col md={6} className="mb-4">
+        <label htmlFor="domicilio.calle">Calle:</label>
         <Field
-          name="localidadId"
-          as="select"
+          name="domicilio.calle"
+          type="text"
+          placeholder="calle"
           className="form-control mt-2"
-        >
-          <option value="">Seleccione una localidad</option>
-          {localidades.map((localidad, index) => (
-            <option key={index} value={localidad.id}>
-              {localidad.nombre}
-            </option>
-          ))}
-        </Field>
-      </div>
-              <Row>
-                <Col md={6} className="mb-4">
-                  <label htmlFor="domicilio.calle">Calle:</label>
-                  <Field
-                    name="domicilio.calle"
-                    type="text"
-                    placeholder="calle"
-                    className="form-control mt-2"
-                  />
-                  <ErrorMessage
-                    name="domicilio.calle"
-                    className="error-message"
-                    component="div"
-                  />
-                </Col>
-                <Col md={6} className="mb-4">
-                  <label htmlFor="domicilio.cp">Código Postal:</label>
-                  <Field
-                    name="domicilio.cp"
-                    type="number"
-                    placeholder="cp"
-                    className="form-control mt-2"
-                  />
-                  <ErrorMessage
-                    name="domicilio.cp"
-                    className="error-message"
-                    component="div"
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col md={6} className="mb-4">
-                  <label htmlFor="horarioApertura">Horario apertura:</label>
-                  <Field
-                    name="horarioApertura"
-                    type="time"
-                    step="1"
-                    className="form-control mt-2"
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      const value = e.target.value;
-                      setFieldValue("horarioApertura", value);
-                    }}
-                  />
-                  <ErrorMessage
-                    name="horarioApertura"
-                    className="error-message"
-                    component="div"
-                  />
-                </Col>
-                <Col md={6} className="mb-4">
-                  <label htmlFor="horarioCierre">Horario cierre:</label>
-                  <Field
-                    name="horarioCierre"
-                    type="time"
-                    step="1"
-                    className="form-control mt-2"
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      const value = e.target.value;
-                      setFieldValue("horarioCierre", value);
-                    }}
-                  />
-                  <ErrorMessage
-                    name="horarioCierre"
-                    className="error-message"
-                    component="div"
-                  />
-                </Col>
-              </Row>
-              <div className="mb-4">
-                <label htmlFor="logo">Logo:</label>
-                <br />
-                <input type="file" onChange={handleFileChange} multiple />
-              </div>
-              <div className="d-flex justify-content-end">
-                <Button
-                  variant="outline-success"
-                  type="submit"
-                  className="custom-button"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Enviando..." : "Enviar"}
-                </Button>
-              </div>
-            </Form>
-          )}
+        />
+        <ErrorMessage
+          name="domicilio.calle"
+          className="error-message"
+          component="div"
+        />
+      </Col>
+      <Col md={6} className="mb-4">
+        <label htmlFor="domicilio.cp">Código Postal:</label>
+        <Field
+          name="domicilio.cp"
+          type="number"
+          placeholder="cp"
+          className="form-control mt-2"
+        />
+        <ErrorMessage
+          name="domicilio.cp"
+          className="error-message"
+          component="div"
+        />
+      </Col>
+    </Row>
+    <Row>
+      <Col md={6} className="mb-4">
+        <label htmlFor="horarioApertura">Horario apertura:</label>
+        <Field
+          name="horarioApertura"
+          type="time"
+          step="1"
+          className="form-control mt-2"
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            const value = e.target.value;
+            setFieldValue("horarioApertura", value);
+          }}
+        />
+        <ErrorMessage
+          name="horarioApertura"
+          className="error-message"
+          component="div"
+        />
+      </Col>
+      <Col md={6} className="mb-4">
+        <label htmlFor="horarioCierre">Horario cierre:</label>
+        <Field
+          name="horarioCierre"
+          type="time"
+          step="1"
+          className="form-control mt-2"
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            const value = e.target.value;
+            setFieldValue("horarioCierre", value);
+          }}
+        />
+        <ErrorMessage
+          name="horarioCierre"
+          className="error-message"
+          component="div"
+        />
+      </Col>
+    </Row>
+    <div className="mb-4">
+      <label htmlFor="logo">Logo:</label>
+      <br />
+      <input type="file" onChange={handleFileChange} multiple />
+    </div>
+    <div className="d-flex justify-content-end">
+      <Button
+        variant="outline-success"
+        type="submit"
+        className="custom-button"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Enviando..." : "Enviar"}
+      </Button>
+    </div>
+  </Form>
+)}
         </Formik>
       </Modal.Body>
     </Modal>
   );
+
 };
 
 export default ModalSucursal;
