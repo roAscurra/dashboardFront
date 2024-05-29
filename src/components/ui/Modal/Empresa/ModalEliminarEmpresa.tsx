@@ -24,6 +24,7 @@ const ModalEliminarEmpresa: React.FC<ModalEliminarEmpresaProps> = ({ show, onHid
         }
       } catch (error) {
         console.error('Error al eliminar la empresa:', error);
+        onHide();
       }
     };
   
