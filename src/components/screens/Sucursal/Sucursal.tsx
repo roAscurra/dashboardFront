@@ -79,7 +79,7 @@ export const ListaSucursal = () => {
   useEffect(() => {
     fetchSucursal();
     fetchEmpresa();
-  }, [fetchSucursal, fetchEmpresa]);
+  }, []);
 
   const handleOpenDeleteModal = (rowData: Row) => {
     setSucursalToEdit({
