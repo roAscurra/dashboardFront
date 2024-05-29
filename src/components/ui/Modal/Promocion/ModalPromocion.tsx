@@ -28,6 +28,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   promocionToEdit,
 }) => {
   const promocionService = new PromocionService();
+  const [file, setFile] = useState<File | null>(null);
   const [showInsumoModal, setShowInsumoModal] = useState(false);
   const [modalColor, setModalColor] = useState<string>(""); // Estado para controlar el color de fondo de la modal
   const [articulosManufacturados, setArticulosManufacturados] = useState<
@@ -166,6 +167,13 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
     setPromocionDetalles(detalles);
     setDetalles(detalles); // Guardar los detalles en el estado
   };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+        setFile(e.target.files[0]);
+    }
+  };
+
   useEffect(() => {
     setDetalles(promocionToEdit?.promocionDetalle || []);
   }, [promocionToEdit]);
@@ -408,6 +416,18 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     component="div"
                   />
                 </div>
+                <div className="col-md-4 mb-4">
+                  <label htmlFor="imagen">Imagen:</label>
+                                      <input
+                                          name="imagen"
+                                          type="file"
+                                          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                                              handleFileChange(event);
+                                          }}
+                                          className="form-control my-2"
+                                      />
+                </div>
+               
                 <div className="mb-4">
                   <label>Sucursales:</label>
                   <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3">
