@@ -53,7 +53,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
           nombre: sucursal.nombre,
           horarioApertura: sucursal.horarioApertura,
           horarioCierre: sucursal.horarioCierre,
-          casaMatriz: sucursal.casaMatriz,
+          esCasaMatriz: sucursal.esCasaMatriz,
           imagen: sucursal.imagen,
           domicilio: sucursal.domicilio,
           empresa: sucursal.empresa,

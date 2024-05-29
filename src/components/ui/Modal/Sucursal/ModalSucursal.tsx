@@ -53,61 +53,61 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
   const initialValues: Sucursal = sucursalToEdit
     ? {
-        ...sucursalToEdit,
-        localidadId: sucursalToEdit.domicilio.localidad.id,
-      }
+      ...sucursalToEdit,
+      localidadId: sucursalToEdit.domicilio.localidad.id,
+    }
     : {
+      id: 0,
+      eliminado: false,
+      nombre: "",
+      horarioApertura: formatTime(new Date()),
+      horarioCierre: formatTime(new Date()),
+      esCasaMatriz: false,
+      localidadId: 0, // Assuming localidadId is part of Sucursal
+      imagen: {
+        id: 0,
+        name: "",
+        url: "",
+        eliminado: false,
+      },
+      domicilio: {
+        id: 0,
+        eliminado: false,
+        calle: "",
+        numero: 0,
+        cp: 0,
+        piso: 0,
+        nroDpto: 0,
+        localidad: {
+          id: 0,
+          eliminado: false,
+          nombre: "",
+          provincia: {
+            id: 0,
+            eliminado: false,
+            nombre: "",
+            pais: {
+              id: 0,
+              eliminado: false,
+              nombre: "",
+            },
+          },
+        },
+      },
+      empresa: {
         id: 0,
         eliminado: false,
         nombre: "",
-        horarioApertura: formatTime(new Date()),
-        horarioCierre: formatTime(new Date()),
-        esCasaMatriz: false,
-        localidadId: 0, // Assuming localidadId is part of Sucursal
+        razonSocial: "",
+        cuil: 0,
         imagen: {
           id: 0,
           name: "",
           url: "",
           eliminado: false,
         },
-        domicilio: {
-          id: 0,
-          eliminado: false,
-          calle: "",
-          numero: 0,
-          cp: 0,
-          piso: 0,
-          nroDpto: 0,
-          localidad: {
-            id: 0,
-            eliminado: false,
-            nombre: "",
-            provincia: {
-              id: 0,
-              eliminado: false,
-              nombre: "",
-              pais: {
-                id: 0,
-                eliminado: false,
-                nombre: "",
-              },
-            },
-          },
-        },
-        empresa: {
-          id: 0,
-          eliminado: false,
-          nombre: "",
-          razonSocial: "",
-          cuil: 0,
-          imagen: {
-            id: 0,
-            name: "",
-            url: "",
-            eliminado: false,
-          },
-        },
-      };
+      },
+    };
 
   const modal = useAppSelector((state: any) => state.modal[modalName]);
   const dispatch = useAppDispatch();
@@ -159,7 +159,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
       setLocalidades([]);
     }
   };
-  
+
   useEffect(() => {
     fetchPais();
     if (sucursalToEdit) {
@@ -256,6 +256,12 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                     values.domicilio
                   );
                   values.domicilio = domicilio;
+
+                  // Verificar si la empresa ya tiene una sucursal que es casa matriz
+                  if (values.esCasaMatriz && empresaTieneCasaMatriz) {
+                    alert("La empresa ya tiene una sucursal que es casa matriz. No se puede crear otra.");
+                    return;
+                  }
 
                   const response = await sucursalService.post(
                     url + "sucursal",
@@ -453,13 +459,16 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                 <Col md={4} className="mb-4">
                   <label htmlFor="casaMatriz">Casa Matriz:</label>
                   <Field
-                    name="casaMatriz"
+                    name="esCasaMatriz"
                     as="select"
                     className="form-control mt-2"
-                    disabled={empresaTieneCasaMatriz && !sucursalToEdit?.esCasaMatriz} // Deshabilita si empresaTieneCasaMatriz es true y sucursalToEdit.casaMatriz es false
-                    defaultValue={sucursalToEdit?.esCasaMatriz ? "true" : "false"} // Marca por defecto como "Sí" si sucursalToEdit.esCasaMatriz es true
-
-                    >
+                    disabled={empresaTieneCasaMatriz && !sucursalToEdit?.esCasaMatriz}
+                    defaultValue={sucursalToEdit?.esCasaMatriz ? "true" : "false"}
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      const value = e.target.value === "true";
+                      setFieldValue("esCasaMatriz", value);
+                    }}
+                  >
                     <option value="false">No</option>
                     <option value="true">Sí</option>
                   </Field>
