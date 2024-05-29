@@ -227,6 +227,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 // Actualizar el producto después de manejar los detalles
                                 await productoService.put(url + "articuloManufacturado", values.id.toString(), values);
                                 console.log('Producto actualizado correctamente.');
+
+                                productoId = productToEdit.id.toString();
                             } else {
                                 console.log(detalles)
                                 // Realizar todas las solicitudes 'post' de manera concurrente y recolectar sus respuestas
@@ -251,6 +253,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
                                 productoId = response.id.toString();
                             }
+
+                            console.log(file, productoId)
 
                             if (file && productoId) {
                                 const response = await productoService.uploadFile(url + 'articuloManufacturado/uploads', file, productoId);
