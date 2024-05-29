@@ -22,7 +22,7 @@ const AppRouter = () => {
       <Route path="/usuario/:sucursalId" element={<Usuario />} />
       <Route path="/productos/lista/:sucursalId" element={<ListaProductos />} /> ta
       <Route path="/categorias/:sucursalId" element={<Categoria />} /> ta
-      <Route path='/unidadMedida' element={<UnidadMedida/>}/>
+      <Route path='/unidadMedida/:sucursalId' element={<UnidadMedida/>}/>
       <Route path="/promociones/lista/:sucursalId" element={<ListaPromocion />} />
       <Route path="/sucursal/:empresaId" element={<><BaseNavBar title="Sucursales" /><ListaSucursal /></>} />
     </Routes>

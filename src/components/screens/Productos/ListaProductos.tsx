@@ -152,7 +152,7 @@ export const ListaProductos = () => {
 
   // Definición de las columnas para la tabla de artículos manufacturados
   const columns: Column[] = [
-    { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
+    // { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
     { id: "categoria", label: "Categoria", renderCell: (rowData) => <>{rowData.categoria.denominacion}</> },
     { id: "precioVenta", label: "Precio", renderCell: (rowData) => <>{rowData.precioVenta}</> },

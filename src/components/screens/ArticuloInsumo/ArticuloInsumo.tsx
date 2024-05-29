@@ -156,7 +156,7 @@ export const ListaArticulosInsumo = () => {
 
 
   const columns: Column[] = [
-    { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
+    // { id: "id", label: "Id", renderCell: (rowData) => <>{rowData.id}</> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <>{rowData.denominacion}</> },
     { id: "categoria", label: "Categoría", renderCell: (rowData) => <>{rowData.categoria.denominacion}</> },
     { id: "precioVenta", label: "Precio Venta", renderCell: (rowData) => <>{rowData.precioVenta}</> },
