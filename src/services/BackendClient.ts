@@ -94,6 +94,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
         "Content-Type": "application/json",
       },
     };
+    
     try {
       await this.request(path, options);
       console.log('Eliminación lógica realizada correctamente.');

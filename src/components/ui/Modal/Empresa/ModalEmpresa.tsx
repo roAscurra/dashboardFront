@@ -111,7 +111,6 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
             <>
               <Form autoComplete="off">
                 <div className="mb-4">
-                  
                   <label htmlFor="nombre">Nombre:</label>
                   <Field
                     name="nombre"

@@ -76,7 +76,7 @@ export const ListaEmpresa = () => {
       nombre: rowData.nombre,
       razonSocial: rowData.razonSocial,
       cuil: rowData.cuil,
-      imagen: rowData.imagen.url
+      imagen: rowData.imagen.url,
     });
     setDeleteModalOpen(true);
   };
@@ -97,9 +97,9 @@ export const ListaEmpresa = () => {
       nombre: rowData.nombre,
       razonSocial: rowData.razonSocial,
       cuil: rowData.cuil,
-      imagen: rowData.imagen
+      imagen: rowData.imagen,
     });
-    dispatch(toggleModal({ modalName: 'modal' }));
+    dispatch(toggleModal({ modalName: "modal" }));
   };
 
   return (
@@ -125,7 +125,6 @@ export const ListaEmpresa = () => {
         >
           {filterData.map((empresa) => {
             return (
-
               <Grid item xs={12} sm={6} md={4} key={empresa.id}>
                 <Card sx={{ maxWidth: 345 }}>
                   <CardMedia
@@ -133,31 +132,33 @@ export const ListaEmpresa = () => {
                     alt={empresa.nombre}
                     height="140"
                     image={empresa.imagen}
-                    sx={{ objectFit: 'contain', borderRadius: '50%' }}
+                    sx={{ objectFit: "contain", borderRadius: "50%" }}
                   />
                   <CardContent>
-                  <Link to={`/sucursal/${empresa.id}`}>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {empresa.nombre}
-                    </Typography>
+                    <Link to={`/sucursal/${empresa.id}`}>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {empresa.nombre}
+                      </Typography>
                     </Link>
                     <Typography variant="body2" color="text.secondary">
                       {empresa.denominacion}
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    <Button
-                      size="small"
-                      onClick={() => handleOpenDeleteModal(empresa)}
-                    >
-                      Eliminar
-                    </Button>
-                    <Button
-                      size="small"
-                      onClick={() => handleOpenEditModal(empresa)}
-                    >
-                      Editar
-                    </Button>
+                    <div>
+                      <Button
+                        size="small"
+                        onClick={() => handleOpenDeleteModal(empresa)}
+                      >
+                        Eliminar
+                      </Button>
+                      <Button
+                        size="small"
+                        onClick={() => handleOpenEditModal(empresa)}
+                      >
+                        Editar
+                      </Button>
+                    </div>
                   </CardActions>
                 </Card>
               </Grid>
@@ -170,8 +171,10 @@ export const ListaEmpresa = () => {
                 component="img"
                 alt={"Crear empresa"}
                 height="140"
-                image={"https://objetivoligar.com/wp-content/uploads/2017/03/blank-profile-picture-973460_1280-768x768.jpg"}
-                sx={{ objectFit: 'contain', borderRadius: '50%' }}
+                image={
+                  "https://objetivoligar.com/wp-content/uploads/2017/03/blank-profile-picture-973460_1280-768x768.jpg"
+                }
+                sx={{ objectFit: "contain", borderRadius: "50%" }}
               />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
