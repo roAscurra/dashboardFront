@@ -20,10 +20,8 @@ const AppRouter = () => {
       <Route path='/articuloInsumo/Lista/:sucursalId' element={<ListaArticulosInsumo />} /> ta
       <Route path="/inicio/:sucursalId" element={<Inicio />} /> ta
       <Route path="/usuario/:sucursalId" element={<Usuario />} />
-      {/* <Route path="/estadisticas" element={<Estadisticas />} /> */}
       <Route path="/productos/lista/:sucursalId" element={<ListaProductos />} /> ta
       <Route path="/categorias/:sucursalId" element={<Categoria />} /> ta
-      {/* <Route path="/cupones/lista" element={<ListaCupones />} /> */}
       <Route path='/unidadMedida' element={<UnidadMedida/>}/>
       <Route path="/promociones/lista/:sucursalId" element={<ListaPromocion />} />
       <Route path="/sucursal/:empresaId" element={<><BaseNavBar title="Sucursales" /><ListaSucursal /></>} />

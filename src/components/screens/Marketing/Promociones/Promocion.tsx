@@ -14,6 +14,7 @@ import { handleSearch } from "../../../../utils.ts/utils.ts";
 import { CCol, CContainer, CRow } from "@coreui/react";
 import { BaseNavBar } from "../../../ui/common/BaseNavBar.tsx";
 import Sidebar from "../../../ui/Sider/SideBar.tsx";
+import { useParams } from "react-router-dom";
 
 interface Row {
   [key: string]: any;
@@ -36,6 +37,7 @@ export const ListaPromocion = () => {
   const globalPromocion = useAppSelector(
     (state) => state.promocion.data
   );
+  const { sucursalId } = useParams(); // Obtén el ID de la sucursal de la URL
 
 
 // Función para abrir la modal de eliminación
@@ -79,16 +81,33 @@ const handleOpenDeleteModal = (rowData: Row) => {
    // Definiendo fetchSucursal con useCallback
    const fetchPromocion = useCallback(async () => {
     try {
-      const sucursales = await promocionService.getAll(url + 'promocion');
-      dispatch(setPromocion(sucursales));
-      setFilterData(sucursales);
-
-
+      // Obtener todas las promociones
+      const promociones = await promocionService.getAll(url + 'promocion');
+  
+      // Si hay una sucursal seleccionada, filtrar las promociones por la sucursal
+      if (sucursalId) {
+        // Parse `sucursalId` to ensure it's of the same type as the IDs of sucursales
+        const parsedSucursalId = parseInt(sucursalId, 10);
+  
+        const promocionesFiltradas = promociones.filter(promocion => promocion.sucursales.some(sucursal => sucursal.id === parsedSucursalId));
+  
+        // Actualizar el estado con las promociones filtradas
+        dispatch(setPromocion(promocionesFiltradas));
+        setFilterData(promocionesFiltradas);
+      } else {
+        // Si no hay una sucursal seleccionada, establecer todas las promociones
+        dispatch(setPromocion(promociones));
+        setFilterData(promociones);
+      }
+  
     } catch (error) {
       console.error("Error al obtener las promociones:", error);
     }
-  }, [dispatch, promocionService, url]);
-
+  }, [dispatch, promocionService, sucursalId, url]);
+  
+  
+  
+  
   useEffect(() => {
     fetchPromocion();
     onSearch('');
