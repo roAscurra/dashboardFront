@@ -69,7 +69,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
           nombre: sucursal.nombre,
           horarioApertura: sucursal.horarioApertura,
           horarioCierre: sucursal.horarioCierre,
-          casaMatriz: sucursal.casaMatriz,
+          esCasaMatriz: sucursal.esCasaMatriz,
           imagen: sucursal.imagen,
           domicilio: sucursal.domicilio,
           empresa: sucursal.empresa,
@@ -227,6 +227,12 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 );
                 values.promocionDetalle = respuestas;
 
+                const sucursalesSeleccionadas = values.sucursales;
+
+                // Ahora, en lugar de agregar una sola sucursal (como la de ID 1),
+                // añadimos todas las sucursales seleccionadas al array de sucursales en values
+                values.sucursales = sucursalesSeleccionadas;
+                console.log(values)
                 await promocionService.put(
                   url + "promocion",
                   values.id.toString(),
@@ -257,10 +263,6 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   })
                 );
                 const sucursalesSeleccionadas = values.sucursales;
-                console.log(
-                  "Sucursales seleccionadas:",
-                  sucursalesSeleccionadas
-                );
 
                 // Ahora, en lugar de agregar una sola sucursal (como la de ID 1),
                 // añadimos todas las sucursales seleccionadas al array de sucursales en values

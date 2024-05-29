@@ -7,7 +7,7 @@ interface SucursalShorDto extends DataModel<SucursalShorDto>{
     nombre: string;
     horarioApertura: string;
     horarioCierre: string;
-    casaMatriz: boolean;
+    esCasaMatriz: boolean;
     domicilio: Domicilio;
     empresa: EmpresaShorDto;
 }
