@@ -47,7 +47,19 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
         eliminado: categoryToEdit ? categoryToEdit.eliminado : false,
         denominacion: categoryToEdit?.denominacion || '',
         subCategorias: categoryToEdit?.subCategorias || [],
-        sucursales: categoryToEdit ? categoryToEdit.sucursales : [],
+        sucursales: categoryToEdit
+      ? categoryToEdit.sucursales.map((sucursal: any) => ({
+          id: sucursal.id,
+          nombre: sucursal.nombre,
+          horarioApertura: sucursal.horarioApertura,
+          horarioCierre: sucursal.horarioCierre,
+          casaMatriz: sucursal.casaMatriz,
+          imagen: sucursal.imagen,
+          domicilio: sucursal.domicilio,
+          empresa: sucursal.empresa,
+          eliminado: sucursal.eliminado || false,
+        }))
+      : [],
         esInsumo: categoryToEdit ? categoryToEdit.esInsumo : false
     };
     
@@ -87,11 +99,24 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                                 await categoriaService.put(url + 'categoria', values.id.toString(), values);
                                 console.log('Categoría actualizada correctamente.', values);
                             } else {
+
+                                const sucursalesSeleccionadas = values.sucursales;
+                                console.log(
+                                  "Sucursales seleccionadas:",
+                                  sucursalesSeleccionadas
+                                );
+                
+                                // Ahora, en lugar de agregar una sola sucursal (como la de ID 1),
+                                // añadimos todas las sucursales seleccionadas al array de sucursales en values
+                                values.sucursales = sucursalesSeleccionadas;
+
+                                console.log("Valores actualizados:", values);
+
                                 await categoriaService.post(url + 'categoria', values);
                                 console.log('Categoría agregada correctamente.', values);
 
-                                const respuesta = await sucursalService.get(url + 'sucursal', '1');
-                                console.log("Respuesta: ", respuesta);
+                                // const respuesta = await sucursalService.get(url + 'sucursal', '1');
+                                // console.log("Respuesta: ", respuesta);
                                 
                             }
                             getCategories();
