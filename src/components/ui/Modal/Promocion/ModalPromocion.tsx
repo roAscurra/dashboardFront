@@ -16,6 +16,7 @@ import ArticuloManufacturadoShorDto from "../../../../types/dto/ArticuloManufact
 import ArticuloManufacturadoShorDtoService from "../../../../services/dtos/ArticuloManufacturadoShorDtoService";
 import SucursalShortDtoService from "../../../../services/dtos/SucursalShortDtoService";
 import SucursalShorDto from "../../../../types/dto/SucursalShortDto";
+import { useParams } from "react-router-dom";
 
 interface ModalPromocionProps {
   getPromocion: () => void;
@@ -29,13 +30,19 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const promocionService = new PromocionService();
   const [showInsumoModal, setShowInsumoModal] = useState(false);
   const [modalColor, setModalColor] = useState<string>(""); // Estado para controlar el color de fondo de la modal
-  const [articulosManufacturados, setArticulosManufacturados] = useState<ArticuloManufacturadoShorDto[]>([]);
-  const articuloManufacturadoService = new ArticuloManufacturadoShorDtoService();
-  const [promocionDetalles, setPromocionDetalles] = useState<PromocionDetalle[]>(promocionToEdit?.promocionDetalle || []);
+  const [articulosManufacturados, setArticulosManufacturados] = useState<
+    ArticuloManufacturadoShorDto[]
+  >([]);
+  const articuloManufacturadoService =
+    new ArticuloManufacturadoShorDtoService();
+  const [promocionDetalles, setPromocionDetalles] = useState<
+    PromocionDetalle[]
+  >(promocionToEdit?.promocionDetalle || []);
 
   const [detalles, setDetalles] = useState<PromocionDetalle[]>([]);
   const url = import.meta.env.VITE_API_URL;
   const today = new Date();
+  const { sucursalId } = useParams();
   const promocionDetalleService = new PromocionDetalleService();
   // const sucursalService = new SucursalService();
   const sucursalService = new SucursalShortDtoService();
@@ -57,48 +64,48 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
     precioPromocional: promocionToEdit ? promocionToEdit.precioPromocional : 0,
     tipoPromocion: promocionToEdit ? promocionToEdit.tipoPromocion : "",
     sucursales: promocionToEdit
-    ? promocionToEdit.sucursales.map((sucursal: any) => ({
-        id: sucursal.id,
-        nombre: sucursal.nombre,
-        horarioApertura: sucursal.horarioApertura,
-        horarioCierre: sucursal.horarioCierre,
-        casaMatriz: sucursal.casaMatriz,
-        imagen: sucursal.imagen,
-        domicilio: sucursal.domicilio,
-        empresa: sucursal.empresa,
-        eliminado: sucursal.eliminado || false,
-      }))
-    : [],
-    promocionDetalle: promocionToEdit?.promocionDetalle
-        ? promocionToEdit.promocionDetalle.map((detalle: any) => ({
-            id: 0,
-            cantidad: detalle.cantidad,
-            eliminado: detalle.eliminado || false, 
-            articuloManufacturado: 
-                {
-                    id: detalle.articuloManufacturado.id,
-                    eliminado: detalle.articuloManufacturado.eliminado,
-                    denominacion: detalle.articuloManufacturado.denominacion,
-                    precioVenta: detalle.articuloManufacturado.precioVenta,
-                    descripcion: detalle.descripcion,
-                    tiempoEstimadoMinutos: detalle.tiempoEstimadoMinutos,
-                    unidadMedida: detalle.unidadMedida,
-                    categoria: detalle.categoria
-                    ? {
-                      id: detalle.articuloInsumo.categoria.id,
-                      eliminado: detalle.articuloInsumo.categoria.eliminado,
-                      denominacion: detalle.articuloInsumo.categoria.denominacion,
-                      esInsumo: detalle.articuloInsumo.categoria.esInsumo,
-                  }: {
-                      id: 0,
-                      eliminado: false,
-                      denominacion: '',
-                      esInsumo: false,
-                  },
-                    preparacion: detalle.articuloManufacturado.preparacion, 
-                }
+      ? promocionToEdit.sucursales.map((sucursal: any) => ({
+          id: sucursal.id,
+          nombre: sucursal.nombre,
+          horarioApertura: sucursal.horarioApertura,
+          horarioCierre: sucursal.horarioCierre,
+          casaMatriz: sucursal.casaMatriz,
+          imagen: sucursal.imagen,
+          domicilio: sucursal.domicilio,
+          empresa: sucursal.empresa,
+          eliminado: sucursal.eliminado || false,
         }))
-        : [],
+      : [],
+    promocionDetalle: promocionToEdit?.promocionDetalle
+      ? promocionToEdit.promocionDetalle.map((detalle: any) => ({
+          id: 0,
+          cantidad: detalle.cantidad,
+          eliminado: detalle.eliminado || false,
+          articuloManufacturado: {
+            id: detalle.articuloManufacturado.id,
+            eliminado: detalle.articuloManufacturado.eliminado,
+            denominacion: detalle.articuloManufacturado.denominacion,
+            precioVenta: detalle.articuloManufacturado.precioVenta,
+            descripcion: detalle.descripcion,
+            tiempoEstimadoMinutos: detalle.tiempoEstimadoMinutos,
+            unidadMedida: detalle.unidadMedida,
+            categoria: detalle.categoria
+              ? {
+                  id: detalle.articuloInsumo.categoria.id,
+                  eliminado: detalle.articuloInsumo.categoria.eliminado,
+                  denominacion: detalle.articuloInsumo.categoria.denominacion,
+                  esInsumo: detalle.articuloInsumo.categoria.esInsumo,
+                }
+              : {
+                  id: 0,
+                  eliminado: false,
+                  denominacion: "",
+                  esInsumo: false,
+                },
+            preparacion: detalle.articuloManufacturado.preparacion,
+          },
+        }))
+      : [],
     imagenes: promocionToEdit
       ? promocionToEdit.imagenes?.map(
           (imagen: any) =>
@@ -125,8 +132,18 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   };
   const fetchSucursales = async () => {
     try {
-      const sucursales = await sucursalService.getAll(url + "sucursal");
-      setSucursales(sucursales);
+      if (sucursalId) {
+        const sucursalSeleccionada = await sucursalService.get(
+          url + "sucursal",
+          sucursalId
+        );
+        const empresaId = sucursalSeleccionada.empresa.id;
+        const todasSucursales = await sucursalService.getAll(url + "sucursal");
+        const sucursalesEmpresa = todasSucursales.filter(
+          (sucursal) => sucursal.empresa.id === empresaId
+        );
+        setSucursales(sucursalesEmpresa);
+      }
     } catch (error) {
       console.log("Error al obtener las sucursales", error);
     }
@@ -151,7 +168,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   };
   useEffect(() => {
     setDetalles(promocionToEdit?.promocionDetalle || []);
-}, [promocionToEdit]);
+  }, [promocionToEdit]);
   return (
     <Modal
       id="modal"
@@ -224,7 +241,10 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     try {
                       console.log(detalle);
                       // Realizar la solicitud 'post' para cada detalle
-                      const respuesta2 = await promocionDetalleService.post(url + "promocionDetalle", detalle);
+                      const respuesta2 = await promocionDetalleService.post(
+                        url + "promocionDetalle",
+                        detalle
+                      );
                       console.log("Respuesta:", respuesta2);
                       return respuesta2; // Devolver la respuesta para procesamiento adicional
                     } catch (error) {
@@ -236,13 +256,18 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     }
                   })
                 );
-              //-------FALTA ASIGNAR LAS SUCURSALES QUE SE SELECCIONAN Y NO LA DEL ID 1 QUE ESTÁ HARCODEADA ------------
-                const respuesta3 = await sucursalService.get(url + "sucursal", "1");
-                console.log("Respuesta:", respuesta3);
-                values.sucursales.push(respuesta3);
+                const sucursalesSeleccionadas = values.sucursales;
+                console.log(
+                  "Sucursales seleccionadas:",
+                  sucursalesSeleccionadas
+                );
+
+                // Ahora, en lugar de agregar una sola sucursal (como la de ID 1),
+                // añadimos todas las sucursales seleccionadas al array de sucursales en values
+                values.sucursales = sucursalesSeleccionadas;
                 // Una vez que se recolectan todas las respuestas, actualizar el objeto 'values'
                 values.promocionDetalle = respuestas;
-                console.log('Valores actualizados:', values);
+                console.log("Valores actualizados:", values);
 
                 await promocionService.post(url + "promocion", values);
                 console.log("Se ha agregado correctamente.");
@@ -254,7 +279,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
             }
           }}
         >
-          {({ setFieldValue, isSubmitting }) => (
+          {({ values, setFieldValue, isSubmitting }) => (
             <Form autoComplete="off">
               <div className="row">
                 <div className="col-md-4 mb-4">
@@ -381,21 +406,49 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     component="div"
                   />
                 </div>
-                <div className="col-md-4 mb-4">
-                  <label htmlFor="sucursales">Sucursales:</label>
-                  <Field name="sucursales" as="select" multiple className="custom-select">
+                <div className="mb-4">
+                  <label>Sucursales:</label>
+                  <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3">
                     {sucursales.map((sucursal) => (
-                      <option key={sucursal.id} value={sucursal.id}>
-                        {sucursal.nombre}
-                      </option>
+                      <div key={sucursal.id} className="col mb-2">
+                        <div className="form-check">
+                          <Field
+                            name="sucursales"
+                            type="checkbox"
+                            value={sucursal.id}
+                            checked={values.sucursales.some(
+                              (s) => s.id === sucursal.id
+                            )}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              if (e.target.checked) {
+                                setFieldValue("sucursales", [
+                                  ...values.sucursales,
+                                  sucursal,
+                                ]);
+                              } else {
+                                setFieldValue(
+                                  "sucursales",
+                                  values.sucursales.filter(
+                                    (s) => s.id !== sucursal.id
+                                  )
+                                );
+                              }
+                            }}
+                            className="form-check-input"
+                            id={`sucursal-${sucursal.id}`}
+                          />
+                          <label
+                            className="form-check-label ml-2"
+                            htmlFor={`sucursal-${sucursal.id}`}
+                          >
+                            {sucursal.nombre}
+                          </label>
+                        </div>
+                      </div>
                     ))}
-                  </Field>
-
-                  <ErrorMessage
-                    name="sucursales"
-                    className="error-message"
-                    component="div"
-                  />
+                  </div>
                 </div>
 
                 <div className="col-md-4 mb-4">
@@ -423,7 +476,11 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 show={showInsumoModal}
                 handleClose={() => setShowInsumoModal(false)}
                 handleAddInsumo={handelAddArticulosManufacturados}
-                initialDetalles={promocionToEdit ? promocionToEdit.promocionDetalle : promocionDetalles || []}
+                initialDetalles={
+                  promocionToEdit
+                    ? promocionToEdit.promocionDetalle
+                    : promocionDetalles || []
+                }
               />
             </Form>
           )}
