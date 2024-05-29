@@ -4,10 +4,12 @@ import Sucursal from '../../types/Sucursal';
 
 interface IInitialState {
   sucursal: Sucursal[];
+  selected: Sucursal | null;
 }
 
 const initialState: IInitialState = {
     sucursal: [],
+    selected: null,
 }
 
 export const sucursalSlice = createSlice({

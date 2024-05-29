@@ -13,6 +13,7 @@ import {handleSearch} from "../../../utils.ts/utils.ts";
 import { CCol, CContainer, CRow } from '@coreui/react';
 import Sidebar from '../../ui/Sider/SideBar.tsx';
 import { BaseNavBar } from '../../ui/common/BaseNavBar.tsx';
+import { useParams } from 'react-router-dom';
 
 const Categoria = () => {
     const url = import.meta.env.VITE_API_URL;
@@ -24,6 +25,8 @@ const Categoria = () => {
         (state) => state.categoria.data
     );
     const [selectedCategoria, setSelectedCategoria] = useState<ICategoria | null>(null);
+    const selectedSucursal = useAppSelector((state) => state.sucursales.selected); 
+    const {sucursalId} = useParams();
     const [modalOpen, setModalOpen] = useState(false);
     const [eliminarModalOpen, setEliminarModalOpen] = useState(false);
 
@@ -31,19 +34,28 @@ const Categoria = () => {
     const fetchCategorias = useCallback(async () => {
         try {
             const categorias = await categoriaService.getAll(url + 'categoria');
-            dispatch(setCategoria(categorias));
-            setFilterData(categorias);
+    
+            if(sucursalId){
+                const parsedSucursalId = parseInt(sucursalId, 10);
+
+                const categoriasFiltradas = categorias.filter( categoria => categoria.sucursales.some(sucursal => sucursal.id === parsedSucursalId));
+                dispatch(setCategoria(categoriasFiltradas));
+                setFilterData(categoriasFiltradas);
+            }else{
+                dispatch(setCategoria(categorias));
+                setFilterData(categorias);
+            }
         } catch (error) {
             console.error('Error al obtener las categorías:', error);
         }
-    }, [dispatch, categoriaService, url])
-
+    }, [dispatch, categoriaService, url, selectedSucursal]);
+    
+    
 
     useEffect(() => {
         fetchCategorias();
         onSearch(''); // Llamada a onSearch para filtrar los datos iniciales
-    // eslint-disable-next-line react-hooks/exhaustive-deps 
-    }, []);
+    }, [fetchCategorias]);
 
 
 

@@ -23,7 +23,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
     const { sucursalId } = useParams();
     const sucursalService = new SucursalService();
     const [sucursales, setSucursales] = useState<Sucursal[]>([]);
-    
+
     const fetchSucursalData = async () => {
         try {
             if (sucursalId) {
@@ -48,21 +48,21 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
         denominacion: categoryToEdit?.denominacion || '',
         subCategorias: categoryToEdit?.subCategorias || [],
         sucursales: categoryToEdit
-      ? categoryToEdit.sucursales.map((sucursal: any) => ({
-          id: sucursal.id,
-          nombre: sucursal.nombre,
-          horarioApertura: sucursal.horarioApertura,
-          horarioCierre: sucursal.horarioCierre,
-          esCasaMatriz: sucursal.esCasaMatriz,
-          imagen: sucursal.imagen,
-          domicilio: sucursal.domicilio,
-          empresa: sucursal.empresa,
-          eliminado: sucursal.eliminado || false,
-        }))
-      : [],
+            ? categoryToEdit.sucursales.map((sucursal: any) => ({
+                id: sucursal.id,
+                nombre: sucursal.nombre,
+                horarioApertura: sucursal.horarioApertura,
+                horarioCierre: sucursal.horarioCierre,
+                esCasaMatriz: sucursal.esCasaMatriz,
+                imagen: sucursal.imagen,
+                domicilio: sucursal.domicilio,
+                empresa: sucursal.empresa,
+                eliminado: sucursal.eliminado || false,
+            }))
+            : [],
         esInsumo: categoryToEdit ? categoryToEdit.esInsumo : false
     };
-    
+
 
     const dispatchCategory = useAppDispatch();
 
@@ -102,10 +102,10 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
 
                                 const sucursalesSeleccionadas = values.sucursales;
                                 console.log(
-                                  "Sucursales seleccionadas:",
-                                  sucursalesSeleccionadas
+                                    "Sucursales seleccionadas:",
+                                    sucursalesSeleccionadas
                                 );
-                
+
                                 // Ahora, en lugar de agregar una sola sucursal (como la de ID 1),
                                 // añadimos todas las sucursales seleccionadas al array de sucursales en values
                                 values.sucursales = sucursalesSeleccionadas;
@@ -117,7 +117,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
 
                                 // const respuesta = await sucursalService.get(url + 'sucursal', '1');
                                 // console.log("Respuesta: ", respuesta);
-                                
+
                             }
                             getCategories();
                             handleClose();
@@ -187,6 +187,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                                     </div>
                                 ))}
                             </div>
+
                             <div className="d-flex justify-content-end">
                                 <Button variant="secondary" onClick={handleClose} className="mr-2">
                                     Cancelar
