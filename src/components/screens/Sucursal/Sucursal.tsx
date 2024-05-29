@@ -33,6 +33,7 @@ export const ListaSucursal = () => {
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [sucursalToEdit, setSucursalToEdit] = useState<Sucursal | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [casaMatriz, setCasaMatriz] = useState(false);
 
   const fetchEmpresa = useCallback(async () => {
     try {
@@ -69,6 +70,15 @@ export const ListaSucursal = () => {
       );
 
       const sucursalesFiltradas = sucursalesConImagenes.filter(sucursal => sucursal.empresa.id.toString() === empresaId);
+      
+      // Verificar si alguna de las sucursales filtradas es casa matriz
+      const empresaTieneCasaMatriz = sucursalesFiltradas.filter(sucursal => sucursal.esCasaMatriz === true);
+      if (empresaTieneCasaMatriz) {
+        setCasaMatriz(true)
+        console.log("La empresa tiene una sucursal que es casa matriz.");
+      } else {
+        console.log("La empresa no tiene sucursal que sea casa matriz.");
+      }
       dispatch(setSucursal(sucursalesFiltradas));
       setFilterData(sucursalesFiltradas);
     } catch (error) {
@@ -89,7 +99,7 @@ export const ListaSucursal = () => {
       imagen: rowData.imagen,
       horarioApertura: rowData.horarioApertura,
       horarioCierre: rowData.horarioCierre,
-      casaMatriz: rowData.casaMatriz,
+      esCasaMatriz: rowData.esCasaMatriz,
       domicilio: rowData.domicilio,
       empresa: rowData.empresa
     });
@@ -116,6 +126,7 @@ export const ListaSucursal = () => {
   };
 
   const handleOpenEditModal = (rowData: Row) => {
+    console.log(rowData)
     setSucursalToEdit({
       id: rowData.id,
       eliminado: rowData.eliminado,
@@ -123,7 +134,7 @@ export const ListaSucursal = () => {
       imagen: rowData.imagen,
       horarioApertura: rowData.horarioApertura,
       horarioCierre: rowData.horarioCierre,
-      casaMatriz: rowData.casaMatriz,
+      esCasaMatriz: rowData.esCasaMatriz, // Asegúrate de manejar undefined
       domicilio: rowData.domicilio,
       empresa: rowData.empresa
     });
@@ -220,7 +231,8 @@ export const ListaSucursal = () => {
           modalName="modal"
           getSucursal={fetchSucursal}
           sucursalToEdit={sucursalToEdit !== null ? sucursalToEdit : undefined}
-        />
+          empresaTieneCasaMatriz={casaMatriz} // Añade la prop aquí
+          />
       </Container>
     </Box>
   );

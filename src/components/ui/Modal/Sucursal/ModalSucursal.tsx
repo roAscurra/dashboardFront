@@ -20,12 +20,14 @@ interface ModalSucursalProps {
   getSucursal: () => void;
   sucursalToEdit?: Sucursal | null;
   modalName: string;
+  empresaTieneCasaMatriz: boolean; // Agrega la prop aquí
 }
 
 const ModalSucursal: React.FC<ModalSucursalProps> = ({
   modalName,
   getSucursal,
   sucursalToEdit,
+  empresaTieneCasaMatriz,
 }) => {
   const sucursalService = new SucursalService();
   const url = import.meta.env.VITE_API_URL;
@@ -60,7 +62,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
         nombre: "",
         horarioApertura: formatTime(new Date()),
         horarioCierre: formatTime(new Date()),
-        casaMatriz: false,
+        esCasaMatriz: false,
         localidadId: 0, // Assuming localidadId is part of Sucursal
         imagen: {
           id: 0,
@@ -123,7 +125,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
       setPaises([]);
     }
   };
-  //console.log(paisId);
 
   const fetchProvinciasData = async (paisId: number | null) => {
     try {
@@ -158,7 +159,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
       setLocalidades([]);
     }
   };
-
+  
   useEffect(() => {
     fetchPais();
     if (sucursalToEdit) {
@@ -213,7 +214,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
           })}
           initialValues={initialValues}
           onSubmit={async (values: Sucursal, { setSubmitting }) => {
-            console.log(values);
             try {
               let newCompanyId: string | null = null;
 
@@ -222,7 +222,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   url + "localidad",
                   values.localidadId
                 );
-                console.log(localidad);
                 values.domicilio.localidad = localidad;
                 // Update address (domicilio)
                 const domicilio = await domicilioService.put(
@@ -231,20 +230,13 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   values.domicilio
                 );
                 values.domicilio = domicilio;
-                console.log("Address updated successfully.");
                 // Update branch details
                 await sucursalService.put(
                   url + "sucursal",
                   values.id.toString(),
                   values
                 );
-                console.log("Branch details updated successfully.");
-              
-                
-              
-                // Consider the edit operation successful
-                console.log("Branch edited successfully.");
-              
+
               } else {
                 if (empresaId) {
                   const empresa = await empresaService.get(
@@ -257,7 +249,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                     url + "localidad",
                     values.localidadId
                   );
-                  console.log(localidad);
                   values.domicilio.localidad = localidad;
 
                   const domicilio = await domicilioService.post(
@@ -270,18 +261,13 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                     url + "sucursal",
                     values
                   );
-                  console.log("Se ha agregado correctamente.");
                   newCompanyId = response.id.toString();
                 }
               }
 
               if (file && newCompanyId) {
-                const response = await sucursalService.uploadFile(
-                  url + "sucursal/uploads",
-                  file,
-                  newCompanyId
-                );
-                console.log("Upload successful:", response);
+                const response = await sucursalService.uploadFile(url + 'sucursal/uploads', file, newCompanyId);
+                console.log('Upload successful:', response);
               }
 
               getSucursal();
@@ -295,128 +281,24 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
         >
           {({ setFieldValue, isSubmitting }) => (
             <Form autoComplete="off">
-              <div className="mb-4">
-                <label htmlFor="nombre">Nombre:</label>
-                <Field
-                  name="nombre"
-                  type="text"
-                  placeholder="nombre"
-                  className="form-control mt-2"
-                />
-                <ErrorMessage
-                  name="nombre"
-                  className="error-message"
-                  component="div"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="paisId">País:</label>
-                <Field
-                  name="paisId"
-                  as="select"
-                  className="form-control mt-2"
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-                    const value = Number(e.target.value);
-                    setSelectedPais(value);
-                    setFieldValue("paisId", value);
-                    setFieldValue("provinciaId", ""); // Resetea el campo de provincia
-                    setFieldValue("localidadId", ""); // Resetea el campo de localidad
-                  }}
-                  value={
-                    selectedPais ||
-                    initialValues.domicilio.localidad.provincia.pais.id
-                  } // Agrega este valor
-                >
-                  <option value="" disabled>Seleccione un país</option>
-                  {paises.map((pais, index) => (
-                    <option key={index} value={pais.id}>
-                      {pais.nombre}
-                    </option>
-                  ))}
-                </Field>
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="provinciaId">Provincia:</label>
-                <Field
-                  name="provinciaId"
-                  as="select"
-                  className="form-control mt-2"
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-                    const value = Number(e.target.value);
-                    setSelectedProvincia(value);
-                    setFieldValue("provinciaId", value);
-                    setFieldValue("localidadId", ""); // Resetea el campo de localidad
-                  }}
-                  disabled={!selectedPais}
-                  value={
-                    selectedProvincia ||
-                    initialValues.domicilio.localidad.provincia.id
-                  } // Agrega este valor
-                >
-                  <option value="" disabled>Seleccione una provincia</option>
-                  {provincias.map((provincia, index) => (
-                    <option key={index} value={provincia.id}>
-                      {provincia.nombre}
-                    </option>
-                  ))}
-                </Field>
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="localidadId">Localidad:</label>
-                <Field
-                  name="localidadId"
-                  as="select"
-                  className="form-control mt-2"
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-                    const value = Number(e.target.value);
-                    console.log("Localidad seleccionada:", value);
-                    setFieldValue("localidadId", value);
-                  }}
-                  disabled={!selectedProvincia || !selectedPais} // Deshabilita el selector si no se ha seleccionado una provincia
-                >
-                  <option value="" disabled>Seleccione una localidad</option>
-                  {localidades.map((localidad, index) => (
-                    <option key={index} value={localidad.id}>
-                      {localidad.nombre}
-                    </option>
-                  ))}
-                </Field>
-              </div>
-
               <Row>
-                <Col md={6} className="mb-4">
-                  <label htmlFor="domicilio.calle">Calle:</label>
+                {/* Primera columna */}
+                <Col md={4} className="mb-4">
+                  <label htmlFor="nombre">Nombre:</label>
                   <Field
-                    name="domicilio.calle"
+                    name="nombre"
                     type="text"
-                    placeholder="calle"
+                    placeholder="nombre"
                     className="form-control mt-2"
                   />
                   <ErrorMessage
-                    name="domicilio.calle"
+                    name="nombre"
                     className="error-message"
                     component="div"
                   />
                 </Col>
-                <Col md={6} className="mb-4">
-                  <label htmlFor="domicilio.cp">Código Postal:</label>
-                  <Field
-                    name="domicilio.cp"
-                    type="number"
-                    placeholder="cp"
-                    className="form-control mt-2"
-                  />
-                  <ErrorMessage
-                    name="domicilio.cp"
-                    className="error-message"
-                    component="div"
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col md={6} className="mb-4">
+                {/* Séptima columna */}
+                <Col md={4} className="mb-4">
                   <label htmlFor="horarioApertura">Horario apertura:</label>
                   <Field
                     name="horarioApertura"
@@ -434,7 +316,8 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                     component="div"
                   />
                 </Col>
-                <Col md={6} className="mb-4">
+                {/* Octava columna */}
+                <Col md={4} className="mb-4">
                   <label htmlFor="horarioCierre">Horario cierre:</label>
                   <Field
                     name="horarioCierre"
@@ -453,11 +336,148 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   />
                 </Col>
               </Row>
-              <div className="mb-4">
-                <label htmlFor="logo">Logo:</label>
-                <br />
-                <input type="file" onChange={handleFileChange} multiple />
-              </div>
+              <Row>
+                {/* Segunda columna */}
+                <Col md={4} className="mb-4">
+                  <label htmlFor="paisId">País:</label>
+                  <Field
+                    name="paisId"
+                    as="select"
+                    className="form-control mt-2"
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      const value = Number(e.target.value);
+                      setSelectedPais(value);
+                      setFieldValue("paisId", value);
+                      setFieldValue("provinciaId", ""); // Resetea el campo de provincia
+                      setFieldValue("localidadId", ""); // Resetea el campo de localidad
+                    }}
+                    value={
+                      selectedPais ||
+                      initialValues.domicilio.localidad.provincia.pais.id
+                    } // Agrega este valor
+                  >
+                    <option value="">
+                      Seleccione un país
+                    </option>
+                    {paises.map((pais, index) => (
+                      <option key={index} value={pais.id}>
+                        {pais.nombre}
+                      </option>
+                    ))}
+                  </Field>
+                </Col>
+                {/* Tercera columna */}
+                <Col md={4} className="mb-4">
+                  <label htmlFor="provinciaId">Provincia:</label>
+                  <Field
+                    name="provinciaId"
+                    as="select"
+                    className="form-control mt-2"
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      const value = Number(e.target.value);
+                      setSelectedProvincia(value);
+                      setFieldValue("provinciaId", value);
+                      setFieldValue("localidadId", ""); // Resetea el campo de localidad
+                    }}
+                    disabled={!selectedPais}
+                    value={
+                      selectedProvincia ||
+                      initialValues.domicilio.localidad.provincia.id
+                    } // Agrega este valor
+                  >
+                    <option value="">
+                      Seleccione una provincia
+                    </option>
+                    {provincias.map((provincia, index) => (
+                      <option key={index} value={provincia.id}>
+                        {provincia.nombre}
+                      </option>
+                    ))}
+                  </Field>
+                </Col>
+                {/* Cuarta columna */}
+                <Col md={4} className="mb-4">
+                  <label htmlFor="localidadId">Localidad:</label>
+                  <Field
+                    name="localidadId"
+                    as="select"
+                    className="form-control mt-2"
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      const value = Number(e.target.value);
+                      setFieldValue("localidadId", value);
+                    }}
+                    disabled={!selectedProvincia || !selectedPais} // Deshabilita el selector si no se ha seleccionado una provincia
+                  >
+                    <option value="">
+                      Seleccione una localidad
+                    </option>
+                    {localidades.map((localidad, index) => (
+                      <option key={index} value={localidad.id}>
+                        {localidad.nombre}
+                      </option>
+                    ))}
+                  </Field>
+                </Col>
+              </Row>
+              <Row>
+                {/* Quinta columna */}
+                <Col md={4} className="mb-4">
+                  <label htmlFor="domicilio.calle">Calle:</label>
+                  <Field
+                    name="domicilio.calle"
+                    type="text"
+                    placeholder="calle"
+                    className="form-control mt-2"
+                  />
+                  <ErrorMessage
+                    name="domicilio.calle"
+                    className="error-message"
+                    component="div"
+                  />
+                </Col>
+                {/* Sexta columna */}
+                <Col md={4} className="mb-4">
+                  <label htmlFor="domicilio.cp">Código Postal:</label>
+                  <Field
+                    name="domicilio.cp"
+                    type="number"
+                    placeholder="cp"
+                    className="form-control mt-2"
+                  />
+                  <ErrorMessage
+                    name="domicilio.cp"
+                    className="error-message"
+                    component="div"
+                  />
+                </Col>
+                <Col md={4} className="mb-4">
+                  <label htmlFor="casaMatriz">Casa Matriz:</label>
+                  <Field
+                    name="casaMatriz"
+                    as="select"
+                    className="form-control mt-2"
+                    disabled={empresaTieneCasaMatriz && !sucursalToEdit?.esCasaMatriz} // Deshabilita si empresaTieneCasaMatriz es true y sucursalToEdit.casaMatriz es false
+                    defaultValue={sucursalToEdit?.esCasaMatriz ? "true" : "false"} // Marca por defecto como "Sí" si sucursalToEdit.esCasaMatriz es true
+
+                    >
+                    <option value="false">No</option>
+                    <option value="true">Sí</option>
+                  </Field>
+                  {(empresaTieneCasaMatriz && !sucursalToEdit?.esCasaMatriz) && ( // Muestra el mensaje solo si empresaTieneCasaMatriz es true
+                    <div className="error-message">
+                      La empresa ya posee casa matriz
+                    </div>
+                  )}
+                </Col>
+              </Row>
+              <Row>
+                {/* Novena columna */}
+                <Col md={4} className="mb-4">
+                  <label htmlFor="logo">Logo:</label>
+                  <br />
+                  <input type="file" onChange={handleFileChange} multiple />
+                </Col>
+              </Row>
               <div className="d-flex justify-content-end">
                 <Button
                   variant="outline-success"
