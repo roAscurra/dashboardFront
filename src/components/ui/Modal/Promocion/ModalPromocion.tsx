@@ -204,6 +204,9 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
           initialValues={initialValues}
           onSubmit={async (values) => {
             try {
+
+              let promocion = undefined;
+
               if (promocionToEdit) {
                 const respuestas = await Promise.all(
                   detalles.map(async (detalle) => {
@@ -241,7 +244,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 // añadimos todas las sucursales seleccionadas al array de sucursales en values
                 values.sucursales = sucursalesSeleccionadas;
                 console.log(values)
-                await promocionService.put(
+                promocion = await promocionService.put(
                   url + "promocion",
                   values.id.toString(),
                   values
@@ -279,9 +282,15 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 values.promocionDetalle = respuestas;
                 console.log("Valores actualizados:", values);
 
-                await promocionService.post(url + "promocion", values);
+                promocion = await promocionService.post(url + "promocion", values);
                 console.log("Se ha agregado correctamente.");
               }
+
+              if (file && promocion.id) {
+                const response = await promocionService.uploadFile(url + 'promocion/uploads', file, promocion.id.toString());
+                console.log('Upload successful:', response);
+              }
+
               getPromocion();
               handleClose();
             } catch (error) {
