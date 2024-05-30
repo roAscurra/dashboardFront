@@ -28,6 +28,7 @@ interface Row {
 export const ListaEmpresa = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const empresaService = new EmpresaService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [empresaToEdit, setEmpresaToEdit] = useState<Empresa | null>(null);
@@ -70,6 +71,7 @@ export const ListaEmpresa = () => {
 
   useEffect(() => {
     fetchEmpresa();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleOpenDeleteModal = (rowData: Row) => {

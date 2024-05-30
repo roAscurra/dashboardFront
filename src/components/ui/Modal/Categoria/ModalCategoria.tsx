@@ -40,6 +40,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
 
     useEffect(() => {
         fetchSucursalData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const initialValues: Categoria = {
@@ -137,7 +138,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                                 {({ push, remove }) => (
                                     <div className="mb-4">
                                         <label>Subcategorías:</label>
-                                        {values.subCategorias.map((subCategoria, index) => (
+                                        {values.subCategorias.map((_subCategoria, index) => (
                                             <div key={index} className="d-flex mb-2">
                                                 <Field
                                                     name={`subCategorias.${index}.denominacion`}

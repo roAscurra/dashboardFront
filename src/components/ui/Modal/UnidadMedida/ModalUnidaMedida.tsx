@@ -17,6 +17,7 @@ const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({ modalName, getUni
   const unidadMedidaService = new UnidadMedidaService();
   const [initialValues, setInitialValues] = useState<UnidadMedida>({
     id: 0,
+    eliminado: false,
     denominacion: "",
   });
 
