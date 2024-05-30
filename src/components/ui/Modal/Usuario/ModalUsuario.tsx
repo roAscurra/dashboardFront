@@ -27,6 +27,7 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, usuarioToEdit 
     ? usuarioToEdit
     : {
       id: 0,
+      eliminado: false,
       auth0Id: "",
       username: ""
     };
