@@ -7,18 +7,21 @@ import IUnidadMedida from "../../../../types/UnidadMedida";
 import { toggleModal } from "../../../../redux/slices/Modal";
 import ArticuloInsumo from "../../../../types/ArticuloInsumoType";
 import UnidadMedidaService from "../../../../services/UnidadMedidaService";
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState, ChangeEvent, useCallback } from "react";
 import CategoriaService from "../../../../services/CategoriaService";
 import Categoria from "../../../../types/Categoria";
 import ImagenArticulo from "../../../../types/ImagenArticulo";
+import { useParams } from "react-router-dom";
 
 interface ModalArticuloInsumoProps {
   getArticulosInsumo: () => void;
   articuloToEdit?: ArticuloInsumo;
 }
 
-const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosInsumo, articuloToEdit }) => {
-
+const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
+  getArticulosInsumo,
+  articuloToEdit,
+}) => {
   const articuloInsumoService = new ArticuloInsumoService();
   const unidadService = new UnidadMedidaService();
   const categoriaService = new CategoriaService();
@@ -36,22 +39,36 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
     stockActual: articuloToEdit ? articuloToEdit.stockActual : 0,
     stockMaximo: articuloToEdit ? articuloToEdit.stockMaximo : 0,
     esParaElaborar: articuloToEdit ? articuloToEdit.esParaElaborar : false,
-    imagenes: articuloToEdit ? articuloToEdit.imagenes?.map((imagen: any) => ({
-      url: imagen.url,
-      name: 'image'
-    } as ImagenArticulo)) : [],
-    unidadMedida: articuloToEdit && articuloToEdit.unidadMedida
-      ? { ...articuloToEdit.unidadMedida }
-      : {
-        id: 0,
-        eliminado: false,
-        denominacion: '',
-      },
-      categoria: articuloToEdit && articuloToEdit.categoria ? articuloToEdit.categoria : 
-      { id: 0, eliminado: false, denominacion: '', esInsumo: false, subCategorias: [], sucursales: [] }
-
-    };
-
+    imagenes: articuloToEdit
+      ? articuloToEdit.imagenes?.map(
+          (imagen: any) =>
+            ({
+              url: imagen.url,
+              name: "image",
+            } as ImagenArticulo)
+        )
+      : [],
+    unidadMedida:
+      articuloToEdit && articuloToEdit.unidadMedida
+        ? { ...articuloToEdit.unidadMedida }
+        : {
+            id: 0,
+            eliminado: false,
+            denominacion: "",
+          },
+    categoria:
+      articuloToEdit && articuloToEdit.categoria
+        ? articuloToEdit.categoria
+        : {
+            id: 0,
+            eliminado: false,
+            denominacion: "",
+            esInsumo: false,
+            subCategorias: [],
+            sucursales: [],
+          },
+  };
+  const { sucursalId } = useParams();
   const modal = useAppSelector((state) => state.modal.modal);
   const dispatch = useAppDispatch();
 
@@ -64,20 +81,31 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
       setFile(e.target.files[0]);
     }
   };
-  const fetchCategorias = async () => {
+  const fetchCategorias = useCallback(async () => {
     try {
-      const categoria = await categoriaService.getAll(url + 'categoria');
-      setCategorias(categoria);
+      const categorias = await categoriaService.getAll(url + "categoria");
+
+      if (sucursalId) {
+        const parsedSucursalId = parseInt(sucursalId, 10);
+
+        const categoriasFiltradas = categorias.filter((categoria) =>
+          categoria.sucursales.some(
+            (sucursal) => sucursal.id === parsedSucursalId
+          )
+        );
+        setCategorias(categoriasFiltradas);
+      }
     } catch (error) {
-      console.error('Error al obtener las unidades de medida:', error);
+      console.error("Error al obtener las categorías:", error);
     }
-  };
+  }, [dispatch, categoriaService, url]);
+
   const fetchUnidadesMedida = async () => {
     try {
-      const unidades = await unidadService.getAll(url + 'unidadMedida');
+      const unidades = await unidadService.getAll(url + "unidadMedida");
       setUnidadesMedida(unidades);
     } catch (error) {
-      console.error('Error al obtener las unidades de medida:', error);
+      console.error("Error al obtener las unidades de medida:", error);
     }
   };
 
@@ -86,7 +114,6 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
     fetchCategorias();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   return (
     <Modal
@@ -99,7 +126,11 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title>{articuloToEdit ? "Editar Artículo de Insumo" : "Agregar Artículo de Insumo"}</Modal.Title>
+        <Modal.Title>
+          {articuloToEdit
+            ? "Editar Artículo de Insumo"
+            : "Agregar Artículo de Insumo"}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Formik
@@ -109,7 +140,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
             precioCompra: Yup.number().required("Campo requerido"),
             stockActual: Yup.number().required("Campo requerido"),
             stockMaximo: Yup.number().required("Campo requerido"),
-            esParaElaborar: Yup.boolean().required("Campo requerido")
+            esParaElaborar: Yup.boolean().required("Campo requerido"),
           })}
           initialValues={initialValues}
           onSubmit={async (values: ArticuloInsumo) => {
@@ -117,28 +148,39 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
               let articuloId: string | null = null;
 
               if (articuloToEdit) {
-                await articuloInsumoService.put(url + "articuloInsumo", values.id.toString(), values);
+                await articuloInsumoService.put(
+                  url + "articuloInsumo",
+                  values.id.toString(),
+                  values
+                );
                 console.log("Se ha actualizado correctamente.");
               } else {
-                console.log(values)
-               
-                const response = await articuloInsumoService.post(url + "articuloInsumo", values);
-                
+                console.log(values);
+
+                const response = await articuloInsumoService.post(
+                  url + "articuloInsumo",
+                  values
+                );
+
                 console.log("Se ha agregado correctamente.");
 
                 articuloId = response.id.toString();
               }
 
-              if(file && articuloId){
-                const response = await articuloInsumoService.uploadFile(url + 'articuloInsumo/uploads', file, articuloId);
-                console.log('Upload successful:', response);
+              if (file && articuloId) {
+                const response = await articuloInsumoService.uploadFile(
+                  url + "articuloInsumo/uploads",
+                  file,
+                  articuloId
+                );
+                console.log("Upload successful:", response);
               }
 
               getArticulosInsumo();
               handleClose();
             } catch (error) {
               console.error("Error al realizar la operación:", error);
-            } 
+            }
           }}
         >
           {({ values, setFieldValue, isSubmitting }) => (
@@ -215,17 +257,19 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                     name="unidadMedida"
                     as="select"
                     className="form-control"
-                    onChange={(event: { target: { value: string; }; }) => {
+                    onChange={(event: { target: { value: string } }) => {
                       const selectedUnitId = parseInt(event.target.value);
-                      const selectedUnidad = unidadesMedida.find((unidad) => unidad.id === selectedUnitId);
+                      const selectedUnidad = unidadesMedida.find(
+                        (unidad) => unidad.id === selectedUnitId
+                      );
 
                       if (selectedUnidad) {
-                        setFieldValue('unidadMedida', selectedUnidad);
+                        setFieldValue("unidadMedida", selectedUnidad);
                       } else {
                         console.error("No se encontró la unidad seleccionada");
                       }
                     }}
-                    value={values.unidadMedida ? values.unidadMedida.id : ''}
+                    value={values.unidadMedida ? values.unidadMedida.id : ""}
                   >
                     <option value="">Seleccionar Unidad de Medida</option>
                     {unidadesMedida.map((unidad) => (
@@ -235,12 +279,14 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                     ))}
                   </Field>
 
-                  <label htmlFor="esParaElaborar" className="mt-3">Es para elaborar:</label>
+                  <label htmlFor="esParaElaborar" className="mt-3">
+                    Es para elaborar:
+                  </label>
                   <Field
                     name="esParaElaborar"
                     type="checkbox"
                     className="form-check-input mx-2 mt-4"
-                    style={{ border: '1px solid #333' }}
+                    style={{ border: "1px solid #333" }}
                   />
                   <ErrorMessage
                     name="esParaElaborar"
@@ -263,30 +309,32 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                 </Col>
               </Row>
               <Row>
-                  <label htmlFor="categoria">Categoria:</label>
-                  <Field
-                    name="categoria"
-                    as="select"
-                    className="form-control"
-                    onChange={(event: { target: { value: string; }; }) => {
-                      const categoriaSelect = parseInt(event.target.value);
-                      const selectedCategoria = categorias.find((categoria) => categoria.id === categoriaSelect);
+                <label htmlFor="categoria">Categoria:</label>
+                <Field
+                  name="categoria"
+                  as="select"
+                  className="form-control"
+                  onChange={(event: { target: { value: string } }) => {
+                    const categoriaSelect = parseInt(event.target.value);
+                    const selectedCategoria = categorias.find(
+                      (categoria) => categoria.id === categoriaSelect
+                    );
 
-                      if (selectedCategoria) {
-                        setFieldValue('categoria', selectedCategoria);
-                      } else {
-                        console.error("No se encontró la categoria seleccionada");
-                      }
-                    }}
-                    value={values.categoria ? values.categoria.id : ''}
-                  >
-                    <option value="">Seleccionar categoria</option>
-                    {categorias.map((categoria) => (
-                      <option key={categoria.id} value={categoria.id}>
-                        {categoria.denominacion}
-                      </option>
-                    ))}
-                  </Field>
+                    if (selectedCategoria) {
+                      setFieldValue("categoria", selectedCategoria);
+                    } else {
+                      console.error("No se encontró la categoria seleccionada");
+                    }
+                  }}
+                  value={values.categoria ? values.categoria.id : ""}
+                >
+                  <option value="">Seleccionar categoria</option>
+                  {categorias.map((categoria) => (
+                    <option key={categoria.id} value={categoria.id}>
+                      {categoria.denominacion}
+                    </option>
+                  ))}
+                </Field>
               </Row>
               <Row className="mt-4">
                 <Col className="text-end">
@@ -302,7 +350,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                     type="submit"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? 'Guardando...' : 'Guardar'}
+                    {isSubmitting ? "Guardando..." : "Guardar"}
                   </Button>
                 </Col>
               </Row>

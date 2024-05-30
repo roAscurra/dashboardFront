@@ -125,12 +125,29 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
       const articulosManufacturados = await articuloManufacturadoService.getAll(
         `${url}articuloManufacturado`
       );
-      setArticulosManufacturados(articulosManufacturados);
-      console.log(articulosManufacturados);
+  
+      // Asegúrate de que sucursalId esté definido y conviértelo a un número
+      if (sucursalId) {
+        const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
+  
+        // Filtrar los artículos manufacturados por sucursal y categoría
+        const manufacturadosFiltrados = articulosManufacturados.filter(articulo =>
+          articulo.categoria && // Verificar si categoria está definido
+          Array.isArray(articulo.categoria.sucursales) && // Verificar si sucursales es un array en categoria
+          articulo.categoria.sucursales.some(sucursal => sucursal.id === sucursalIdNumber)
+        );
+  
+        setArticulosManufacturados(manufacturadosFiltrados);
+        console.log(manufacturadosFiltrados);
+      } else {
+        setArticulosManufacturados(articulosManufacturados);
+        console.log(articulosManufacturados);
+      }
     } catch (error) {
-      console.error("Error al obtener los insumos:", error);
+      console.error("Error al obtener los artículos manufacturados:", error);
     }
   };
+  
   const fetchSucursales = async () => {
     try {
       if (sucursalId) {
