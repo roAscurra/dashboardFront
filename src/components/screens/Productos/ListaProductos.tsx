@@ -17,6 +17,7 @@ import Sidebar from "../../ui/Sider/SideBar.tsx";
 import UnidadMedida from "../../../types/UnidadMedida.ts";
 import { handleSearch } from "../../../utils.ts/utils.ts";
 import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
+import { useParams } from "react-router-dom";
 
 interface Row {
   [key: string]: any;
@@ -37,6 +38,7 @@ export const ListaProductos = () => {
   const [filteredData, setFilterData] = useState<Row[]>([]);
   const [productToEdit, setProductToEdit] = useState<AManufacturado | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const {sucursalId} = useParams();
 
   const globalArticuloManufacturado = useAppSelector(
       (state) => state.articuloManufacturado.data
@@ -59,20 +61,43 @@ export const ListaProductos = () => {
   const fetchProductos = useCallback(async () => {
     try {
       const productos = (await productoService.getAll(url + 'articuloManufacturado')).filter((v) => !v.eliminado);
-      const productoConImagenes = await Promise.all(
-        productos.map(async(product) => {
-          const imagenUrl = await fetchImages(product.id.toString());
-          return {...product, imagen: imagenUrl};
-        })
-      )
-
-      dispatch(setArticuloManufacturado(productoConImagenes));
-      setFilterData(productoConImagenes);
+      
+      // Asegúrate de que sucursalId esté definido y conviértelo a un número
+      if (sucursalId) {
+        const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
+        
+        // Filtrar los productos por sucursal y categoría
+        const productosFiltrados = productos.filter(producto =>
+          producto.categoria && // Verificar si categoria está definido
+          Array.isArray(producto.categoria.sucursales) && // Verificar si sucursales es un array en categoria
+          producto.categoria.sucursales.some(sucursal => sucursal.id === sucursalIdNumber)
+        );
+  
+        const productoConImagenes = await Promise.all(
+          productosFiltrados.map(async (product) => {
+            const imagenUrl = await fetchImages(product.id.toString());
+            return { ...product, imagen: imagenUrl };
+          })
+        );
+  
+        dispatch(setArticuloManufacturado(productoConImagenes));
+        setFilterData(productoConImagenes);
+      } else {
+        const productoConImagenes = await Promise.all(
+          productos.map(async (product) => {
+            const imagenUrl = await fetchImages(product.id.toString());
+            return { ...product, imagen: imagenUrl };
+          })
+        );
+  
+        dispatch(setArticuloManufacturado(productoConImagenes));
+        setFilterData(productoConImagenes);
+      }
     } catch (error) {
       console.error("Error al obtener los productos:", error);
     }
-  }, [dispatch, productoService, url, fetchImages]);
-
+  }, [dispatch, productoService, url, fetchImages, sucursalId]);
+  
   useEffect(() => {
     fetchProductos();
     onSearch('');
