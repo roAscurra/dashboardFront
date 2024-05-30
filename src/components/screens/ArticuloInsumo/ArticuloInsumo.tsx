@@ -15,6 +15,7 @@ import UnidadMedida from "../../../types/UnidadMedida.ts";
 import Sidebar from "../../ui/Sider/SideBar.tsx";
 import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import { CContainer, CRow, CCol } from "@coreui/react";
+import { useParams } from "react-router-dom";
 
 interface Row {
   [key: string]: any;
@@ -39,6 +40,7 @@ export const ListaArticulosInsumo = () => {
   const globalArticuloInsumo = useAppSelector(
     (state) => state.articuloInsumo.data
   );
+  const {sucursalId} = useParams();
 
   const fetchImages = useCallback(async (articuloInsumoId: string) => {
     try {
@@ -55,20 +57,32 @@ export const ListaArticulosInsumo = () => {
 
   const fetchArticulosInsumo = useCallback(async () => {
     try {
-      const articulosInsumo = await articuloInsumoService.getAll(url + "articuloInsumo");
-      const artInsumoConImagenes = await Promise.all(
-        articulosInsumo.map(async (articuloInsumo) => {
-          const imagenUrl = await fetchImages(articuloInsumo.id.toString());
-          return { ...articuloInsumo, imagen: imagenUrl };
-        })
-      )
-      console.log(articulosInsumo)
-      dispatch(setArticuloInsumo(artInsumoConImagenes));
-      setFilterData(artInsumoConImagenes);
+      if (sucursalId) {
+        const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
+        const articulosInsumo = await articuloInsumoService.getAll(url + "articuloInsumo");
+        const artInsumoConImagenes = await Promise.all(
+          articulosInsumo.map(async (articuloInsumo) => {
+            const imagenUrl = await fetchImages(articuloInsumo.id.toString());
+            return { ...articuloInsumo, imagen: imagenUrl };
+          })
+        );
+  
+        // Filtrar los insumos por sucursal y categoría
+        const insumosFiltrados = articulosInsumo.filter(insumo =>
+          insumo.categoria && // Verificar si categoria está definido
+          Array.isArray(insumo.categoria.sucursales) && // Verificar si sucursales es un array en categoria
+          insumo.categoria.sucursales.some((sucursal: any) => sucursal.id === sucursalIdNumber)
+        );
+  
+        console.log(insumosFiltrados);
+        dispatch(setArticuloInsumo(artInsumoConImagenes));
+        setFilterData(insumosFiltrados);
+      }
     } catch (error) {
       console.error("Error al obtener los artículos de insumo:", error);
     }
-  }, [dispatch, articuloInsumoService, url, fetchImages]);
+  }, [dispatch, articuloInsumoService, url, fetchImages, sucursalId]);
+  
 
   useEffect(() => {
     fetchArticulosInsumo();
