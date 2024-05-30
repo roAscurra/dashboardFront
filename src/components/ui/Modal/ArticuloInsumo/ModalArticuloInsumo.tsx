@@ -98,6 +98,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     } catch (error) {
       console.error("Error al obtener las categorías:", error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, categoriaService, url]);
 
   const fetchUnidadesMedida = async () => {

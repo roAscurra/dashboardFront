@@ -25,7 +25,7 @@ const Categoria = () => {
         (state) => state.categoria.data
     );
     const [selectedCategoria, setSelectedCategoria] = useState<ICategoria | null>(null);
-    const selectedSucursal = useAppSelector((state) => state.sucursales.selected); 
+    // const selectedSucursal = useAppSelector((state) => state.sucursales.selected); 
     const {sucursalId} = useParams();
     const [modalOpen, setModalOpen] = useState(false);
     const [eliminarModalOpen, setEliminarModalOpen] = useState(false);
@@ -48,14 +48,15 @@ const Categoria = () => {
         } catch (error) {
             console.error('Error al obtener las categorías:', error);
         }
-    }, [dispatch, categoriaService, url, selectedSucursal]);
+    }, [dispatch, categoriaService, url, sucursalId]);
     
     
 
     useEffect(() => {
         fetchCategorias();
         onSearch(''); // Llamada a onSearch para filtrar los datos iniciales
-    }, [fetchCategorias]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
 
 

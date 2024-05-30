@@ -167,18 +167,21 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
       setSelectedPais(domicilio.localidad.provincia.pais.id);
       setSelectedProvincia(domicilio.localidad.provincia.id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sucursalToEdit]);
 
   useEffect(() => {
     if (selectedPais) {
       fetchProvinciasData(selectedPais);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPais]);
 
   useEffect(() => {
     if (selectedProvincia) {
       fetchLocalidadesData(selectedProvincia);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProvincia]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {

@@ -30,7 +30,9 @@ export const ListaSucursal = () => {
   const url = import.meta.env.VITE_API_URL;
   const { empresaId } = useParams(); // Obtén el ID de la URL
   const dispatch = useAppDispatch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   const sucursalService = new SucursalService();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const empresaService = new EmpresaService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [sucursalToEdit, setSucursalToEdit] = useState<Sucursal | null>(null);
@@ -97,6 +99,7 @@ export const ListaSucursal = () => {
   useEffect(() => {
     fetchSucursal();
     fetchEmpresa();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleOpenDeleteModal = (rowData: Row) => {

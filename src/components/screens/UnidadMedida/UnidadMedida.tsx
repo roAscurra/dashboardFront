@@ -26,6 +26,7 @@ interface Column {
 export const ListaUnidadesMedida = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const unidadMedidaService = new UnidadMedidaService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [unidadToEdit, setUnidadToEdit] = useState<UnidadMedida | null>(null);
