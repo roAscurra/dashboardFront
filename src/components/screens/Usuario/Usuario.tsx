@@ -67,6 +67,7 @@ export const ListaUsuarios = () => {
   const handleOpenEditModal = (rowData: Row) => {
     setUsuarioToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       auth0Id: rowData.auth0Id,
       username: rowData.username
     });
@@ -81,6 +82,7 @@ export const ListaUsuarios = () => {
   const handleOpenDeleteModal = (rowData: Row) => {
     setUsuarioToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       auth0Id: rowData.auth0Id,
       username: rowData.username
     });
