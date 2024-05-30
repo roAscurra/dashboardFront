@@ -19,7 +19,9 @@ import { useAppDispatch } from "../../../hooks/redux.ts";
 import Sucursal from "../../../types/Sucursal.ts";
 import ModalEliminarSucursal from "../../ui/Modal/Sucursal/ModalEliminarSucursal.tsx";
 import EmpresaService from "../../../services/EmpresaService.ts";
-
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 interface Row {
   [key: string]: any;
 }
@@ -38,30 +40,36 @@ export const ListaSucursal = () => {
   const fetchEmpresa = useCallback(async () => {
     try {
       if (empresaId) {
-        const empresa = await empresaService.get(url + 'empresa', empresaId);
-        console.log('Detalles de la empresa:', empresa);
+        const empresa = await empresaService.get(url + "empresa", empresaId);
+        console.log("Detalles de la empresa:", empresa);
       }
     } catch (error) {
       console.error("Error al obtener los detalles de la empresa:", error);
     }
   }, [empresaService, empresaId, url]);
 
-  const fetchImages = useCallback(async (sucursalId: string) => {
-    try {
-      const response = await sucursalService.get(url + 'sucursal/getAllImagesBySucursalId', sucursalId);
+  const fetchImages = useCallback(
+    async (sucursalId: string) => {
+      try {
+        const response = await sucursalService.get(
+          url + "sucursal/getAllImagesBySucursalId",
+          sucursalId
+        );
 
-      if (Array.isArray(response) && response.length > 0) {
-        return response[0].url; // Devuelve la URL de la primera imagen
+        if (Array.isArray(response) && response.length > 0) {
+          return response[0].url; // Devuelve la URL de la primera imagen
+        }
+        return "";
+      } catch (error) {
+        return "";
       }
-      return 'https://via.placeholder.com/150';
-    } catch (error) {
-      return 'https://via.placeholder.com/150';
-    }
-  }, [sucursalService, url]);
+    },
+    [sucursalService, url]
+  );
 
   const fetchSucursal = useCallback(async () => {
     try {
-      const sucursales = await sucursalService.getAll(url + 'sucursal');
+      const sucursales = await sucursalService.getAll(url + "sucursal");
       const sucursalesConImagenes = await Promise.all(
         sucursales.map(async (sucursal) => {
           const imagenUrl = await fetchImages(sucursal.id.toString());
@@ -69,10 +77,14 @@ export const ListaSucursal = () => {
         })
       );
 
-      const sucursalesFiltradas = sucursalesConImagenes.filter(sucursal => sucursal.empresa.id.toString() === empresaId);
+      const sucursalesFiltradas = sucursalesConImagenes.filter(
+        (sucursal) => sucursal.empresa.id.toString() === empresaId
+      );
 
       // Verificar si alguna de las sucursales filtradas es casa matriz
-      const empresaTieneCasaMatriz = sucursalesFiltradas.some(sucursal => sucursal.esCasaMatriz === true);
+      const empresaTieneCasaMatriz = sucursalesFiltradas.some(
+        (sucursal) => sucursal.esCasaMatriz === true
+      );
       setCasaMatriz(empresaTieneCasaMatriz);
 
       dispatch(setSucursal(sucursalesFiltradas));
@@ -81,7 +93,6 @@ export const ListaSucursal = () => {
       console.error("Error al obtener las sucursales:", error);
     }
   }, [dispatch, sucursalService, url, fetchImages, empresaId]);
-
 
   useEffect(() => {
     fetchSucursal();
@@ -98,7 +109,7 @@ export const ListaSucursal = () => {
       horarioCierre: rowData.horarioCierre,
       esCasaMatriz: rowData.esCasaMatriz,
       domicilio: rowData.domicilio,
-      empresa: rowData.empresa
+      empresa: rowData.empresa,
     });
     setDeleteModalOpen(true);
   };
@@ -110,20 +121,25 @@ export const ListaSucursal = () => {
   const handleDelete = async () => {
     try {
       if (sucursalToEdit && sucursalToEdit.id) {
-        await sucursalService.delete(url + 'sucursal', sucursalToEdit.id.toString());
-        console.log('Se ha eliminado correctamente.');
+        await sucursalService.delete(
+          url + "sucursal",
+          sucursalToEdit.id.toString()
+        );
+        console.log("Se ha eliminado correctamente.");
         handleCloseDeleteModal();
         fetchSucursal();
       } else {
-        console.error('No se puede eliminar la sucursal porque no se proporcionó un ID válido.');
+        console.error(
+          "No se puede eliminar la sucursal porque no se proporcionó un ID válido."
+        );
       }
     } catch (error) {
-      console.error('Error al eliminar la sucursal:', error);
+      console.error("Error al eliminar la sucursal:", error);
     }
   };
 
   const handleOpenEditModal = (rowData: Row) => {
-    console.log(rowData)
+    console.log(rowData);
     setSucursalToEdit({
       id: rowData.id,
       eliminado: rowData.eliminado,
@@ -133,9 +149,9 @@ export const ListaSucursal = () => {
       horarioCierre: rowData.horarioCierre,
       esCasaMatriz: rowData.esCasaMatriz, // Asegúrate de manejar undefined
       domicilio: rowData.domicilio,
-      empresa: rowData.empresa
+      empresa: rowData.empresa,
     });
-    dispatch(toggleModal({ modalName: 'modal' }));
+    dispatch(toggleModal({ modalName: "modal" }));
   };
 
   const handleAddSucursal = () => {
@@ -164,19 +180,91 @@ export const ListaSucursal = () => {
           alignItems="center"
           style={{ minHeight: "80vh", paddingTop: "1rem" }}
         >
+          <Grid item xs={12} sm={6} md={4} onClick={handleAddSucursal}>
+            <Card
+              sx={{
+                maxWidth: 345,
+                boxShadow: 3,
+                borderRadius: 16,
+                cursor: "pointer",
+                transition: "transform 0.3s",
+                "&:hover": { transform: "scale(1.05)" },
+              }}
+            >
+              <CardContent
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100%",
+                  minHeight: 250,
+                }}
+              >
+                <AddIcon sx={{ fontSize: 48, marginBottom: 1 }} />
+                <Typography
+                  gutterBottom
+                  variant="h6"
+                  component="div"
+                  sx={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    color: "#333",
+                    marginTop: 1,
+                  }}
+                >
+                  Agregar Sucursal
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
           {filterData.map((sucursal) => (
             <Grid item xs={12} sm={6} md={4} key={sucursal.id}>
-              <Card sx={{ maxWidth: 345 }}>
-                <CardMedia
-                  component="img"
-                  alt={sucursal.nombre}
-                  height="140"
-                  image={sucursal.imagen}
-                  sx={{ objectFit: 'contain', borderRadius: '50%' }}
-                />
-                <CardContent>
-                  <Link to={`/inicio/${sucursal.id}`}>
-                    <Typography gutterBottom variant="h5" component="div">
+              <Card sx={{ maxWidth: 345, boxShadow: 3, borderRadius: 16 }}>
+                {sucursal.imagen !== "" && (
+                  <CardMedia
+                    component="img"
+                    alt={sucursal.nombre}
+                    height="140"
+                    image={sucursal.imagen}
+                    sx={{
+                      objectFit: "cover",
+                      borderRadius: "16px 16px 0 0",
+                      maxHeight: 140,
+                    }}
+                  />
+                )}
+
+                <CardContent
+                  sx={
+                    sucursal.imagen == ""
+                      ? {
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          height: "100%",
+                          minHeight: 200,
+                        }
+                      : {}
+                  }
+                >
+                  {" "}
+                  <Link
+                    to={`/inicio/${sucursal.id}`}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Typography
+                      gutterBottom
+                      variant="h6"
+                      component="div"
+                      sx={{
+                        fontWeight: "bold",
+                        color: "#333",
+                        textAlign: "center",
+                      }}
+                    >
                       {sucursal.nombre}
                     </Typography>
                   </Link>
@@ -184,39 +272,23 @@ export const ListaSucursal = () => {
                     {sucursal.razonSocial}
                   </Typography>
                 </CardContent>
-                <CardActions>
+                <CardActions sx={{ justifyContent: "center" }}>
                   <Button
                     size="small"
                     onClick={() => handleOpenDeleteModal(sucursal)}
                   >
-                    Eliminar
+                    <DeleteIcon style={{ color: "red" }} />{" "}
                   </Button>
                   <Button
                     size="small"
                     onClick={() => handleOpenEditModal(sucursal)}
                   >
-                    Editar
+                    <EditIcon style={{ color: "green" }} />{" "}
                   </Button>
                 </CardActions>
               </Card>
             </Grid>
           ))}
-          <Grid item xs={12} sm={6} md={4} onClick={handleAddSucursal}>
-            <Card sx={{ maxWidth: 345 }}>
-              <CardMedia
-                component="img"
-                alt={"Crear sucursal"}
-                height="140"
-                image={"https://objetivoligar.com/wp-content/uploads/2017/03/blank-profile-picture-973460_1280-768x768.jpg"}
-                sx={{ objectFit: 'contain', borderRadius: '50%' }}
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  Agregar Sucursal
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
         </Grid>
         <ModalEliminarSucursal
           show={deleteModalOpen}
