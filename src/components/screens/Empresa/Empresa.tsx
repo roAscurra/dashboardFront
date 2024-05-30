@@ -168,7 +168,16 @@ export const ListaEmpresa = () => {
           {filterData.map((empresa) => {
             return (
               <Grid item xs={12} sm={6} md={4} key={empresa.id}>
-                <Card sx={{ maxWidth: 345, boxShadow: 3, borderRadius: 16 }}>
+                <Card
+                  sx={{
+                    maxWidth: 345,
+                    boxShadow: 3,
+                    borderRadius: 16,
+                    cursor: "pointer",
+                    transition: "transform 0.3s",
+                    "&:hover": { transform: "scale(1.05)" },
+                  }}
+                >
                   {empresa.imagen !== "" && (
                     <CardMedia
                       component="img"
@@ -184,12 +193,18 @@ export const ListaEmpresa = () => {
                   )}
 
                   <CardContent
-                    sx={empresa.imagen == "" ? { display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: "100%",
-                    minHeight: 200 } : {}}
+                    sx={
+                      empresa.imagen == ""
+                        ? {
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: "100%",
+                            minHeight: 200,
+                          }
+                        : {}
+                    }
                   >
                     <Link
                       to={`/sucursal/${empresa.id}`}
