@@ -85,6 +85,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
               if (empresaToEdit) {
                 await empresaService.put(url + "empresa", values.id.toString(), values);
                 console.log("Se ha actualizado correctamente.");
+                newCompanyId = values.id.toString();
               } else {
                 const response = await empresaService.post(url + "empresa", values);
                 console.log("Se ha agregado correctamente.");
