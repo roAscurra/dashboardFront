@@ -104,7 +104,7 @@ export const ListaUnidadesMedida = () => {
   return (
     <React.Fragment>
       <BaseNavBar title="" />
-      <CContainer fluid>
+      <CContainer fluid style={{backgroundColor: "#fff"}}>
         <CRow>
           <CCol xs="auto" className="sidebar">
             <Sidebar />

@@ -1,3 +1,5 @@
-.articulo-insumo-modal {
-    background-color: red;
+body,
+html,
+#root {
+    background-color: #f2f2f2;
 }

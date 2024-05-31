@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { Add } from "@mui/icons-material";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/redux.ts";
-import PromocionService from "../../../../services/PromocionService.ts";
-import Promocion from "../../../../types/Promocion.ts";
-import { setPromocion } from "../../../../redux/slices/Promocion.ts";
-import { toggleModal } from "../../../../redux/slices/Modal.ts";
-import SearchBar from "../../../ui/SearchBar/SearchBar.tsx";
-import TableComponent from "../../../ui/Table/Table.tsx";
-import ModalEliminarPromocion from "../../../ui/Modal/Promocion/ModalEliminarPromocion.tsx";
-import ModalPromocion from "../../../ui/Modal/Promocion/ModalPromocion.tsx";
-import { handleSearch } from "../../../../utils.ts/utils.ts";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux.ts";
+import PromocionService from "../../../services/PromocionService.ts";
+import Promocion from "../../../types/Promocion.ts";
+import { setPromocion } from "../../../redux/slices/Promocion.ts";
+import { toggleModal } from "../../../redux/slices/Modal.ts";
+import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
+import TableComponent from "../../ui/Table/Table.tsx";
+import ModalEliminarPromocion from "../../ui/Modal/Promocion/ModalEliminarPromocion.tsx";
+import ModalPromocion from "../../ui/Modal/Promocion/ModalPromocion.tsx";
+import { handleSearch } from "../../../utils.ts/utils.ts";
 import { CCol, CContainer, CRow } from "@coreui/react";
-import { BaseNavBar } from "../../../ui/common/BaseNavBar.tsx";
-import Sidebar from "../../../ui/Sider/SideBar.tsx";
+import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
+import Sidebar from "../../ui/Sider/SideBar.tsx";
 import { useParams } from "react-router-dom";
 
 interface Row {
@@ -178,7 +178,7 @@ const onSearch = (query: string) => {
   return (
   <React.Fragment>
     <BaseNavBar title="" />
-    <CContainer fluid>
+    <CContainer fluid style={{backgroundColor: "#fff"}}>
       <CRow>
         {/* Sidebar */}
         <CCol xs="auto" className="sidebar">
