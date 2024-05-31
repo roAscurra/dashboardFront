@@ -155,6 +155,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   values
                 );
                 console.log("Se ha actualizado correctamente.");
+                articuloId = values.id.toString();
               } else {
                 console.log(values);
 

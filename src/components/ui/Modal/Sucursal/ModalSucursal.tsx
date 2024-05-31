@@ -166,6 +166,9 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
       const { domicilio } = sucursalToEdit;
       setSelectedPais(domicilio.localidad.provincia.pais.id);
       setSelectedProvincia(domicilio.localidad.provincia.id);
+    } else {
+      setSelectedPais(null);
+      setSelectedProvincia(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sucursalToEdit]);
@@ -239,7 +242,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   values.id.toString(),
                   values
                 );
-
+                newCompanyId = values.id.toString(); //asigno el id de la sucursal
               } else {
                 if (empresaId) {
                   const empresa = await empresaService.get(
@@ -273,7 +276,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   newCompanyId = response.id.toString();
                 }
               }
-
               if (file && newCompanyId) {
                 const response = await sucursalService.uploadFile(url + 'sucursal/uploads', file, newCompanyId);
                 console.log('Upload successful:', response);
@@ -487,7 +489,14 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                 <Col md={4} className="mb-4">
                   <label htmlFor="logo">Logo:</label>
                   <br />
-                  <input type="file" onChange={handleFileChange} multiple />
+                  <input
+                    name="imagen"
+                    type="file"
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                      handleFileChange(event);
+                    }}
+                    className="form-control my-2"
+                  />
                 </Col>
               </Row>
               <div className="d-flex justify-content-end">
