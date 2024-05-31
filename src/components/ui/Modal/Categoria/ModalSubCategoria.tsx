@@ -69,7 +69,7 @@ const ModalSubCategoria: React.FC<AgregarSubcategoriaModalProps> = ({
                 // la categoria que traemos se la asignamos a la categoria que recibe la modal
                 categoria = response;
                 //le asigno las mismas sucursales que la categoria padre
-                // values.sucursales = response.sucursales;
+                values.sucursales = response.sucursales;
               }
               // Procesar el formulario
               const nombreSubcategoria = values.denominacion.trim();

@@ -2,23 +2,32 @@ import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import Categoria from '../../../../types/Categoria';
 import CategoriaService from '../../../../services/CategoriaService';
+import CategoriaShorService from '../../../../services/dtos/CategoriaShorService';
 
 interface ModalEliminarCategoriaProps {
     show: boolean;
     categoria: Categoria | null;
+    getCategories: () => void;
     onDelete: () => void;
     onClose: () => void;
 }
 
-const ModalEliminarCategoria: React.FC<ModalEliminarCategoriaProps> = ({ show, categoria, onClose }) => {
+const ModalEliminarCategoria: React.FC<ModalEliminarCategoriaProps> = ({ show, categoria, onClose, getCategories }) => {
     const categoriaService = new CategoriaService();
     const url = import.meta.env.VITE_API_URL;
+    const categoriaShortService = new CategoriaShorService();
 
     const handleEliminar = async () => {
         try {
             if (categoria && categoria.id) {
+                // Elimino las subcategorias de la categoria que elimino
+                categoria.subCategorias.map(async subCategoria => {
+                    await categoriaShortService.delete(url + 'categoria', subCategoria.id.toString());
+                });
+
                 await categoriaService.delete(url + 'categoria', categoria.id.toString());
                 console.log('Se ha eliminado correctamente.');
+                getCategories();
                 onClose(); // Cerramos el modal después de eliminar
             } else {
                 console.error('No se puede eliminar la categoría porque no se proporcionó un ID válido.');

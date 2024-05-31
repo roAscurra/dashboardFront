@@ -33,31 +33,35 @@ const Categoria = () => {
   const fetchCategorias = useCallback(async () => {
     try {
       const categorias = await categoriaService.getAll(url + "categoria");
-
-      const categoriasNoEliminadas = categorias.filter(
-        (categoria) => !categoria.eliminado
-      );
-
+  
+      // Filtrar las subcategorías para obtener sus IDs
+      const subCategoriaIds = categorias.filter(categoria => categoria.subCategorias.length > 0)
+                                        .map(subcategoria => subcategoria.subCategorias.map(sub => sub.id))
+                                        .flat();
+  
+      // Filtrar las categorías principales excluyendo aquellas que son subcategorías
+      const categoriasPrincipales = categorias.filter(categoria => !subCategoriaIds.includes(categoria.id));
+  
       if (sucursalId) {
         const parsedSucursalId = parseInt(sucursalId, 10);
-
-        const categoriasFiltradas = categoriasNoEliminadas.filter((categoria) =>
+  
+        const categoriasFiltradas = categoriasPrincipales.filter((categoria) =>
           categoria.sucursales.some(
             (sucursal) => sucursal.id === parsedSucursalId
           )
         );
-
+  
         dispatch(setCategoria(categoriasFiltradas));
         setFilterData(categoriasFiltradas);
       } else {
-        dispatch(setCategoria(categoriasNoEliminadas));
-        setFilterData(categoriasNoEliminadas);
+        dispatch(setCategoria(categoriasPrincipales));
+        setFilterData(categoriasPrincipales);
       }
     } catch (error) {
       console.error("Error al obtener las categorías:", error);
     }
   }, [dispatch, categoriaService, url, sucursalId]);
-
+  
   useEffect(() => {
     fetchCategorias();
     onSearch(""); // Llamada a onSearch para filtrar los datos iniciales
@@ -166,10 +170,8 @@ const Categoria = () => {
                 <ModalEliminarCategoria
                   show={eliminarModalOpen}
                   categoria={selectedCategoria}
-                  onDelete={() => {
-                    setEliminarModalOpen(false);
-                    handleEliminar();
-                  }}
+                  onDelete={handleEliminar} 
+                  getCategories={() => fetchCategorias()}
                   onClose={() => setEliminarModalOpen(false)}
                 />
               </Container>
