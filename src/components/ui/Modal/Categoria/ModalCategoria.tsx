@@ -9,6 +9,7 @@ import { toggleModal } from '../../../../redux/slices/Modal';
 import { useParams } from 'react-router-dom';
 import SucursalService from '../../../../services/SucursalService';
 import Sucursal from '../../../../types/Sucursal';
+import CategoriaShorService from '../../../../services/dtos/CategoriaShorService';
 
 interface ModalCategoriaProps {
     open: boolean;
@@ -19,6 +20,7 @@ interface ModalCategoriaProps {
 
 const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCategories, categoryToEdit }) => {
     const categoriaService = new CategoriaService();
+    const categoriaShortService = new CategoriaShorService();
     const url = import.meta.env.VITE_API_URL;
     const { sucursalId } = useParams();
     const sucursalService = new SucursalService();
@@ -47,7 +49,12 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
         id: categoryToEdit ? categoryToEdit.id : 0,
         eliminado: categoryToEdit ? categoryToEdit.eliminado : false,
         denominacion: categoryToEdit?.denominacion || '',
-        subCategorias: categoryToEdit?.subCategorias || [],
+        subCategorias: categoryToEdit?categoryToEdit.subCategorias.map((subCategoria: any) => ({
+            id: subCategoria.id,
+            eliminado: subCategoria.eliminado,
+            denominacion: subCategoria.denominacion,
+            esInsumo: subCategoria.esInsumo
+        })) : [],
         sucursales: categoryToEdit
             ? categoryToEdit.sucursales.map((sucursal: any) => ({
                 id: sucursal.id,
@@ -81,22 +88,15 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ open, onClose, getCateg
                 <Formik
                     validationSchema={Yup.object({
                         denominacion: Yup.string().required('Campo requerido'),
-                        // subCategorias: Yup.array().of(
-                        //     Yup.object({
-                        //         denominacion: Yup.string().required('Campo requerido'),
-                        //     })
-                        // ),
-                        // sucursales: Yup.array().of(
-                        //     Yup.object({
-                        //         id: Yup.number().required(),
-                        //         nombre: Yup.string().required(),
-                        //     })
-                        // )
                     })}
                     initialValues={initialValues}
                     onSubmit={async (values) => {
                         try {
                             if (categoryToEdit) {
+                                // Realizar PUT para cada subcategoría de manera secuencial usando .map
+                                values.subCategorias.map(async subCategoria => {
+                                    await categoriaShortService.put(url + 'categoria', subCategoria.id.toString(), subCategoria);
+                                });
                                 await categoriaService.put(url + 'categoria', values.id.toString(), values);
                                 console.log('Categoría actualizada correctamente.', values);
                             } else {
