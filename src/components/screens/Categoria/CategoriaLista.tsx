@@ -1,24 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import { IconButton, Menu, MenuItem } from '@mui/material';
-import { ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
+import { ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon, MoreVert as MoreVertIcon, Add as AddIcon } from '@mui/icons-material';
 import Categoria from '../../../types/Categoria';
+import ModalSubCategoria from '../../ui/Modal/Categoria/ModalSubCategoria';
 
 interface CategoriaListaProps {
     categorias: Categoria[];
+    getCategories: () => void;
     onEditar: (categoria: Categoria) => void;
     onDelete: (categoria: Categoria) => void;
+    onAddSubCategoria: (categoria: Categoria) => void;
 }
 
-const CategoriaLista: React.FC<CategoriaListaProps> = ({ categorias, onEditar, onDelete }) => {
+const CategoriaLista: React.FC<CategoriaListaProps> = ({ categorias, onEditar, onDelete, getCategories }) => {
     const [openMap, setOpenMap] = React.useState<{ [key: number]: boolean }>({});
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
     const [selectedCategoria, setSelectedCategoria] = React.useState<Categoria | null>(null);
-  
+    const [modalOpen, setModalOpen] = useState(false);
+
     const handleClick = (id: number) => {
       setOpenMap((prevOpenMap) => ({
         ...prevOpenMap,
@@ -45,6 +49,10 @@ const CategoriaLista: React.FC<CategoriaListaProps> = ({ categorias, onEditar, o
       onDelete(selectedCategoria as Categoria);
       handleMenuClose();
     };
+
+    const handleCloseModal = () => {
+      setModalOpen(false);
+    };
   
     const renderCategoria = (categoria: Categoria) => {
       const isOpen = openMap[categoria.id] || false;
@@ -63,6 +71,16 @@ const CategoriaLista: React.FC<CategoriaListaProps> = ({ categorias, onEditar, o
               <MoreVertIcon />
             </IconButton>
             {tieneSubcategorias && (isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+            <IconButton
+              aria-label="add-subcategoria"
+              onClick={(event) => {
+                event.stopPropagation(); // Evitar que el clic llegue al ListItemButton
+                setSelectedCategoria(categoria);
+                setModalOpen(true);
+              }}
+            >
+              <AddIcon />
+            </IconButton>
           </ListItemButton>
           {tieneSubcategorias && (
             <Collapse in={isOpen} timeout="auto" unmountOnExit>
@@ -100,9 +118,14 @@ const CategoriaLista: React.FC<CategoriaListaProps> = ({ categorias, onEditar, o
           <MenuItem onClick={handleEditar}>Editar</MenuItem>
           <MenuItem onClick={handleEliminar}>Eliminar</MenuItem>
         </Menu>
+        <ModalSubCategoria 
+          open={modalOpen}
+          categoria={selectedCategoria}
+          onClose={handleCloseModal}
+          getCategories={() => getCategories()}
+          />
       </List>
     );
   };
   
   export default CategoriaLista;
-  

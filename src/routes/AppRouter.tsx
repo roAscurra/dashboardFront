@@ -7,7 +7,7 @@ import Usuario from "../components/screens/Usuario/Usuario.tsx";
 import {ListaProductos} from "../components/screens/Productos/ListaProductos.tsx";
 import Categoria from "../components/screens/Categoria/Categoria.tsx";
 // import {ListaCupones} from "../components/screens/Marketing/Cupones/Cupones.tsx";
-import {ListaPromocion} from "../components/screens/Marketing/Promociones/Promocion.tsx";
+import {ListaPromocion} from "../components/screens/Promocion/Promocion.tsx";
 import {ListaSucursal} from "../components/screens/Sucursal/Sucursal.tsx";
 import {ListaEmpresa} from "../components/screens/Empresa/Empresa.tsx";
 import UnidadMedida from '../components/screens/UnidadMedida/UnidadMedida.tsx';
