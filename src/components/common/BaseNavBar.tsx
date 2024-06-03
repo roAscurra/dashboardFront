@@ -16,9 +16,21 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
 import LunchDiningOutlinedIcon from '@mui/icons-material/LunchDiningOutlined';
 import Divider from '@mui/material/Divider';
+<<<<<<< refs/remotes/origin/coni:src/components/common/BaseNavBar.tsx
+=======
+import SucursalService from '../../../services/SucursalService';
+import { useParams } from 'react-router-dom';
+import { ShoppingCart } from '@mui/icons-material';
+import ModalCarrito from '../Modal/Carrito/ModalCarrito';
+import { toggleModal } from '../../../redux/slices/Modal';
+import { useAppDispatch } from '../../../hooks/redux';
+>>>>>>> local:src/components/ui/common/BaseNavBar.tsx
 
 export default function PrimarySearchAppBar() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [carritoOpen, setCarritoOpen] = useState(false);
+
+  const dispatch = useAppDispatch();
 
   const handleProfileMenuOpen = () => {
     setDialogOpen(true);
@@ -27,6 +39,18 @@ export default function PrimarySearchAppBar() {
   const handleDialogClose = () => {
     setDialogOpen(false);
   };
+<<<<<<< refs/remotes/origin/coni:src/components/common/BaseNavBar.tsx
+=======
+
+  const handleOpenCarrito = () => {
+    dispatch(toggleModal({ modalName: "carrito" }));
+  };
+
+  const url = import.meta.env.VITE_API_URL;
+  const { sucursalId } = useParams(); // Obtén el ID de la URL
+  const sucursalService = new SucursalService();
+  const [sucursalName, setSucursalName] = useState(""); // Variable de estado para almacenar el nombre de la sucursal
+>>>>>>> local:src/components/ui/common/BaseNavBar.tsx
 
   return (
     <Box sx={{ marginBottom: 1 }}>
@@ -41,6 +65,15 @@ export default function PrimarySearchAppBar() {
             <LunchDiningOutlinedIcon sx={{mr: 2}}/>
             Buen Sabor
           </Typography>
+            <IconButton
+            size="large"
+            edge="end"
+            aria-label="account of current user"
+            onClick={handleOpenCarrito}
+            color="inherit"
+          >
+            <ShoppingCart />
+          </IconButton>
           <IconButton
             size="large"
             edge="end"
@@ -52,6 +85,7 @@ export default function PrimarySearchAppBar() {
           </IconButton>
         </Toolbar>
       </AppBar>
+      <ModalCarrito modalName='carrito'></ModalCarrito>
       <Dialog onClose={handleDialogClose} open={dialogOpen}>
         <DialogTitle>Opciones de Usuario</DialogTitle>
         <List>
