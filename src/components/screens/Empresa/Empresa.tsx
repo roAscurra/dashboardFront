@@ -37,7 +37,7 @@ export const ListaEmpresa = () => {
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [empresaToEdit, setEmpresaToEdit] = useState<Empresa | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const { user, isLoading } = useAuth0();
+  const { user, isLoading, isAuthenticated } = useAuth0();
   const [ usuario, setUsuario ] = useState<Usuario>();
   const [ usuarioIsLoading, setUsuarioIsLoading ] = useState<boolean>(true);
 
@@ -132,11 +132,14 @@ export const ListaEmpresa = () => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
-  if(isLoading || usuarioIsLoading) {
-      return <div style={{height: "calc(100vh - 88px)"}} className="d-flex flex-column justify-content-center align-items-center">
-          <div className="spinner-border" role="status"></div>
-      </div>
+  if(isAuthenticated) {
+      if(isLoading || usuarioIsLoading) {
+          return <div style={{height: "calc(100vh - 88px)"}} className="d-flex flex-column justify-content-center align-items-center">
+              <div className="spinner-border" role="status"></div>
+          </div>
+      }
   }
+
 
     if (!user) {
         return <div style={{height: "calc(100vh - 88px)"}}
