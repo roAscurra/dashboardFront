@@ -17,12 +17,14 @@ import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
 import Divider from '@mui/material/Divider';
 import SucursalService from '../../../services/SucursalService';
 import { useParams } from 'react-router-dom';
+import {useAuth0} from "@auth0/auth0-react";
 
 interface BaseNavBarProps {
   title: string;
 }
 export const BaseNavBar = ({ title }: BaseNavBarProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
   const handleProfileMenuOpen = () => {
     setDialogOpen(true);
@@ -35,6 +37,18 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
   const { sucursalId } = useParams(); // Obtén el ID de la URL
   const sucursalService = new SucursalService();
   const [sucursalName, setSucursalName] = useState(""); // Variable de estado para almacenar el nombre de la sucursal
+
+  const handleLogin = () => {
+    loginWithRedirect();
+  }
+
+  const handleLogout = () => {
+    logout({
+      logoutParams: {
+        returnTo: "http://localhost:5174"
+      }
+    })
+  }
 
   const fetchSucursalData = async () => {
       try {
@@ -80,20 +94,26 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
       <Dialog onClose={handleDialogClose} open={dialogOpen}>
         <DialogTitle>Opciones de Usuario</DialogTitle>
         <List>
-          <ListItem button>
+          <ListItem hidden={!isAuthenticated} button>
             <ListItemIcon>
               <Person2OutlinedIcon />
             </ListItemIcon>
             <ListItemText primary="Perfil" />
           </ListItem>
-          <ListItem button>
+          <ListItem hidden={!isAuthenticated} button>
             <ListItemIcon>
               <SettingsOutlinedIcon />
             </ListItemIcon>
             <ListItemText primary="Ajustes" />
           </ListItem>
           <Divider />
-          <ListItem button>
+          <ListItem onClick={handleLogin} hidden={isAuthenticated} button>
+            <ListItemIcon>
+              <LoginOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Login" />
+          </ListItem>
+          <ListItem onClick={handleLogin}  hidden={!isAuthenticated} button>
             <ListItemIcon>
               <LoginOutlinedIcon />
             </ListItemIcon>
