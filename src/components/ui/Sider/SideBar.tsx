@@ -79,7 +79,13 @@ const Sidebar: React.FC = () => {
               <CIcon customClassName="nav-icon" icon={icon.cilCash} />
                 Promociones
               </Link>
-            </CNavItem>
+          </CNavItem>
+          <CNavItem>
+            <Link to={`/usuario/${sucursalId}`} className="nav-link">
+              <CIcon customClassName="nav-icon" icon={icon.cilPeople} />
+              Usuarios
+            </Link>
+          </CNavItem>
         </CSidebarNav>
       </CSidebar>
     </div>
