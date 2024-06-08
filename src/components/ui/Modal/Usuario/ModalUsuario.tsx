@@ -19,7 +19,8 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, usuarioToEdit 
   // Definir las reglas de validación para el formulario usando Yup
   const validationSchema = Yup.object({
     username: Yup.string().required("Campo requerido"),
-    auth0Id: Yup.string().required("Campo requerido"),
+    email: Yup.string().required("Campo requerido"),
+    rol: Yup.string().required("Campo requerido"),
   });
 
   // Valores iniciales del formulario, si hay un usuario para editar, se usan esos valores
@@ -28,8 +29,9 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, usuarioToEdit 
     : {
       id: 0,
       eliminado: false,
-      auth0Id: "",
-      username: ""
+      username: "",
+      email: "",
+      rol: "",
     };
 
   const modal = useAppSelector((state) => state.modal.modal);
@@ -60,11 +62,11 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, usuarioToEdit 
             try {
               if (usuarioToEdit) {
                 // Lógica para editar el usuario existente
-                await usuarioService.put(url + "usuarios", values.id.toString(), values);
+                await usuarioService.put(url + "usuarioCliente", values.id.toString(), values);
                 console.log("Se ha actualizado correctamente.");
               } else {
                 // Lógica para agregar un nuevo usuario
-                await usuarioService.post(url + "usuarios", values);
+                await usuarioService.post(url + "usuarioCliente", values);
                 console.log("Se ha agregado correctamente.");
               }
               getUsuarios();
@@ -75,23 +77,33 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, usuarioToEdit 
           }}
         >
           {() => (
-            <Form autoComplete="off">
-              <div className="mb-4">
-                <label htmlFor="username">Usuario:</label>
-                <Field name="username" type="text" className="form-control mt-2" />
-                <ErrorMessage name="username" className="error-message" component="div" />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="auth0Id">Auth0Id:</label>
-                <Field name="auth0Id" type="text" className="form-control mt-2" />
-                <ErrorMessage name="auth0Id" className="error-message" component="div" />
-              </div>
-              <div className="d-flex justify-content-end">
-                <Button variant="outline-success" type="submit" className="custom-button">
-                  Enviar
-                </Button>
-              </div>
-            </Form>
+              <Form autoComplete="off">
+                <div className="mb-4">
+                  <label htmlFor="username">Usuario:</label>
+                  <Field name="username" type="text" className="form-control mt-2"/>
+                  <ErrorMessage name="username" className="error-message" component="div"/>
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="email">Email:</label>
+                  <Field name="email" type="text" className="form-control mt-2"/>
+                  <ErrorMessage name="email" className="error-message" component="div"/>
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="rol">Rol:</label>
+                  <Field name="rol" as="select" className="form-control mt-2">
+                    <option value="CAJERO">Cajero</option>
+                    <option value="COCINERO">Cocinero</option>
+                    <option value="DELIVERY">Delivery</option>
+                    <option value="ADMIN">Admin</option>
+                  </Field>
+                  <ErrorMessage name="rol" className="error-message" component="div"/>
+                </div>
+                <div className="d-flex justify-content-end">
+                  <Button variant="outline-success" type="submit" className="custom-button">
+                    Enviar
+                  </Button>
+                </div>
+              </Form>
           )}
         </Formik>
       </Modal.Body>
