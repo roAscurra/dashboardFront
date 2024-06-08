@@ -21,6 +21,9 @@ import { Link } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import {useAuth0} from "@auth0/auth0-react";
+import UsuarioService from "../../../services/UsuarioService.ts";
+import Usuario from "../../../types/Usuario.ts";
 interface Row {
   [key: string]: any;
 }
@@ -30,9 +33,13 @@ export const ListaEmpresa = () => {
   const dispatch = useAppDispatch();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const empresaService = new EmpresaService();
+  const usuarioService = new UsuarioService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [empresaToEdit, setEmpresaToEdit] = useState<Empresa | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const { user, isLoading } = useAuth0();
+  const [ usuario, setUsuario ] = useState<Usuario>();
+  const [ usuarioIsLoading, setUsuarioIsLoading ] = useState<boolean>(true);
 
   const fetchImages = useCallback(
     async (empresaId: string) => {
@@ -69,10 +76,27 @@ export const ListaEmpresa = () => {
     }
   }, [dispatch, empresaService, url, fetchImages]);
 
+    const fetchUsuario = async () => {
+        try {
+            const usuario = await usuarioService.getByEmail(url + "usuarioCliente/role/" + user?.email, {});
+
+            setUsuario(usuario);
+
+        } catch (error) {
+            console.error("Error al obtener el usuario:", error);
+        } finally {
+            setUsuarioIsLoading(false)
+        }
+    }
+
   useEffect(() => {
+      if(user) {
+          fetchUsuario();
+      }
+
     fetchEmpresa();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   const handleOpenDeleteModal = (rowData: Row) => {
     setEmpresaToEdit({
@@ -107,6 +131,25 @@ export const ListaEmpresa = () => {
     });
     dispatch(toggleModal({ modalName: "modal" }));
   };
+
+  if(isLoading || usuarioIsLoading) {
+      return <div style={{height: "calc(100vh - 88px)"}} className="d-flex flex-column justify-content-center align-items-center">
+          <div className="spinner-border" role="status"></div>
+      </div>
+  }
+
+    if (!user) {
+        return <div style={{height: "calc(100vh - 88px)"}}
+                    className={"d-flex flex-column justify-content-center align-items-center"}>
+          <h1>Necesitas logearte para continuar</h1>
+          <p>Prueba iniciar session!</p>
+      </div>;
+  } else if(!usuario) {
+      return <div style={{height: "calc(100vh - 88px)"}} className={"d-flex flex-column justify-content-center align-items-center"}>
+          <h1>No tienes permisos para usar este dashboard</h1>
+          <p>Prueba pedir permisos!</p>
+      </div>;
+  }
 
   return (
     <Box
@@ -194,73 +237,73 @@ export const ListaEmpresa = () => {
                     />
                   )}
 
-                  <CardContent
-                    sx={
-                      empresa.imagen == ""
-                        ? {
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            height: "100%",
-                            minHeight: 200,
-                          }
-                        : {}
-                    }
-                  >
-                    <Link
-                      to={`/sucursal/${empresa.id}`}
-                      style={{ textDecoration: "none" }}
-                    >
-                      <Typography
-                        gutterBottom
-                        variant="h6"
-                        component="div"
-                        sx={{
-                          fontWeight: "bold",
-                          color: "#333",
-                          textAlign: "center",
-                        }}
-                      >
-                        {empresa.nombre}
-                      </Typography>
-                    </Link>
-                    <Typography variant="body2" color="text.secondary">
-                      {empresa.denominacion}
-                    </Typography>
-                  </CardContent>
-                  <CardActions sx={{ justifyContent: "center" }}>
-                    <Button
-                      size="small"
-                      onClick={() => handleOpenDeleteModal(empresa)}
-                    >
-                      <DeleteIcon style={{ color: "red" }} />{" "}
-                    </Button>
-                    <Button
-                      size="small"
-                      onClick={() => handleOpenEditModal(empresa)}
-                    >
-                      <EditIcon style={{ color: "green" }} />{" "}
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            );
-          })}
-        </Grid>
+                                      <CardContent
+                                          sx={
+                                              empresa.imagen == ""
+                                                  ? {
+                                                      display: "flex",
+                                                      flexDirection: "column",
+                                                      alignItems: "center",
+                                                      justifyContent: "center",
+                                                      height: "100%",
+                                                      minHeight: 200,
+                                                  }
+                                                  : {}
+                                          }
+                                      >
+                                          <Link
+                                              to={`/sucursal/${empresa.id}`}
+                                              style={{ textDecoration: "none" }}
+                                          >
+                                              <Typography
+                                                  gutterBottom
+                                                  variant="h6"
+                                                  component="div"
+                                                  sx={{
+                                                      fontWeight: "bold",
+                                                      color: "#333",
+                                                      textAlign: "center",
+                                                  }}
+                                              >
+                                                  {empresa.nombre}
+                                              </Typography>
+                                          </Link>
+                                          <Typography variant="body2" color="text.secondary">
+                                              {empresa.denominacion}
+                                          </Typography>
+                                      </CardContent>
+                                      <CardActions sx={{ justifyContent: "center" }}>
+                                          <Button
+                                              size="small"
+                                              onClick={() => handleOpenDeleteModal(empresa)}
+                                          >
+                                              <DeleteIcon style={{ color: "red" }} />{" "}
+                                          </Button>
+                                          <Button
+                                              size="small"
+                                              onClick={() => handleOpenEditModal(empresa)}
+                                          >
+                                              <EditIcon style={{ color: "green" }} />{" "}
+                                          </Button>
+                                      </CardActions>
+                                  </Card>
+                              </Grid>
+                          );
+                      })}
+                  </Grid>
 
-        <ModalEliminarEmpresa
-          show={deleteModalOpen}
-          onHide={handleCloseDeleteModal}
-          empresa={empresaToEdit}
-          //onDelete={fetchEmpresa}
-        />
-        <ModalEmpresa
-          modalName="modal"
-          getEmpresa={fetchEmpresa}
-          empresaToEdit={empresaToEdit !== null ? empresaToEdit : undefined}
-        />
-      </Container>
-    </Box>
+                  <ModalEliminarEmpresa
+                      show={deleteModalOpen}
+                      onHide={handleCloseDeleteModal}
+                      empresa={empresaToEdit}
+                      //onDelete={fetchEmpresa}
+                  />
+                  <ModalEmpresa
+                      modalName="modal"
+                      getEmpresa={fetchEmpresa}
+                      empresaToEdit={empresaToEdit !== null ? empresaToEdit : undefined}
+                  />
+              </Container>
+          </Box>
   );
 };
