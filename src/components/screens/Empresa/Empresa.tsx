@@ -24,6 +24,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import {useAuth0} from "@auth0/auth0-react";
 import UsuarioService from "../../../services/UsuarioService.ts";
 import Usuario from "../../../types/Usuario.ts";
+import {BaseNavBar} from "../../ui/common/BaseNavBar.tsx";
 interface Row {
   [key: string]: any;
 }
@@ -155,90 +156,92 @@ export const ListaEmpresa = () => {
   }
 
   return (
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        my: 2,
-      }}
-    >
-      <Container maxWidth="lg">
-        <Grid
-          container
-          spacing={4}
-          direction="row"
-          justifyContent="space-evenly"
-          alignItems="center"
-          style={{ minHeight: "80vh", paddingTop: "1rem" }}
-        >
-          <Grid item xs={12} sm={6} md={4} onClick={handleAddEmpresa}>
-            <Card
+      <>
+          <BaseNavBar title="Empresas" />
+          <Box
+              component="main"
               sx={{
-                maxWidth: 345,
-                boxShadow: 3,
-                borderRadius: 16,
-                cursor: "pointer",
-                transition: "transform 0.3s",
-                "&:hover": { transform: "scale(1.05)" },
-              }}
-            >
-              <CardContent
-                sx={{
+                  flexGrow: 1,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  height: "100%",
-                  minHeight: 250,
-                }}
-              >
-                <AddIcon sx={{ fontSize: 48, marginBottom: 1 }} />
-                <Typography
-                  gutterBottom
-                  variant="h6"
-                  component="div"
-                  sx={{
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    color: "#333",
-                    marginTop: 1,
-                  }}
-                >
-                  Agregar Empresa
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          {filterData.map((empresa) => {
-            return (
-              <Grid item xs={12} sm={6} md={4} key={empresa.id}>
-                <Card
-                  sx={{
-                    maxWidth: 345,
-                    boxShadow: 3,
-                    borderRadius: 16,
-                    cursor: "pointer",
-                    transition: "transform 0.3s",
-                    "&:hover": { transform: "scale(1.05)" },
-                  }}
-                >
-                  {empresa.imagen !== "" && (
-                    <CardMedia
-                      component="img"
-                      alt={empresa.nombre}
-                      height="140"
-                      image={empresa.imagen}
-                      sx={{
-                        objectFit: "cover",
-                        borderRadius: "16px 16px 0 0",
-                        maxHeight: 140,
-                      }}
-                    />
-                  )}
+                  my: 2,
+              }}
+          >
+              <Container maxWidth="lg">
+                  <Grid
+                      container
+                      spacing={4}
+                      direction="row"
+                      justifyContent="space-evenly"
+                      alignItems="center"
+                      style={{ minHeight: "80vh", paddingTop: "1rem" }}
+                  >
+                      <Grid item xs={12} sm={6} md={4} onClick={handleAddEmpresa}>
+                          <Card
+                              sx={{
+                                  maxWidth: 345,
+                                  boxShadow: 3,
+                                  borderRadius: 16,
+                                  cursor: "pointer",
+                                  transition: "transform 0.3s",
+                                  "&:hover": { transform: "scale(1.05)" },
+                              }}
+                          >
+                              <CardContent
+                                  sx={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      height: "100%",
+                                      minHeight: 250,
+                                  }}
+                              >
+                                  <AddIcon sx={{ fontSize: 48, marginBottom: 1 }} />
+                                  <Typography
+                                      gutterBottom
+                                      variant="h6"
+                                      component="div"
+                                      sx={{
+                                          fontWeight: "bold",
+                                          textAlign: "center",
+                                          color: "#333",
+                                          marginTop: 1,
+                                      }}
+                                  >
+                                      Agregar Empresa
+                                  </Typography>
+                              </CardContent>
+                          </Card>
+                      </Grid>
+                      {filterData.map((empresa) => {
+                          return (
+                              <Grid item xs={12} sm={6} md={4} key={empresa.id}>
+                                  <Card
+                                      sx={{
+                                          maxWidth: 345,
+                                          boxShadow: 3,
+                                          borderRadius: 16,
+                                          cursor: "pointer",
+                                          transition: "transform 0.3s",
+                                          "&:hover": { transform: "scale(1.05)" },
+                                      }}
+                                  >
+                                      {empresa.imagen !== "" && (
+                                          <CardMedia
+                                              component="img"
+                                              alt={empresa.nombre}
+                                              height="140"
+                                              image={empresa.imagen}
+                                              sx={{
+                                                  objectFit: "cover",
+                                                  borderRadius: "16px 16px 0 0",
+                                                  maxHeight: 140,
+                                              }}
+                                          />
+                                      )}
 
                                       <CardContent
                                           sx={
@@ -308,5 +311,7 @@ export const ListaEmpresa = () => {
                   />
               </Container>
           </Box>
+      </>
+
   );
 };
