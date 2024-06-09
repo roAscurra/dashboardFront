@@ -11,6 +11,7 @@ import {ListaPromocion} from "../components/screens/Promocion/Promocion.tsx";
 import {ListaSucursal} from "../components/screens/Sucursal/Sucursal.tsx";
 import {ListaEmpresa} from "../components/screens/Empresa/Empresa.tsx";
 import UnidadMedida from '../components/screens/UnidadMedida/UnidadMedida.tsx';
+import { ListaPedidos } from '../components/screens/Pedidos/ListaPedidos.tsx';
 
 
 const AppRouter = () => {
@@ -25,6 +26,7 @@ const AppRouter = () => {
       <Route path='/unidadMedida/:sucursalId' element={<UnidadMedida/>}/>
       <Route path="/promociones/lista/:sucursalId" element={<ListaPromocion />} />
       <Route path="/sucursal/:empresaId" element={<><BaseNavBar title="Sucursales" /><ListaSucursal /></>} />
+      <Route path="/pedidos/:sucursalId" element={<><ListaPedidos /></>}/>
     </Routes>
   );
 };
