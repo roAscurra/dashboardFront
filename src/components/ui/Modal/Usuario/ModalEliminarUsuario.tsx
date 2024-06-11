@@ -19,7 +19,7 @@ const ModalEliminarUsuario: React.FC<ModalEliminarUsuarioProps> = ({ show, onHid
   const handleDelete = async () => {
     try {
       if (usuario && usuario.id) {
-        await usuarioService.delete(url + 'usuarios', usuario.id.toString(), await getAccessTokenSilently({}));
+        await usuarioService.delete(url + 'usuarioCliente', usuario.id.toString(), await getAccessTokenSilently({}));
         console.log('Se ha eliminado el usuario correctamente.');
         onHide(); // Cerramos el modal
       } else {
