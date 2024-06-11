@@ -8,7 +8,6 @@ import { IconButton, Menu, MenuItem } from '@mui/material';
 import { ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon, MoreVert as MoreVertIcon, Add as AddIcon } from '@mui/icons-material';
 import Categoria from '../../../types/Categoria';
 import ModalSubCategoria from '../../ui/Modal/Categoria/ModalSubCategoria';
-import {useAuth0} from "@auth0/auth0-react";
 
 interface CategoriaListaProps {
     categorias: Categoria[];
@@ -19,7 +18,6 @@ interface CategoriaListaProps {
 }
 
 const CategoriaLista: React.FC<CategoriaListaProps> = ({ categorias, onEditar, onDelete, getCategories }) => {
-    const { getAccessTokenSilently } = useAuth0();
     const [openMap, setOpenMap] = React.useState<{ [key: number]: boolean }>({});
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
     const [selectedCategoria, setSelectedCategoria] = React.useState<Categoria | null>(null);
