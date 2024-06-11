@@ -10,8 +10,8 @@ export const Auth0ProviderWithNavigate = ({ children }: Props) => {
             domain="dev-txo0jpb5hw80bylr.us.auth0.com"
             clientId="MoOscA1VTuRLgEhcLpxbZi4FkGAxcqd5"
             authorizationParams={{
-                redirect_uri: 'http://localhost:5174',
-                audience: 'https://buensaborgrupal.com',
+                redirect_uri: 'https://dashboard-front-five.vercel.app/',
+                audience: 'https://dashboard-front-five.vercel.app/',
                 scope: 'openid profile email'
             }}
         >
