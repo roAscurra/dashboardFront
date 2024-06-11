@@ -14,8 +14,10 @@ import { CCol, CContainer, CRow } from "@coreui/react";
 import Sidebar from "../../ui/Sider/SideBar.tsx";
 import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import { useParams } from "react-router-dom";
+import {useAuth0} from "@auth0/auth0-react";
 
 const Categoria = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const url = import.meta.env.VITE_API_URL;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const categoriaService = new CategoriaService();
@@ -32,7 +34,7 @@ const Categoria = () => {
 
   const fetchCategorias = useCallback(async () => {
     try {
-      const categorias = await categoriaService.getAll(url + "categoria");
+      const categorias = await categoriaService.getAll(url + "categoria", await getAccessTokenSilently({}));
   
       // Filtrar las subcategorías para obtener sus IDs
       const subCategoriaIds = categorias.filter(categoria => categoria.subCategorias.length > 0)
@@ -96,7 +98,7 @@ const Categoria = () => {
       if (selectedCategoria && selectedCategoria.id) {
         await categoriaService.delete(
           url + "categoria",
-          selectedCategoria.id.toString()
+          selectedCategoria.id.toString(), await getAccessTokenSilently({})
         );
         console.log("Se ha eliminado correctamente.");
         handleCloseModal(); // Cerramos el modal después de eliminar

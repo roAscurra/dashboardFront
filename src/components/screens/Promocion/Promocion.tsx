@@ -15,6 +15,7 @@ import { CCol, CContainer, CRow } from "@coreui/react";
 import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import Sidebar from "../../ui/Sider/SideBar.tsx";
 import { useParams } from "react-router-dom";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface Row {
   [key: string]: any;
@@ -27,6 +28,7 @@ interface Column {
 }
 
 export const ListaPromocion = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -62,7 +64,7 @@ const handleOpenDeleteModal = (rowData: Row) => {
   const handleDelete = async () => {
     try {
       if (promocionToEdit && promocionToEdit.id) {
-        await promocionService.delete(url + 'promocion', promocionToEdit.id.toString());
+        await promocionService.delete(url + 'promocion', promocionToEdit.id.toString(), await getAccessTokenSilently({}));
         console.log('Se ha eliminado correctamente.');
         handleCloseDeleteModal(); // Cerrar el modal de eliminación
         fetchPromocion(); // Actualizar la lista de promociones después de la eliminación
@@ -82,7 +84,7 @@ const handleOpenDeleteModal = (rowData: Row) => {
    const fetchPromocion = useCallback(async () => {
     try {
       // Obtener todas las promociones
-      const promociones = await promocionService.getAll(url + 'promocion');
+      const promociones = await promocionService.getAll(url + 'promocion', await getAccessTokenSilently({}));
   
       // Si hay una sucursal seleccionada, filtrar las promociones por la sucursal
       if (sucursalId) {

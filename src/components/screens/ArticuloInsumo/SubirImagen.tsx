@@ -1,10 +1,12 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import Button from '@mui/material/Button';
 import ArticuloInsumoService from '../../../services/ArticuloInsumoService';
+import {useAuth0} from "@auth0/auth0-react";
 
 const SubirImagen: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const articuloInsumoService = new ArticuloInsumoService();
+  const { getAccessTokenSilently } = useAuth0();
   const url = import.meta.env.VITE_API_URL;
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -20,7 +22,7 @@ const SubirImagen: React.FC = () => {
         return;
       }
 
-      const response = await articuloInsumoService.uploadFile(url + 'articuloInsumo/uploads', file, "1");
+      const response = await articuloInsumoService.uploadFile(url + 'articuloInsumo/uploads', file, "1", await getAccessTokenSilently({}));
 
       console.log('Upload successful:', response);
     } catch (error) {

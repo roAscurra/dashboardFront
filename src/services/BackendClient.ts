@@ -38,31 +38,38 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
   // Implementación de los métodos de la interfaz AbstractCrudService
 
   // Método para obtener un elemento por su ID
-  async get(url: string, id: string): Promise<T> {
+  async get(url: string, id: string, token: string): Promise<T> {
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     };
     return this.request(path, options);
   }
 
   // Método para obtener todos los elementos
-  async getAll(url: string): Promise<T[]> {
+  async getAll(url: string, token: string): Promise<T[]> {
     const path = url;
     const options: RequestInit = {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     };
     return this.requestAll(path, options);
   }
 
   // Método para crear un nuevo elemento
-  async post(url: string, data: T): Promise<T> {
+  async post(url: string, data: T, token: string): Promise<T> {
     const path = url;
     const options: RequestInit = {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify(data),
     };
@@ -71,13 +78,14 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
   }
 
   // Método para actualizar un elemento existente por su ID
-  async put(url: string, id: string, data: T): Promise<T> {
+  async put(url: string, id: string, data: T, token: string): Promise<T> {
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify(data),
     };
@@ -85,13 +93,14 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
   }
 
   // Método para eliminar un elemento por su ID
-  async delete(url:string, id: string): Promise<void> {
+  async delete(url:string, id: string, token: string): Promise<void> {
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "DELETE",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
     };
     
@@ -105,7 +114,7 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
   }
 
   // Método para subir archivos
-  async uploadFile(url: string, file: File, id: string): Promise<Response> {
+  async uploadFile(url: string, file: File, id: string, token: string): Promise<Response> {
     const path = url;
     const formData = new FormData();
     formData.append('uploads', file);
@@ -114,6 +123,9 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
     const options: RequestInit = {
       method: "POST",
       body: formData,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     };
 
     return fetch(path, options);
