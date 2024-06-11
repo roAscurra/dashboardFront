@@ -23,6 +23,9 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import {BaseNavBar} from "../../ui/common/BaseNavBar.tsx";
+import {useAuth0} from "@auth0/auth0-react";
+import Usuario from "../../../types/Usuario.ts";
+import UsuarioService from "../../../services/UsuarioService.ts";
 interface Row {
   [key: string]: any;
 }
@@ -33,17 +36,38 @@ export const ListaSucursal = () => {
   const dispatch = useAppDispatch();
   // eslint-disable-next-line react-hooks/exhaustive-deps 
   const sucursalService = new SucursalService();
+  const usuarioService = new UsuarioService();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const empresaService = new EmpresaService();
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [sucursalToEdit, setSucursalToEdit] = useState<Sucursal | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [casaMatriz, setCasaMatriz] = useState(false);
+  const { user, isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const [ usuario, setUsuario ] = useState<Usuario>();
+  const [ usuarioIsLoading, setUsuarioIsLoading ] = useState<boolean>(true);
+
+  const fetchUsuario = async () => {
+    try {
+      const usuario = await usuarioService.getByEmail(url + "usuarioCliente/role/" + user?.email, {
+        headers: {
+          Authorization: `Bearer ${await getAccessTokenSilently({})}`
+        }
+      });
+
+      setUsuario(usuario);
+
+    } catch (error) {
+      console.error("Error al obtener el usuario:", error);
+    } finally {
+      setUsuarioIsLoading(false)
+    }
+  }
 
   const fetchEmpresa = useCallback(async () => {
     try {
       if (empresaId) {
-        const empresa = await empresaService.get(url + "empresa", empresaId);
+        const empresa = await empresaService.get(url + "empresa", empresaId, await getAccessTokenSilently({}));
         console.log("Detalles de la empresa:", empresa);
       }
     } catch (error) {
@@ -56,7 +80,7 @@ export const ListaSucursal = () => {
       try {
         const response = await sucursalService.get(
           url + "sucursal/getAllImagesBySucursalId",
-          sucursalId
+          sucursalId, await getAccessTokenSilently({})
         );
 
         if (Array.isArray(response) && response.length > 0) {
@@ -72,7 +96,7 @@ export const ListaSucursal = () => {
 
   const fetchSucursal = useCallback(async () => {
     try {
-      const sucursales = await sucursalService.getAll(url + "sucursal");
+      const sucursales = await sucursalService.getAll(url + "sucursal", await getAccessTokenSilently({}));
       const sucursalesConImagenes = await Promise.all(
         sucursales.map(async (sucursal) => {
           const imagenUrl = await fetchImages(sucursal.id.toString());
@@ -98,10 +122,14 @@ export const ListaSucursal = () => {
   }, [dispatch, sucursalService, url, fetchImages, empresaId]);
 
   useEffect(() => {
+    if(user) {
+      fetchUsuario();
+    }
+
     fetchSucursal();
     fetchEmpresa();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   const handleOpenDeleteModal = (rowData: Row) => {
     setSucursalToEdit({
@@ -127,7 +155,7 @@ export const ListaSucursal = () => {
       if (sucursalToEdit && sucursalToEdit.id) {
         await sucursalService.delete(
           url + "sucursal",
-          sucursalToEdit.id.toString()
+          sucursalToEdit.id.toString(), await getAccessTokenSilently({})
         );
         console.log("Se ha eliminado correctamente.");
         handleCloseDeleteModal();
@@ -163,6 +191,14 @@ export const ListaSucursal = () => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
+  if(isAuthenticated) {
+    if(isLoading || usuarioIsLoading) {
+      return <div style={{height: "calc(100vh - 88px)"}} className="d-flex flex-column justify-content-center align-items-center">
+        <div className="spinner-border" role="status"></div>
+      </div>
+    }
+  }
+
   return (
       <>
         <BaseNavBar title="Sucursales" />
@@ -186,7 +222,9 @@ export const ListaSucursal = () => {
               alignItems="center"
               style={{ minHeight: "80vh", paddingTop: "1rem" }}
             >
-              <Grid item xs={12} sm={6} md={4} onClick={handleAddSucursal}>
+              {
+                ['ADMIN'].includes(usuario?.rol || '')
+                ? <Grid item xs={12} sm={6} md={4} onClick={handleAddSucursal}>
                 <Card
                   sx={{
                     maxWidth: 345,
@@ -224,6 +262,8 @@ export const ListaSucursal = () => {
                   </CardContent>
                 </Card>
               </Grid>
+                : ''
+              }
 
               {filterData.map((sucursal) => (
                 <Grid item xs={12} sm={6} md={4} key={sucursal.id}>

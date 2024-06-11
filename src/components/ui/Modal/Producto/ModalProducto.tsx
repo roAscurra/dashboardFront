@@ -21,6 +21,7 @@ import ArticuloInsumoShortService from "../../../../services/dtos/ArticuloInsumo
 // import CategoriaShorDto from '../../../../types/dto/CategoriaShorDto.ts';
 import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloManufacturadoDetalleService.ts";
 import { useParams } from "react-router-dom";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalProductProps {
   getProducts: () => void;
@@ -50,6 +51,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
       productToEdit?.articuloManufacturadoDetalles || []
     );
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
   const [modalColor, setModalColor] = useState<string>(""); // Estado para controlar el color de fondo de la modal
   const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
 
@@ -129,7 +131,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
   const fetchArticuloInsumo = async () => {
     try {
       const articulosInsumos = await insumoService.getAll(
-        `${url}articuloInsumo`
+        `${url}articuloInsumo`, await getAccessTokenSilently({})
       );
 
       // Asegúrate de que sucursalId esté definido y conviértelo a un número
@@ -159,7 +161,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 
   const fetchUnidadesMedida = async () => {
     try {
-      const unidades = await unidadService.getAll(`${url}unidadMedida`);
+      const unidades = await unidadService.getAll(`${url}unidadMedida`, await getAccessTokenSilently({}));
       setUnidadesMedida(unidades);
       console.log(unidades);
     } catch (error) {
@@ -169,7 +171,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 
   const fetchCategorias = async () => {
     try {
-      const categorias = await categoriaService.getAll(url + "categoria");
+      const categorias = await categoriaService.getAll(url + "categoria", await getAccessTokenSilently({}));
 
       if (sucursalId) {
         const parsedSucursalId = parseInt(sucursalId, 10);
@@ -257,7 +259,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                         const respuesta2 = await articuloDetalleService.put(
                           url + "articuloManufacturadoDetalle",
                           detalle.id.toString(),
-                          detalle
+                          detalle, await getAccessTokenSilently({})
                         );
                         console.log("Detalle actualizado:", respuesta2);
                         return respuesta2; // Devolver la respuesta para procesamiento adicional
@@ -265,7 +267,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                         // Si el detalle no tiene un ID, insertarlo como nuevo
                         const respuesta2 = await articuloDetalleService.post(
                           url + "articuloManufacturadoDetalle",
-                          detalle
+                          detalle, await getAccessTokenSilently({})
                         );
                         console.log("Nuevo detalle insertado:", respuesta2);
                         return respuesta2; // Devolver la respuesta para procesamiento adicional
@@ -283,7 +285,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                 await productoService.put(
                   url + "articuloManufacturado",
                   values.id.toString(),
-                  values
+                  values, await getAccessTokenSilently({})
                 );
                 console.log("Producto actualizado correctamente.");
 
@@ -297,7 +299,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                       // Realizar la solicitud 'post' para cada detalle
                       const respuesta2 = await articuloDetalleService.post(
                         url + "articuloManufacturadoDetalle",
-                        detalle
+                        detalle, await getAccessTokenSilently({})
                       );
                       console.log("Respuesta:", respuesta2);
                       return respuesta2; // Devolver la respuesta para procesamiento adicional
@@ -317,7 +319,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                 console.log(values.articuloManufacturadoDetalles);
                 const response = await productoService.post(
                   url + "articuloManufacturado",
-                  values
+                  values, await getAccessTokenSilently({})
                 );
                 console.log("Producto agregado correctamente.", values);
 
@@ -330,7 +332,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                 const response = await productoService.uploadFile(
                   url + "articuloManufacturado/uploads",
                   file,
-                  productoId
+                  productoId, await getAccessTokenSilently({})
                 );
                 console.log("Upload successful:", response);
               }

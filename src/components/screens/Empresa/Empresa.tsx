@@ -38,7 +38,7 @@ export const ListaEmpresa = () => {
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [empresaToEdit, setEmpresaToEdit] = useState<Empresa | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const { user, isLoading, isAuthenticated } = useAuth0();
+  const { user, isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [ usuario, setUsuario ] = useState<Usuario>();
   const [ usuarioIsLoading, setUsuarioIsLoading ] = useState<boolean>(true);
 
@@ -47,7 +47,7 @@ export const ListaEmpresa = () => {
       try {
         const response = await empresaService.get(
           url + "empresa/getAllImagesByEmpresaId",
-          empresaId
+          empresaId, await getAccessTokenSilently({})
         );
 
         if (Array.isArray(response) && response.length > 0) {
@@ -63,7 +63,7 @@ export const ListaEmpresa = () => {
 
   const fetchEmpresa = useCallback(async () => {
     try {
-      const empresas = await empresaService.getAll(url + "empresa");
+      const empresas = await empresaService.getAll(url + "empresa", await getAccessTokenSilently({}));
       const empresasConImagenes = await Promise.all(
         empresas.map(async (empresa) => {
           const imagenUrl = await fetchImages(empresa.id.toString());
@@ -79,7 +79,11 @@ export const ListaEmpresa = () => {
 
     const fetchUsuario = async () => {
         try {
-            const usuario = await usuarioService.getByEmail(url + "usuarioCliente/role/" + user?.email, {});
+            const usuario = await usuarioService.getByEmail(url + "usuarioCliente/role/" + user?.email, {
+                headers: {
+                    Authorization: `Bearer ${await getAccessTokenSilently({})}`
+                }
+            });
 
             setUsuario(usuario);
 
@@ -178,7 +182,9 @@ export const ListaEmpresa = () => {
                       alignItems="center"
                       style={{ minHeight: "80vh", paddingTop: "1rem" }}
                   >
-                      <Grid item xs={12} sm={6} md={4} onClick={handleAddEmpresa}>
+                      {
+                          ['ADMIN'].includes(usuario?.rol)
+                           ? <Grid item xs={12} sm={6} md={4} onClick={handleAddEmpresa}>
                           <Card
                               sx={{
                                   maxWidth: 345,
@@ -216,6 +222,8 @@ export const ListaEmpresa = () => {
                               </CardContent>
                           </Card>
                       </Grid>
+                              : ''
+                      }
                       {filterData.map((empresa) => {
                           return (
                               <Grid item xs={12} sm={6} md={4} key={empresa.id}>

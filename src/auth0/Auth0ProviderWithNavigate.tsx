@@ -11,7 +11,8 @@ export const Auth0ProviderWithNavigate = ({ children }: Props) => {
             clientId="MoOscA1VTuRLgEhcLpxbZi4FkGAxcqd5"
             authorizationParams={{
                 redirect_uri: 'http://localhost:5174',
-                audience: 'https://buensaborgrupal.com'
+                audience: 'https://buensaborgrupal.com',
+                scope: 'openid profile email'
             }}
         >
             {children}

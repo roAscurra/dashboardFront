@@ -16,6 +16,7 @@ import Sidebar from "../../ui/Sider/SideBar.tsx";
 import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import { CContainer, CRow, CCol } from "@coreui/react";
 import { useParams } from "react-router-dom";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface Row {
   [key: string]: any;
@@ -28,6 +29,7 @@ interface Column {
 }
 
 export const ListaArticulosInsumo = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -44,7 +46,7 @@ export const ListaArticulosInsumo = () => {
 
   const fetchImages = useCallback(async (articuloInsumoId: string) => {
     try {
-      const response = await articuloInsumoService.get(url + 'articuloInsumo/getAllImagesByInsumoId', articuloInsumoId);
+      const response = await articuloInsumoService.get(url + 'articuloInsumo/getAllImagesByInsumoId', articuloInsumoId, await getAccessTokenSilently({}));
 
       if (Array.isArray(response) && response.length > 0) {
         return response[0].url;
@@ -59,7 +61,7 @@ export const ListaArticulosInsumo = () => {
     try {
       if (sucursalId) {
         const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
-        const articulosInsumo = await articuloInsumoService.getAll(url + "articuloInsumo");
+        const articulosInsumo = await articuloInsumoService.getAll(url + "articuloInsumo", await getAccessTokenSilently({}));
         const artInsumoConImagenes = await Promise.all(
           articulosInsumo.map(async (articuloInsumo) => {
             const imagenUrl = await fetchImages(articuloInsumo.id.toString());
