@@ -40,6 +40,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     precioCompra: articuloToEdit ? articuloToEdit.precioCompra : 0,
     stockActual: articuloToEdit ? articuloToEdit.stockActual : 0,
     stockMaximo: articuloToEdit ? articuloToEdit.stockMaximo : 0,
+    stockMinimo: articuloToEdit ? articuloToEdit.stockMinimo : 0,
     esParaElaborar: articuloToEdit ? articuloToEdit.esParaElaborar : false,
     imagenes: articuloToEdit
       ? articuloToEdit.imagenes?.map(
@@ -255,7 +256,18 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                     className="error-message"
                     component="div"
                   />
-
+                  <label htmlFor="stockMinimo">Stock Minimo:</label>
+                  <Field
+                    name="stockMinimo"
+                    type="number"
+                    placeholder="Stock Minimo"
+                    className="form-control mt-2"
+                  />
+                  <ErrorMessage
+                    name="stockMinimo"
+                    className="error-message"
+                    component="div"
+                  />
                   <label htmlFor="unidadMedida">Unidad de Medida:</label>
                   <Field
                     name="unidadMedida"

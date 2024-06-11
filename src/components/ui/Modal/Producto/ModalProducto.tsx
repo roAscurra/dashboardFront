@@ -2,23 +2,18 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { Button, Modal, Row, Col } from "react-bootstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-// import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloManufacturadoDetalleService.ts";
 import ArticuloManufacturadoService from "../../../../services/ArticuloManufacturadoService.ts";
 import UnidadMedidaService from "../../../../services/UnidadMedidaService.ts";
-// import ArticuloInsumoService from "../../../../services/ArticuloInsumoService.ts";
 import CategoriaService from "../../../../services/CategoriaService.ts";
 import { useAppDispatch, useAppSelector } from "../../../../hooks/redux.ts";
 import { toggleModal } from "../../../../redux/slices/Modal.ts";
 import ArticuloManufacturado from "../../../../types/ArticuloManufacturado.ts";
 import UnidadMedida from "../../../../types/UnidadMedida.ts";
-// import ArticuloInsumoType from "../../../../types/ArticuloInsumoType.ts";
 import Categoria from "../../../../types/Categoria.ts";
 import ModalInsumo from "./ModalInsumo.tsx";
 import ArticuloManufacturadoDetalle from "../../../../types/ArticuloManufacturadoDetalle.ts";
 import ArticuloInsumoShortDto from "../../../../types/dto/ArticuloInsumoShortDto.ts";
 import ArticuloInsumoShortService from "../../../../services/dtos/ArticuloInsumoShortService.ts";
-// import CategoriaShorService from '../../../../services/dtos/CategoriaShorService.ts';
-// import CategoriaShorDto from '../../../../types/dto/CategoriaShorDto.ts';
 import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloManufacturadoDetalleService.ts";
 import { useParams } from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
@@ -86,6 +81,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
             precioCompra: detalle.precioCompra,
             stockActual: detalle.stockActual,
             stockMaximo: detalle.stockMaximo,
+            stockMinimo: detalle.stockMinimo,
             esParaElaborar: detalle.esParaElaborar,
             categoria: detalle.articuloInsumo.categoria
               ? {
