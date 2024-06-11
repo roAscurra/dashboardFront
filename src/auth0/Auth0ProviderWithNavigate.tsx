@@ -11,7 +11,7 @@ export const Auth0ProviderWithNavigate = ({ children }: Props) => {
             clientId="MoOscA1VTuRLgEhcLpxbZi4FkGAxcqd5"
             authorizationParams={{
                 redirect_uri: 'https://dashboard-front-five.vercel.app/',
-                audience: 'https://dashboard-front-five.vercel.app/',
+                audience: 'https://buensaborgrupal.com',
                 scope: 'openid profile email'
             }}
         >
