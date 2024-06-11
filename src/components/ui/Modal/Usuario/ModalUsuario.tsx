@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import UsuarioService from "../../../../services/UsuarioService";
 import Usuario from "../../../../types/Usuario.ts";
 import { toggleModal } from "../../../../redux/slices/Modal";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalUsuarioProps {
   getUsuarios: () => void;
@@ -15,6 +16,7 @@ interface ModalUsuarioProps {
 const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, usuarioToEdit }) => {
   const usuarioService = new UsuarioService();
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
 
   // Definir las reglas de validación para el formulario usando Yup
   const validationSchema = Yup.object({
@@ -62,11 +64,11 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, usuarioToEdit 
             try {
               if (usuarioToEdit) {
                 // Lógica para editar el usuario existente
-                await usuarioService.put(url + "usuarioCliente", values.id.toString(), values);
+                await usuarioService.put(url + "usuarioCliente", values.id.toString(), values, await getAccessTokenSilently({}));
                 console.log("Se ha actualizado correctamente.");
               } else {
                 // Lógica para agregar un nuevo usuario
-                await usuarioService.post(url + "usuarioCliente", values);
+                await usuarioService.post(url + "usuarioCliente", values, await getAccessTokenSilently({}));
                 console.log("Se ha agregado correctamente.");
               }
               getUsuarios();

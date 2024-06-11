@@ -34,6 +34,7 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
     setDialogOpen(false);
   };
   const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
   const { sucursalId } = useParams(); // Obtén el ID de la URL
   const sucursalService = new SucursalService();
   const [sucursalName, setSucursalName] = useState(""); // Variable de estado para almacenar el nombre de la sucursal
@@ -53,7 +54,7 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
   const fetchSucursalData = async () => {
       try {
           if (sucursalId) {
-              const sucursal = await sucursalService.get(url + 'sucursal', sucursalId);
+              const sucursal = await sucursalService.get(url + 'sucursal', sucursalId, await getAccessTokenSilently({}));
               setSucursalName(sucursal.nombre)
           }
       } catch (error) {

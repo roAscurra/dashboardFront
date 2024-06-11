@@ -14,6 +14,7 @@ import Sidebar from "../../ui/Sider/SideBar.tsx";
 import { Estado } from "../../../types/enums/Estado.ts";
 import ModalPedido from "../../ui/Modal/Pedido/ModalPedido.tsx"; 
 import { SelectChangeEvent } from '@mui/material';
+import {useAuth0} from "@auth0/auth0-react";
 
 interface Row {
   [key: string]: any;
@@ -26,6 +27,7 @@ interface Column {
 }
 
 export const ListaPedidos = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   const pedidoService = new PedidoService();
@@ -40,7 +42,7 @@ export const ListaPedidos = () => {
 
   const fetchPedidos = useCallback(async () => {
     try {
-      const pedidos = (await pedidoService.getAll(url + 'pedido')).filter((v) => !v.eliminado);
+      const pedidos = (await pedidoService.getAll(url + 'pedido', await getAccessTokenSilently({}))).filter((v) => !v.eliminado);
 
       if (sucursalId) {
         const sucursalIdNumber = parseInt(sucursalId);

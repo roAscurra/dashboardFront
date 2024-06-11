@@ -1,8 +1,10 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import Button from '@mui/material/Button';
 import ArticuloManufacturadoService from '../../../services/ArticuloManufacturadoService';
+import {useAuth0} from "@auth0/auth0-react";
 
 const SubirImagen: React.FC = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const [file, setFile] = useState<File | null>(null);
   const productoService = new ArticuloManufacturadoService();
   const url = import.meta.env.VITE_API_URL;
@@ -20,7 +22,7 @@ const SubirImagen: React.FC = () => {
         return;
       }
 
-      const response = await productoService.uploadFile(url + 'articuloManufacturado/uploads', file, "1");
+      const response = await productoService.uploadFile(url + 'articuloManufacturado/uploads', file, "1", await getAccessTokenSilently({}));
 
       console.log('Upload successful:', response);
     } catch (error) {

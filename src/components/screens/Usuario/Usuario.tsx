@@ -14,6 +14,7 @@ import {handleSearch} from "../../../utils.ts/utils.ts";
 import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import { CCol, CContainer, CRow } from "@coreui/react";
 import Sidebar from "../../ui/Sider/SideBar.tsx";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface Row {
   [key: string]: any;
@@ -26,6 +27,7 @@ interface Column {
 }
 
 export const ListaUsuarios = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -43,7 +45,7 @@ export const ListaUsuarios = () => {
   // Definiendo fetchUsuarios con useCallback
   const fetchUsuarios = useCallback(async () => {
     try {
-      const usuarios = await usuarioService.getAll(url + 'usuarioCliente');
+      const usuarios = await usuarioService.getAll(url + 'usuarioCliente', await getAccessTokenSilently({}));
       dispatch(setUsuario(usuarios));
       setFilterData(usuarios);
       setLoading(false);
@@ -99,7 +101,7 @@ export const ListaUsuarios = () => {
   const handleDeleteUsuario = async () => {
     try {
       if (usuarioToEdit && usuarioToEdit.id) {
-        await usuarioService.delete(url + 'usuarioCliente', usuarioToEdit.id.toString());
+        await usuarioService.delete(url + 'usuarioCliente', usuarioToEdit.id.toString(), await getAccessTokenSilently({}));
         console.log('Usuario eliminado correctamente.');
         // Cerrar el modal de eliminar
         handleCloseDeleteModal();

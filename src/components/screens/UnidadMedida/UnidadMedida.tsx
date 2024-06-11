@@ -14,6 +14,7 @@ import ModalUnidadMedida from "../../ui/Modal/UnidadMedida/ModalUnidaMedida.tsx"
 import ModalEliminarUnidadMedida from "../../ui/Modal/UnidadMedida/ModalEliminarUnidaMedida.tsx";
 import UnidadMedida from "../../../types/UnidadMedida.ts";
 import { setUnidades } from "../../../redux/slices/UnidaMedia.ts";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface Row {
   [key: string]: any;
@@ -24,6 +25,7 @@ interface Column {
   renderCell: (rowData: Row) => JSX.Element;
 }
 export const ListaUnidadesMedida = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -36,7 +38,7 @@ export const ListaUnidadesMedida = () => {
 
   const fetchUnidades = useCallback(async () => {
     try {
-      const unidades = await unidadMedidaService.getAll(url + 'unidadMedida');
+      const unidades = await unidadMedidaService.getAll(url + 'unidadMedida', await getAccessTokenSilently({}));
       dispatch(setUnidades(unidades));
       setFilterData(unidades);
       setLoading(false);
@@ -85,7 +87,7 @@ export const ListaUnidadesMedida = () => {
   const handleDeleteUnidad = async () => {
     try {
       if (unidadToEdit && unidadToEdit.id) {
-        await unidadMedidaService.delete(url + 'unidades', unidadToEdit.id.toString());
+        await unidadMedidaService.delete(url + 'unidades', unidadToEdit.id.toString(), await getAccessTokenSilently({}));
         handleCloseDeleteModal();
         fetchUnidades();
       } else {

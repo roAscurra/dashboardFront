@@ -18,6 +18,7 @@ import UnidadMedida from "../../../types/UnidadMedida.ts";
 import { handleSearch } from "../../../utils.ts/utils.ts";
 import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
 import { useParams } from "react-router-dom";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface Row {
   [key: string]: any;
@@ -30,7 +31,7 @@ interface Column {
 }
 
 export const ListaProductos = () => {
-
+  const { getAccessTokenSilently } = useAuth0();
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,7 +48,7 @@ export const ListaProductos = () => {
 
   const fetchImages = useCallback(async (productoId: string) =>{
     try{
-      const response = await productoService.get(url + 'articuloManufacturado/getAllImagesByArticuloManufacturadoId', productoId);
+      const response = await productoService.get(url + 'articuloManufacturado/getAllImagesByArticuloManufacturadoId', productoId, await getAccessTokenSilently({}));
 
       if(Array.isArray(response) && response.length > 0){
         return response[0].url;
@@ -60,7 +61,7 @@ export const ListaProductos = () => {
 
   const fetchProductos = useCallback(async () => {
     try {
-      const productos = (await productoService.getAll(url + 'articuloManufacturado')).filter((v) => !v.eliminado);
+      const productos = (await productoService.getAll(url + 'articuloManufacturado', await getAccessTokenSilently({}))).filter((v) => !v.eliminado);
       
       // Asegúrate de que sucursalId esté definido y conviértelo a un número
       if (sucursalId) {
@@ -133,7 +134,7 @@ export const ListaProductos = () => {
   const handleDelete = async () => {
     try {
       if (productToEdit && productToEdit.id) {
-        await productoService.delete(url + 'articuloManufacturado', productToEdit.id.toString());
+        await productoService.delete(url + 'articuloManufacturado', productToEdit.id.toString(), await getAccessTokenSilently({}));
         console.log('Se ha eliminado correctamente.');
         handleCloseDeleteModal(); // Cerrar el modal de eliminación
         fetchProductos();
