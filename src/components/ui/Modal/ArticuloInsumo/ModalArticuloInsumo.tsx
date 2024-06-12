@@ -311,11 +311,19 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                 <Col>
                   <label htmlFor="imagenes">Imágenes:</label>
                   <input
-                    name="imagenes"
+                    name="imagen"
                     type="file"
-                    className="form-control"
-                    onChange={handleFileChange}
-                    multiple
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                      const files = event.target.files;
+                      if (files && files.length > 0) {
+                        // Si se selecciona una imagen nueva, maneja el cambio de archivo
+                        handleFileChange(event);
+                      } else {
+                        
+                        // Si no se selecciona ninguna imagen nueva, no hagas nada para mantener las imágenes existentes
+                      }
+                    }}
+                    className="form-control my-2"
                   />
                 </Col>
               </Row>
