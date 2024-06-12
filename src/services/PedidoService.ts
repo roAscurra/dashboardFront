@@ -16,4 +16,60 @@ export default class PedidoService extends BackendClient<Pedido> {
         };
         return this.request(path, options);
       }
+
+    async getRankingInsumos(url: string, token: string): Promise<any[][]> {
+        const path = `${url}pedido/ranking/insumos/data`;
+        console.log(path)
+        const options: RequestInit = {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+        };
+        return (this.request(path, options) as unknown) as any[][];
+    }
+
+    async getPedidosPorCliente(url: string, token: string): Promise<any[][]> {
+        const path = `${url}pedido/ranking/pedidos/cliente/data`;
+        console.log(path)
+        const options: RequestInit = {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+        };
+        return (this.request(path, options) as unknown) as any[][];
+    }
+
+    async getIngresos(url: string, token: string): Promise<any[][]> {
+        const path = `${url}pedido/ranking/ingresos/data`;
+        console.log(path)
+        const options: RequestInit = {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+        };
+        return (this.request(path, options) as unknown) as any[][];
+    }
+
+    async getGanancias(url: string, token: string): Promise<any[][]> {
+        const path = `${url}pedido/ranking/ganancias/data`;
+        console.log(path)
+        const options: RequestInit = {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+        };
+        return (this.request(path, options) as unknown) as any[][];
+    }
 }

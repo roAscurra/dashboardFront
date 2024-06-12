@@ -165,7 +165,16 @@ const Sidebar: React.FC = () => {
                 </CNavItem>
               : ''
           }
-
+          {
+            ['ADMIN'].includes(usuario?.rol || '')
+                ? <CNavItem>
+                  <Link to={`/reportes`} className="nav-link">
+                    <CIcon customClassName="nav-icon" icon={icon.cilChart} />
+                    Reportes
+                  </Link>
+                </CNavItem>
+                : ''
+          }
         </CSidebarNav>
       </CSidebar>
     </div>
