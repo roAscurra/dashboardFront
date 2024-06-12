@@ -11,9 +11,10 @@ import {useAuth0} from "@auth0/auth0-react";
 interface ModalUsuarioProps {
   getUsuarios: () => void;
   usuarioToEdit?: Usuario;
+  surcursalId: number;
 }
 
-const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, usuarioToEdit }) => {
+const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, surcursalId, usuarioToEdit }) => {
   const usuarioService = new UsuarioService();
   const url = import.meta.env.VITE_API_URL;
   const { getAccessTokenSilently } = useAuth0();
@@ -34,6 +35,12 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, usuarioToEdit 
       username: "",
       email: "",
       rol: "",
+      empleado: {
+        tipoEmpleado: "",
+        sucursal: {
+          id: 0
+        }
+      }
     };
 
   const modal = useAppSelector((state) => state.modal.modal);
@@ -61,6 +68,16 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, usuarioToEdit 
           validationSchema={validationSchema}
           initialValues={initialValues}
           onSubmit={async (values: Usuario) => {
+
+            values.empleado = {
+              tipoEmpleado: values.rol,
+              sucursal: {
+                id: surcursalId
+              }
+            }
+
+            console.log(values)
+
             try {
               if (usuarioToEdit) {
                 // Lógica para editar el usuario existente

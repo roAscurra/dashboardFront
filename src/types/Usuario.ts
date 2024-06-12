@@ -5,6 +5,13 @@ interface Usuario  extends DataModel<Usuario>{
     username: string;
     email: string;
     rol: string;
+
+    empleado: {
+        tipoEmpleado: string;
+        sucursal: {
+            id: number;
+        }
+    }
   }
   
   export default Usuario
