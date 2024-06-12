@@ -68,20 +68,27 @@ export const ListaPedidos = () => {
   const fetchPedidos = useCallback(async () => {
     try {
       if (rolUsuario) { // Verificar si se ha obtenido el rol del usuario
-
         const pedidos = (await pedidoService.getPedidosFiltrados(url + 'pedido', rolUsuario, await getAccessTokenSilently({}))).filter((v) => !v.eliminado);
-
-      if (sucursalId) {
-        const sucursalIdNumber = parseInt(sucursalId);
-        const pedidos = await pedidoService.pedidosSucursal(url, sucursalIdNumber, await getAccessTokenSilently({}));
-
-        dispatch(setPedido(pedidos));
-        setFilterData(pedidos);
+  
+        let pedidosFiltrados = pedidos;
+  
+        if (sucursalId) {
+          const sucursalIdNumber = parseInt(sucursalId);
+          pedidosFiltrados = pedidos.filter(pedido =>
+            pedido.sucursal &&
+            pedido.sucursal.id === sucursalIdNumber
+          );
+        }
+  
+        // Actualizar el estado con los pedidos obtenidos o filtrados
+        dispatchPedido(setPedido(pedidosFiltrados));
+        setFilterData(pedidosFiltrados);
       }
     } catch (error) {
       console.error("Error al obtener los pedidos:", error);
     }
   }, [dispatchPedido, pedidoService, url, sucursalId, getAccessTokenSilently, rolUsuario]);
+  
 
   useEffect(() => {
     if (user) {
