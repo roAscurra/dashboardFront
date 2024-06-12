@@ -14,7 +14,7 @@ import ModalInsumo from "./ModalInsumo.tsx";
 import ArticuloManufacturadoDetalle from "../../../../types/ArticuloManufacturadoDetalle.ts";
 import ArticuloInsumoShortDto from "../../../../types/dto/ArticuloInsumoShortDto.ts";
 import ArticuloInsumoShortService from "../../../../services/dtos/ArticuloInsumoShortService.ts";
-import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloManufacturadoDetalleService.ts";
+// import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloManufacturadoDetalleService.ts";
 import { useParams } from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
 
@@ -34,7 +34,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
   const { sucursalId } = useParams();
   const categoriaService = new CategoriaService();
   // const categoriaService = new CategoriaShorService();
-  const articuloDetalleService = new ArticuloManufacturadoDetalleService();
+  // const articuloDetalleService = new ArticuloManufacturadoDetalleService();
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
   const [insumos, setInsumos] = useState<ArticuloInsumoShortDto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -69,7 +69,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
     preparacion: productToEdit?.preparacion || "",
     articuloManufacturadoDetalles: productToEdit?.articuloManufacturadoDetalles
       ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({
-          id: 0,
+          id: detalle.id,
           cantidad: detalle.cantidad,
           eliminado: detalle.eliminado,
           articuloInsumo: {
@@ -145,10 +145,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({
         );
 
         setInsumos(insumosFiltrados);
-        console.log(insumosFiltrados);
       } else {
         setInsumos(articulosInsumos);
-        console.log(articulosInsumos);
       }
     } catch (error) {
       console.error("Error al obtener los insumos:", error);
@@ -159,7 +157,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({
     try {
       const unidades = await unidadService.getAll(`${url}unidadMedida`, await getAccessTokenSilently({}));
       setUnidadesMedida(unidades);
-      console.log(unidades);
     } catch (error) {
       console.error("Error al obtener las unidades de medida:", error);
     }
@@ -200,18 +197,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({
   }, [showInsumoModal]);
 
   const handleAddInsumo = (detalles: ArticuloManufacturadoDetalle[]) => {
-    console.log("Detalles a guardar:", detalles);
     setArticuloManufacturadoDetalles(detalles);
     setDetalles(detalles); // Guardar los detalles en el estado
   };
   useEffect(() => {
     setDetalles(productToEdit?.articuloManufacturadoDetalles || []);
   }, [productToEdit]);
-
-  // const handleAddD = (detalles: ArticuloManufacturadoDetalle[]) => {
-  //     console.log("Detalles a guardar:", detalles);
-  //     setDetalles(detalles); // Guardar los detalles en el estado
-  // };
 
   return (
     <Modal
@@ -241,88 +232,29 @@ const ModalProducto: React.FC<ModalProductProps> = ({
           })}
           initialValues={initialValues}
           onSubmit={async (values: ArticuloManufacturado) => {
-            console.log(values);
             try {
               let productoId: string | null = null;
 
               if (productToEdit) {
-                const respuestas = await Promise.all(
-                  detalles.map(async (detalle) => {
-                    try {
-                      // Verificar si el detalle ya existe
-                      if (detalle.id) {
-                        // Si el detalle tiene un ID, intenta actualizarlo
-                        const respuesta2 = await articuloDetalleService.put(
-                          url + "articuloManufacturadoDetalle",
-                          detalle.id.toString(),
-                          detalle, await getAccessTokenSilently({})
-                        );
-                        console.log("Detalle actualizado:", respuesta2);
-                        return respuesta2; // Devolver la respuesta para procesamiento adicional
-                      } else {
-                        // Si el detalle no tiene un ID, insertarlo como nuevo
-                        const respuesta2 = await articuloDetalleService.post(
-                          url + "articuloManufacturadoDetalle",
-                          detalle, await getAccessTokenSilently({})
-                        );
-                        console.log("Nuevo detalle insertado:", respuesta2);
-                        return respuesta2; // Devolver la respuesta para procesamiento adicional
-                      }
-                    } catch (error) {
-                      console.error("Error en articuloDetalleService:", error);
-                      throw error; // Volver a lanzar el error para asegurar que Promise.all() falle
-                    }
-                  })
-                );
 
-                values.articuloManufacturadoDetalles = respuestas;
-
-                // Actualizar el producto después de manejar los detalles
+                values.articuloManufacturadoDetalles = detalles;
+                // Actualizar el producto 
                 await productoService.put(
                   url + "articuloManufacturado",
                   values.id.toString(),
                   values, await getAccessTokenSilently({})
                 );
-                console.log("Producto actualizado correctamente.");
-
                 productoId = productToEdit.id.toString();
               } else {
-                console.log(detalles);
-                // Realizar todas las solicitudes 'post' de manera concurrente y recolectar sus respuestas
-                const respuestas = await Promise.all(
-                  detalles.map(async (detalle) => {
-                    try {
-                      // Realizar la solicitud 'post' para cada detalle
-                      const respuesta2 = await articuloDetalleService.post(
-                        url + "articuloManufacturadoDetalle",
-                        detalle, await getAccessTokenSilently({})
-                      );
-                      console.log("Respuesta:", respuesta2);
-                      return respuesta2; // Devolver la respuesta para procesamiento adicional
-                    } catch (error) {
-                      console.error(
-                        "Error en articuloDetalleService.post():",
-                        error
-                      );
-                      throw error; // Volver a lanzar el error para asegurar que Promise.all() falle
-                    }
-                  })
-                );
-                // Una vez que se recolectan todas las respuestas, actualizar el objeto 'values'
-                values.articuloManufacturadoDetalles = respuestas;
-                console.log("Valores actualizados:", values);
+                values.articuloManufacturadoDetalles = detalles;
 
-                console.log(values.articuloManufacturadoDetalles);
                 const response = await productoService.post(
                   url + "articuloManufacturado",
                   values, await getAccessTokenSilently({})
                 );
-                console.log("Producto agregado correctamente.", values);
 
                 productoId = response.id.toString();
               }
-
-              console.log(file, productoId);
 
               if (file && productoId) {
                 const response = await productoService.uploadFile(
