@@ -128,6 +128,7 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
     );
     setDetalles(updatedDetalles);
   };
+  console.log(detalles)
   return (
     <Modal
       id={"modal"}

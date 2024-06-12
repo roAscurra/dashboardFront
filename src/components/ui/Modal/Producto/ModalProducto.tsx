@@ -126,26 +126,15 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 
   const fetchArticuloInsumo = async () => {
     try {
-      const articulosInsumos = await insumoService.getAll(
-        `${url}articuloInsumo`, await getAccessTokenSilently({})
-      );
-
       // Asegúrate de que sucursalId esté definido y conviértelo a un número
       if (sucursalId) {
         const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
 
         // Filtrar los insumos por sucursal y categoría
-        const insumosFiltrados = articulosInsumos.filter(
-          (insumo) =>
-            insumo.categoria && // Verificar si categoria está definido
-            Array.isArray(insumo.categoria.sucursales) && // Verificar si sucursales es un array en categoria
-            insumo.categoria.sucursales.some(
-              (sucursal) => sucursal.id === sucursalIdNumber
-            )
+        const articulosInsumos = await insumoService.insumos(
+          `${url}`, sucursalIdNumber, await getAccessTokenSilently({})
         );
-
-        setInsumos(insumosFiltrados);
-      } else {
+  
         setInsumos(articulosInsumos);
       }
     } catch (error) {
