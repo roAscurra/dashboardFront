@@ -40,6 +40,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     precioCompra: articuloToEdit ? articuloToEdit.precioCompra : 0,
     stockActual: articuloToEdit ? articuloToEdit.stockActual : 0,
     stockMaximo: articuloToEdit ? articuloToEdit.stockMaximo : 0,
+    stockMinimo: articuloToEdit ? articuloToEdit.stockMinimo : 0,
     esParaElaborar: articuloToEdit ? articuloToEdit.esParaElaborar : false,
     imagenes: articuloToEdit
       ? articuloToEdit.imagenes?.map(
@@ -85,17 +86,12 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   };
   const fetchCategorias = useCallback(async () => {
     try {
-      const categorias = await categoriaService.getAll(url + "categoria", await getAccessTokenSilently({}));
-
       if (sucursalId) {
-        const parsedSucursalId = parseInt(sucursalId, 10);
+        const parsedSucursalId = parseInt(sucursalId, 10); 
 
-        const categoriasFiltradas = categorias.filter((categoria) =>
-          categoria.sucursales.some(
-            (sucursal) => sucursal.id === parsedSucursalId
-          )
-        );
-        setCategorias(categoriasFiltradas);
+        const categorias = await categoriaService.categoriaSucursal(url, parsedSucursalId, await getAccessTokenSilently({}));
+  
+        setCategorias(categorias);
       }
     } catch (error) {
       console.error("Error al obtener las categorías:", error);
@@ -255,7 +251,18 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                     className="error-message"
                     component="div"
                   />
-
+                  <label htmlFor="stockMinimo">Stock Minimo:</label>
+                  <Field
+                    name="stockMinimo"
+                    type="number"
+                    placeholder="Stock Minimo"
+                    className="form-control mt-2"
+                  />
+                  <ErrorMessage
+                    name="stockMinimo"
+                    className="error-message"
+                    component="div"
+                  />
                   <label htmlFor="unidadMedida">Unidad de Medida:</label>
                   <Field
                     name="unidadMedida"
@@ -304,11 +311,19 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                 <Col>
                   <label htmlFor="imagenes">Imágenes:</label>
                   <input
-                    name="imagenes"
+                    name="imagen"
                     type="file"
-                    className="form-control"
-                    onChange={handleFileChange}
-                    multiple
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                      const files = event.target.files;
+                      if (files && files.length > 0) {
+                        // Si se selecciona una imagen nueva, maneja el cambio de archivo
+                        handleFileChange(event);
+                      } else {
+                        
+                        // Si no se selecciona ninguna imagen nueva, no hagas nada para mantener las imágenes existentes
+                      }
+                    }}
+                    className="form-control my-2"
                   />
                 </Col>
               </Row>

@@ -82,25 +82,17 @@ const handleOpenDeleteModal = (rowData: Row) => {
 
    // Definiendo fetchSucursal con useCallback
    const fetchPromocion = useCallback(async () => {
-    try {
-      // Obtener todas las promociones
-      const promociones = await promocionService.getAll(url + 'promocion', await getAccessTokenSilently({}));
-  
+    try {  
       // Si hay una sucursal seleccionada, filtrar las promociones por la sucursal
       if (sucursalId) {
-        // Parse `sucursalId` to ensure it's of the same type as the IDs of sucursales
-        const parsedSucursalId = parseInt(sucursalId, 10);
-  
-        const promocionesFiltradas = promociones.filter(promocion => promocion.sucursales.some(sucursal => sucursal.id === parsedSucursalId));
-  
-        // Actualizar el estado con las promociones filtradas
-        dispatch(setPromocion(promocionesFiltradas));
-        setFilterData(promocionesFiltradas);
-      } else {
-        // Si no hay una sucursal seleccionada, establecer todas las promociones
+        
+        const sucursalIdNumber = parseInt(sucursalId);
+
+        const promociones = await promocionService.promocionesSucursal(url, sucursalIdNumber, await getAccessTokenSilently({}));
+        // Actualizar el estado con las promociones 
         dispatch(setPromocion(promociones));
         setFilterData(promociones);
-      }
+      } 
   
     } catch (error) {
       console.error("Error al obtener las promociones:", error);

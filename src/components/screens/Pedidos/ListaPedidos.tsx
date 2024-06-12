@@ -71,17 +71,12 @@ export const ListaPedidos = () => {
 
         const pedidos = (await pedidoService.getPedidosFiltrados(url + 'pedido', rolUsuario, await getAccessTokenSilently({}))).filter((v) => !v.eliminado);
 
-        if (sucursalId) {
-          const sucursalIdNumber = parseInt(sucursalId);
+      if (sucursalId) {
+        const sucursalIdNumber = parseInt(sucursalId);
+        const pedidos = await pedidoService.pedidosSucursal(url, sucursalIdNumber, await getAccessTokenSilently({}));
 
-          const pedidosFiltrados = pedidos.filter(pedido =>
-            pedido.sucursal &&
-            pedido.sucursal.id === sucursalIdNumber
-          );
-
-          dispatchPedido(setPedido(pedidosFiltrados));
-          setFilterData(pedidosFiltrados);
-        }
+        dispatch(setPedido(pedidos));
+        setFilterData(pedidos);
       }
     } catch (error) {
       console.error("Error al obtener los pedidos:", error);

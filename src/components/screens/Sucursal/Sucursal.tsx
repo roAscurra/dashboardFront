@@ -96,26 +96,26 @@ export const ListaSucursal = () => {
 
   const fetchSucursal = useCallback(async () => {
     try {
-      const sucursales = await sucursalService.getAll(url + "sucursal", await getAccessTokenSilently({}));
-      const sucursalesConImagenes = await Promise.all(
-        sucursales.map(async (sucursal) => {
-          const imagenUrl = await fetchImages(sucursal.id.toString());
-          return { ...sucursal, imagen: imagenUrl };
-        })
-      );
+      if(empresaId){
+        const empresaIdNumber = parseInt(empresaId);
 
-      const sucursalesFiltradas = sucursalesConImagenes.filter(
-        (sucursal) => sucursal.empresa.id.toString() === empresaId
-      );
+        const sucursalesEmpresa = await sucursalService.sucursalEmpresa(url, empresaIdNumber, await getAccessTokenSilently({}));
 
-      // Verificar si alguna de las sucursales filtradas es casa matriz
-      const empresaTieneCasaMatriz = sucursalesFiltradas.some(
-        (sucursal) => sucursal.esCasaMatriz === true
-      );
-      setCasaMatriz(empresaTieneCasaMatriz);
-
-      dispatch(setSucursal(sucursalesFiltradas));
-      setFilterData(sucursalesFiltradas);
+        // Verificar si alguna de las sucursales filtradas es casa matriz
+        const empresaTieneCasaMatriz = sucursalesEmpresa.some(
+          (sucursal) => sucursal.esCasaMatriz === true
+        );
+        const sucursalesConImagenes = await Promise.all(
+          sucursalesEmpresa.map(async (sucursal) => {
+            const imagenUrl = await fetchImages(sucursal.id.toString());
+            return { ...sucursal, imagen: imagenUrl };
+          })
+        );
+        setCasaMatriz(empresaTieneCasaMatriz);
+  
+        dispatch(setSucursal(sucursalesConImagenes));
+        setFilterData(sucursalesConImagenes);
+      }
     } catch (error) {
       console.error("Error al obtener las sucursales:", error);
     }

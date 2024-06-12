@@ -96,7 +96,6 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
   const handleGuardarInsumo = () => {
     handleAddInsumo(detalles);
     handleClose();
-    console.log(detalles);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
