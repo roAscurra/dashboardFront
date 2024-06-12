@@ -79,6 +79,7 @@ const ModalPedido: React.FC<ModalPedidoProps> = ({ open, onClose, pedido, onSave
         if (pedido) {
             onSave({ ...pedido, estado });
         }
+        console.log(usuario)
     };
 
     if (!pedido) return null;
