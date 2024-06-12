@@ -15,6 +15,7 @@ import Sidebar from "../../ui/Sider/SideBar.tsx";
 import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import { useParams } from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
+import ModalSubCategoria from "../../ui/Modal/Categoria/ModalSubCategoria.tsx";
 
 const Categoria = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -34,30 +35,21 @@ const Categoria = () => {
 
   const fetchCategorias = useCallback(async () => {
     try {
-      const categorias = await categoriaService.getAll(url + "categoria", await getAccessTokenSilently({}));
+      if(sucursalId){
+        const parsedSucursalId = parseInt(sucursalId, 10); 
+
+        const categorias = await categoriaService.categoriaSucursal(url, parsedSucursalId, await getAccessTokenSilently({}));
   
-      // Filtrar las subcategorías para obtener sus IDs
-      const subCategoriaIds = categorias.filter(categoria => categoria.subCategorias.length > 0)
-                                        .map(subcategoria => subcategoria.subCategorias.map(sub => sub.id))
-                                        .flat();
+        // Filtrar las subcategorías para obtener sus IDs
+        const subCategoriaIds = categorias.filter(categoria => categoria.subCategorias.length > 0)
+          .map(subcategoria => subcategoria.subCategorias.map(sub => sub.id))
+          .flat();
+                                          
+        // Filtrar las categorías principales excluyendo aquellas que son subcategorías
+        const categoriasPrincipales = categorias.filter(categoria => !subCategoriaIds.includes(categoria.id));
   
-      // Filtrar las categorías principales excluyendo aquellas que son subcategorías
-      const categoriasPrincipales = categorias.filter(categoria => !subCategoriaIds.includes(categoria.id));
-  
-      if (sucursalId) {
-        const parsedSucursalId = parseInt(sucursalId, 10);
-  
-        const categoriasFiltradas = categoriasPrincipales.filter((categoria) =>
-          categoria.sucursales.some(
-            (sucursal) => sucursal.id === parsedSucursalId
-          )
-        );
-  
-        dispatch(setCategoria(categoriasFiltradas));
-        setFilterData(categoriasFiltradas);
-      } else {
         dispatch(setCategoria(categoriasPrincipales));
-        setFilterData(categoriasPrincipales);
+        setFilterData(categoriasPrincipales)
       }
     } catch (error) {
       console.error("Error al obtener las categorías:", error);
@@ -175,6 +167,12 @@ const Categoria = () => {
                   onDelete={handleEliminar} 
                   getCategories={() => fetchCategorias()}
                   onClose={() => setEliminarModalOpen(false)}
+                />
+                <ModalSubCategoria 
+                  open={modalOpen}
+                  categoria={selectedCategoria}
+                  onClose={handleCloseModal}
+                  getCategories={() => fetchCategorias()}
                 />
               </Container>
             </Box>
