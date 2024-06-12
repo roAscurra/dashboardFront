@@ -140,10 +140,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
         );
   
         setArticulosManufacturados(manufacturadosFiltrados);
-        console.log(manufacturadosFiltrados);
       } else {
         setArticulosManufacturados(articulosManufacturados);
-        console.log(articulosManufacturados);
       }
     } catch (error) {
       console.error("Error al obtener los artículos manufacturados:", error);
