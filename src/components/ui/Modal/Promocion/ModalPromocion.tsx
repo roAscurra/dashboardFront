@@ -158,10 +158,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
           sucursalId, await getAccessTokenSilently({})
         );
         const empresaId = sucursalSeleccionada.empresa.id;
-        const todasSucursales = await sucursalService.getAll(url + "sucursal", await getAccessTokenSilently({}));
-        const sucursalesEmpresa = todasSucursales.filter(
-          (sucursal) => sucursal.empresa.id === empresaId
-        );
+
+        const sucursalesEmpresa = await sucursalService.sucursalEmpresa(url, empresaId, await getAccessTokenSilently({}));
         setSucursales(sucursalesEmpresa);
       }
     } catch (error) {

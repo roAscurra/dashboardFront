@@ -86,17 +86,12 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   };
   const fetchCategorias = useCallback(async () => {
     try {
-      const categorias = await categoriaService.getAll(url + "categoria", await getAccessTokenSilently({}));
-
       if (sucursalId) {
-        const parsedSucursalId = parseInt(sucursalId, 10);
+        const parsedSucursalId = parseInt(sucursalId, 10); 
 
-        const categoriasFiltradas = categorias.filter((categoria) =>
-          categoria.sucursales.some(
-            (sucursal) => sucursal.id === parsedSucursalId
-          )
-        );
-        setCategorias(categoriasFiltradas);
+        const categorias = await categoriaService.categoriaSucursal(url, parsedSucursalId, await getAccessTokenSilently({}));
+  
+        setCategorias(categorias);
       }
     } catch (error) {
       console.error("Error al obtener las categorías:", error);
