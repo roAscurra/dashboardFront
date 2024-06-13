@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Typography, Container } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
+import { Box, Typography, Container, Button } from "@mui/material";
+import { useAppDispatch } from "../../../hooks/redux";
 import TableComponent from "../../ui/Table/Table.tsx";
 import { CCol, CContainer, CRow } from "@coreui/react";
-import { handleSearch } from "../../../utils.ts/utils.ts";
 import SearchBar from "../../ui/SearchBar/SearchBar.tsx";
 import { useParams } from "react-router-dom";
 import PedidoService from "../../../services/PedidoService.ts";
@@ -15,6 +14,7 @@ import ModalPedido from "../../ui/Modal/Pedido/ModalPedido.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import Usuario from "../../../types/Usuario.ts";
 import UsuarioService from "../../../services/UsuarioService.ts";
+import ModalDetallePedido from "../../ui/Modal/Pedido/ModalDetallePedido.tsx";
 
 interface Row {
   [key: string]: any;
@@ -40,11 +40,11 @@ export const ListaPedidos = () => {
   const usuarioService = new UsuarioService();
   const [usuarioIsLoading, setUsuarioIsLoading] = useState<boolean>(true);
   const [rolUsuario, setRolUsuario] = useState<string | undefined>();
-
-  const globalArticuloManufacturado = useAppSelector(
-    (state) => state.articuloManufacturado.data
-  );
-
+  const [showModal, setShowModal] = useState(false);
+  const [currentDetallePedidos, setCurrentDetallePedidos] = useState([]);
+  const [orderDate, setOrderDate] = useState("");
+  const [cliente, setCliente] = useState<string | undefined>();
+  const [originalData, setOriginalData] = useState<Row[]>([]);
   const fetchUsuario = async () => {
     try {
       const usuario = await usuarioService.getByEmail(url + "usuarioCliente/role/" + user?.email, {
@@ -83,6 +83,7 @@ export const ListaPedidos = () => {
         // Actualizar el estado con los pedidos obtenidos o filtrados
         dispatchPedido(setPedido(pedidosFiltrados));
         setFilterData(pedidosFiltrados);
+        setOriginalData(pedidosFiltrados)
       }
     } catch (error) {
       console.error("Error al obtener los pedidos:", error);
@@ -99,6 +100,7 @@ export const ListaPedidos = () => {
   useEffect(() => {
     if (usuario) {
       fetchPedidos();
+      onSearch("");
     }
   }, [usuario, fetchPedidos]);
 
@@ -127,9 +129,24 @@ export const ListaPedidos = () => {
       formaPago: rowData.formaPago,
       fechaPedido: rowData.fechaPedido,
       detallePedidos: rowData.detallePedidos,
-      sucursal: rowData.sucursal
+      sucursal: rowData.sucursal,
+      cliente: rowData.cliente
     });
     setEditModalOpen(true);
+  };
+  const handleShow = (detallePedidos: any, fechaPedido:any, cliente: any) => {
+    setCurrentDetallePedidos(detallePedidos);
+    setCliente(cliente)
+    setOrderDate(new Date(fechaPedido).toLocaleDateString());
+    setShowModal(true);
+  };
+
+  const handleClose = () => {
+    setShowModal(false);
+    setCurrentDetallePedidos([]);
+    setCliente("")
+    setOrderDate("");
+    window.location.reload();
   };
 
   const handleCloseEditModal = () => {
@@ -148,11 +165,44 @@ export const ListaPedidos = () => {
   };
 
   const onSearch = (query: string) => {
-    handleSearch(query, globalArticuloManufacturado, setFilterData);
+    // Verificamos si el campo de búsqueda está vacío o no
+    const isQueryEmpty = query.trim() === "";
+    // Si el campo de búsqueda está vacío o es "false", mostramos todos los resultados sin filtrar
+    if (isQueryEmpty) {
+      setFilterData(originalData);
+      return;
+    }
+    // Aplicamos la búsqueda sobre los datos filtrados
+    const filtered = originalData.filter(
+      (row) =>
+        // Verificamos si la propiedad es una cadena antes de llamar a toLowerCase()
+        (typeof row.horaEstimadaFinalizacion === "string" &&
+          row.horaEstimadaFinalizacion
+            .toLowerCase()
+            .includes(query.toLowerCase())) ||
+        (typeof row.total === "string" &&
+          row.total.toLowerCase().includes(query.toLowerCase())) ||
+        (typeof row.estado === "string" &&
+          row.estado.toLowerCase().includes(query.toLowerCase())) ||
+        (typeof row.tipoEnvio === "string" &&
+          row.tipoEnvio.toLowerCase().includes(query.toLowerCase())) ||
+        (typeof row.formaPago === "string" &&
+          row.formaPago.toLowerCase().includes(query.toLowerCase())) ||
+        (typeof row.fechaPedido === "string" &&
+          row.fechaPedido.toLowerCase().includes(query.toLowerCase())) || 
+        (typeof row.cliente === "string" &&
+          row.cliente.toLowerCase().includes(query.toLowerCase())) 
+    );
+
+    // Actualizamos los datos filtrados con los resultados de la búsqueda
+    setFilterData(filtered);
   };
+
 
   const columns: Column[] = [
     { id: "horaEstimadaFinalizacion", label: "Hora Estimada Finalizacion", renderCell: (rowData) => <>{rowData.horaEstimadaFinalizacion}</> },
+    { id: "cliente", label: "Cliente", renderCell: (rowData) => <>{rowData.cliente?.nombre + " " + rowData.cliente?.apellido}</> },
+    { id: "telefono", label: "Teléfono", renderCell: (rowData) => <>{rowData.cliente?.telefono}</> },
     { id: "total", label: "Total", renderCell: (rowData) => <>{rowData.total}</> },
     { id: "totalCosto", label: "Total Costo", renderCell: (rowData) => <>{rowData.totalCosto}</> },
     { id: "estado", label: "Estado", renderCell: (rowData) => <> {rowData.estado}</> },
@@ -162,20 +212,12 @@ export const ListaPedidos = () => {
     {
       id: "detallePedidos",
       label: "Detalle del Pedido",
-      renderCell: (rowData) => {
-        const detalles = rowData.detallePedidos;
-        return (
-          <div>
-            {detalles.map((detalle: any, index: number) => (
-              <div key={index}>
-                <p>Cantidad: {detalle.cantidad}</p>
-                <p>Artículo: {detalle.articulo.denominacion}</p>
-              </div>
-            ))}
-          </div>
-        );
-      }
-    }
+      renderCell: (rowData) => (
+        <div>
+          <Button sx={{ bgcolor: "#9c27b0", "&:hover": { bgcolor: "#9c27b0" } }} variant="contained" onClick={() => handleShow(rowData.detallePedidos, rowData.fechaPedido, rowData.cliente)}>Ver</Button>
+        </div>
+      ),
+    },
   ];
 
   if (filteredData.length === 0) {
@@ -223,21 +265,19 @@ export const ListaPedidos = () => {
                   <Typography variant="h5" gutterBottom>
                     Pedidos
                   </Typography>
-                  <a
-                    className="btn btn-primary"
-                    href={`../productos/${sucursalId}`}
-                    style={{ backgroundColor: "#9c27b0", border: "#9c27b0" }}
-                  >
-                    +
-                    Pedido
-                  </a>
                 </Box>
                 <Box sx={{ mt: 2 }}>
                   <SearchBar onSearch={onSearch} />
                 </Box>
 
                 <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenEditModal} handleOpenEditModal={handleOpenEditModal} isListaPedidos={true} />
-
+                <ModalDetallePedido
+                  show={showModal}
+                  handleClose={handleClose}
+                  detallePedidos={currentDetallePedidos}
+                  orderDate={orderDate}
+                  cliente={cliente}
+                />
               </Container>
             </Box>
           </CCol>
