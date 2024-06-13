@@ -144,7 +144,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
         const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
 
         // Filtrar los insumos por sucursal y categoría
-        const articulosInsumos = await insumoService.insumos(
+        const articulosInsumos = await insumoService.insumosParaElaborar(
           `${url}`, sucursalIdNumber, await getAccessTokenSilently({})
         );
   
@@ -166,17 +166,10 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 
   const fetchCategorias = async () => {
     try {
-      const categorias = await categoriaService.getAll(url + "categoria", await getAccessTokenSilently({}));
-
       if (sucursalId) {
         const parsedSucursalId = parseInt(sucursalId, 10);
-
-        const categoriasFiltradas = categorias.filter((categoria) =>
-          categoria.sucursales.some(
-            (sucursal) => sucursal.id === parsedSucursalId
-          )
-        );
-        setCategorias(categoriasFiltradas);
+        const categorias = await categoriaService.categoriaSucursal(url, parsedSucursalId, await getAccessTokenSilently({}));
+        setCategorias(categorias);
       }
     } catch (error) {
       console.error("Error al obtener las categorías:", error);

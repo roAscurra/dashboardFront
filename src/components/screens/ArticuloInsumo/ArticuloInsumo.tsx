@@ -61,7 +61,7 @@ export const ListaArticulosInsumo = () => {
     try {
       if (sucursalId) {
         const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
-        const articulosInsumo = await articuloInsumoService.getAll(url + "articuloInsumo", await getAccessTokenSilently({}));
+        const articulosInsumo = await articuloInsumoService.insumos(url, sucursalIdNumber, await getAccessTokenSilently({}));
         const artInsumoConImagenes = await Promise.all(
           articulosInsumo.map(async (articuloInsumo) => {
             const imagenUrl = await fetchImages(articuloInsumo.id.toString());
@@ -69,16 +69,9 @@ export const ListaArticulosInsumo = () => {
           })
         );
   
-        // Filtrar los insumos por sucursal y categoría
-        const insumosFiltrados = articulosInsumo.filter(insumo =>
-          insumo.categoria && // Verificar si categoria está definido
-          Array.isArray(insumo.categoria.sucursales) && // Verificar si sucursales es un array en categoria
-          insumo.categoria.sucursales.some((sucursal: any) => sucursal.id === sucursalIdNumber)
-        );
-  
-        console.log(insumosFiltrados);
+        console.log(artInsumoConImagenes);
         dispatch(setArticuloInsumo(artInsumoConImagenes));
-        setFilterData(insumosFiltrados);
+        setFilterData(artInsumoConImagenes);
       }
     } catch (error) {
       console.error("Error al obtener los artículos de insumo:", error);

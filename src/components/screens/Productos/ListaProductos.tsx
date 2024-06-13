@@ -60,30 +60,13 @@ export const ListaProductos = () => {
   },[productoService, url]);
 
   const fetchProductos = useCallback(async () => {
-    try {
-      const productos = (await productoService.getAll(url + 'articuloManufacturado', await getAccessTokenSilently({}))).filter((v) => !v.eliminado);
-      
+    try {      
       // Asegúrate de que sucursalId esté definido y conviértelo a un número
       if (sucursalId) {
         const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
         
-        // Filtrar los productos por sucursal y categoría
-        const productosFiltrados = productos.filter(producto =>
-          producto.categoria && // Verificar si categoria está definido
-          Array.isArray(producto.categoria.sucursales) && // Verificar si sucursales es un array en categoria
-          producto.categoria.sucursales.some(sucursal => sucursal.id === sucursalIdNumber)
-        );
+        const productos = (await productoService.manufacturados(url, sucursalIdNumber, await getAccessTokenSilently({}))).filter((v) => !v.eliminado);
   
-        const productoConImagenes = await Promise.all(
-          productosFiltrados.map(async (product) => {
-            const imagenUrl = await fetchImages(product.id.toString());
-            return { ...product, imagen: imagenUrl };
-          })
-        );
-  
-        dispatch(setArticuloManufacturado(productoConImagenes));
-        setFilterData(productoConImagenes);
-      } else {
         const productoConImagenes = await Promise.all(
           productos.map(async (product) => {
             const imagenUrl = await fetchImages(product.id.toString());
