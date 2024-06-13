@@ -70,6 +70,22 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
             subCategorias: [],
             sucursales: [],
           },
+    sucursal: articuloToEdit?.sucursal
+    ? { ...articuloToEdit.sucursal }
+    : {
+        id: 0,
+        eliminado: false,
+        nombre: "",
+        domicilio: {
+          id: 0,
+          eliminado: false,
+          calle: "",
+          numero: 0,
+          cp: 0,
+          piso: 0,
+          nroDpto: 0
+        },
+      },
   };
   const { sucursalId } = useParams();
   const modal = useAppSelector((state) => state.modal.modal);
@@ -156,7 +172,10 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                 articuloId = values.id.toString();
               } else {
                 console.log(values);
-
+                if(sucursalId){
+                  const sucursalIdNumber = parseInt(sucursalId);
+                  values.sucursal.id = sucursalIdNumber;
+                }
                 const response = await articuloInsumoService.post(
                   url + "articuloInsumo",
                   values, await getAccessTokenSilently({})
