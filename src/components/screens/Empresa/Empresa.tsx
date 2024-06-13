@@ -17,7 +17,7 @@ import { toggleModal } from "../../../redux/slices/Modal";
 import EmpresaService from "../../../services/EmpresaService";
 import Empresa from "../../../types/Empresa";
 import ModalEliminarEmpresa from "../../ui/Modal/Empresa/ModalEliminarEmpresa.tsx";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -32,6 +32,7 @@ interface Row {
 export const ListaEmpresa = () => {
   const url = import.meta.env.VITE_API_URL;
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const empresaService = new EmpresaService();
   const usuarioService = new UsuarioService();
@@ -146,18 +147,32 @@ export const ListaEmpresa = () => {
   }
 
 
-    if (!user) {
-        return <div style={{height: "calc(100vh - 88px)"}}
-                    className={"d-flex flex-column justify-content-center align-items-center"}>
-          <h1>Necesitas logearte para continuar</h1>
-          <p>Prueba iniciar session!</p>
-      </div>;
+if (!user) {
+    return <div style={{height: "calc(100vh - 88px)"}}
+                className={"d-flex flex-column justify-content-center align-items-center"}>
+      <h1>Necesitas logearte para continuar</h1>
+      <p>Prueba iniciar session!</p>
+  </div>;
   } else if(!usuario) {
       return <div style={{height: "calc(100vh - 88px)"}} className={"d-flex flex-column justify-content-center align-items-center"}>
           <h1>No tienes permisos para usar este dashboard</h1>
           <p>Prueba pedir permisos!</p>
       </div>;
   }
+
+    switch (usuario.rol) {
+        case 'COCINERO':
+            navigate(`pedidos/${usuario?.empleado?.sucursal?.id}`);
+            break;
+        case 'CAJERO':
+            navigate(`pedidos/${usuario?.empleado?.sucursal?.id}`);
+            break;
+        case 'ADMIN':
+            navigate(``);
+            break;
+    }
+
+
 
   return (
       <>

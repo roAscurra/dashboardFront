@@ -49,8 +49,8 @@ export default class PedidoService extends BackendClient<Pedido> {
         }
       }
 
-    async getRankingInsumos(url: string, token: string): Promise<any[][]> {
-        const path = `${url}pedido/ranking/insumos/data`;
+    async getRankingInsumos(url: string, sucursalId: string | undefined, token: string): Promise<any[][]> {
+        const path = `${url}pedido/ranking/insumos/data/${sucursalId}`;
         console.log(path)
         const options: RequestInit = {
             method: "GET",
@@ -63,8 +63,8 @@ export default class PedidoService extends BackendClient<Pedido> {
         return (this.request(path, options) as unknown) as any[][];
     }
 
-    async getPedidosPorCliente(url: string, token: string): Promise<any[][]> {
-        const path = `${url}pedido/ranking/pedidos/cliente/data`;
+    async getPedidosPorCliente(url: string, sucursalId: string | undefined, token: string): Promise<any[][]> {
+        const path = `${url}pedido/ranking/pedidos/cliente/data/${sucursalId}`;
         console.log(path)
         const options: RequestInit = {
             method: "GET",
@@ -77,8 +77,8 @@ export default class PedidoService extends BackendClient<Pedido> {
         return (this.request(path, options) as unknown) as any[][];
     }
 
-    async getIngresos(url: string, token: string): Promise<any[][]> {
-        const path = `${url}pedido/ranking/ingresos/data`;
+    async getIngresos(url: string, sucursalId: string | undefined, token: string): Promise<any[][]> {
+        const path = `${url}pedido/ranking/ingresos/data/${sucursalId}`;
         console.log(path)
         const options: RequestInit = {
             method: "GET",
@@ -91,8 +91,8 @@ export default class PedidoService extends BackendClient<Pedido> {
         return (this.request(path, options) as unknown) as any[][];
     }
 
-    async getGanancias(url: string, token: string): Promise<any[][]> {
-        const path = `${url}pedido/ranking/ganancias/data`;
+    async getGanancias(url: string, sucursalId: string | undefined, token: string): Promise<any[][]> {
+        const path = `${url}pedido/ranking/ganancias/data/${sucursalId}`;
         console.log(path)
         const options: RequestInit = {
             method: "GET",
