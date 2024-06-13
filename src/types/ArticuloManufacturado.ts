@@ -4,6 +4,7 @@ import Categoria from "./Categoria";
 import DataModel from "./DataModel";
 import Imagen from "./Imagen";
 import UnidadMedida from "./UnidadMedida";
+import SucursalDto from "./dto/SucursalDto";
 // import CategoriaShorDto from "./dto/CategoriaShorDto";
 
 interface IArticuloManufacturado extends DataModel<IArticuloManufacturado> {
@@ -16,6 +17,7 @@ interface IArticuloManufacturado extends DataModel<IArticuloManufacturado> {
     preparacion: string;
     articuloManufacturadoDetalles: ArticuloManufacturadoDetalle[];
     categoria: Categoria;
+    sucursal: SucursalDto;
 }
 
 export default IArticuloManufacturado;

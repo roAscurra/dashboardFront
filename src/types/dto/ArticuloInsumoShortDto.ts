@@ -1,6 +1,7 @@
 import DataModel from "../DataModel";
 import IUnidadMedida from "../UnidadMedida";
 import CategoriaShorDto from "./CategoriaShorDto";
+import SucursalDto from "./SucursalDto";
 
 
 interface ArticuloInsumoShortDto extends DataModel<ArticuloInsumoShortDto>{
@@ -15,6 +16,7 @@ interface ArticuloInsumoShortDto extends DataModel<ArticuloInsumoShortDto>{
     stockMinimo: number;
     esParaElaborar: boolean;
     categoria: CategoriaShorDto;
+    sucursal: SucursalDto;
 }
 
 export default ArticuloInsumoShortDto;
