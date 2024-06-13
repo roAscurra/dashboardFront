@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, TablePagination, IconButton, Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { Download } from '@mui/icons-material';
 
 interface Row {
   [key: string]: any;
@@ -18,9 +19,10 @@ interface Props {
   columns: Column[];
   handleOpenEditModal: (rowData: Row) => void;
   handleOpenDeleteModal: (rowData: Row) => void; // Nueva prop para manejar la apertura de la modal de eliminación
+  isListaPedidos?: boolean;
 }
 
-const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, handleOpenDeleteModal }) => {
+const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, handleOpenDeleteModal, isListaPedidos }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -57,10 +59,17 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
                   <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
-                    <DeleteIcon />
-                  </IconButton>
-
+                  {isListaPedidos ? (
+                    <IconButton aria-label="descargar" 
+                    // onClick={() => window.open(`http://localhost:8080/pedido/downloadPdf/${row.id}`, "_blank")}
+                    >
+                      <Download />
+                    </IconButton>
+                  ) : (
+                    <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
                 </Box>
               </TableCell>
             </TableRow>

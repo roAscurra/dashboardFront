@@ -192,7 +192,7 @@ export const ListaUsuarios = () => {
                   <CircularProgress />
                 </Box>
               ) : (
-                <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} handleOpenDeleteModal={handleOpenDeleteModal} />
+                <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} handleOpenDeleteModal={handleOpenDeleteModal} isListaPedidos={false}/>
               )}
 
               
