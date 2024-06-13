@@ -106,6 +106,22 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   esInsumo: false,
                 },
             preparacion: detalle.articuloManufacturado.preparacion,
+            sucursal: detalle?.sucursal
+              ? { ...detalle.sucursal }
+              : {
+                  id: 0,
+                  eliminado: false,
+                  nombre: "",
+                  domicilio: {
+                    id: 0,
+                    eliminado: false,
+                    calle: "",
+                    numero: 0,
+                    cp: 0,
+                    piso: 0,
+                    nroDpto: 0
+                  },
+                },
           },
         }))
       : [],
@@ -124,25 +140,15 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   };
   const fetchArticulosManufacturados = async () => {
     try {
-      const articulosManufacturados = await articuloManufacturadoService.getAll(
-        `${url}articuloManufacturado`, await getAccessTokenSilently({})
-      );
-  
       // Asegúrate de que sucursalId esté definido y conviértelo a un número
       if (sucursalId) {
         const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
-  
-        // Filtrar los artículos manufacturados por sucursal y categoría
-        const manufacturadosFiltrados = articulosManufacturados.filter(articulo =>
-          articulo.categoria && // Verificar si categoria está definido
-          Array.isArray(articulo.categoria.sucursales) && // Verificar si sucursales es un array en categoria
-          articulo.categoria.sucursales.some(sucursal => sucursal.id === sucursalIdNumber)
+        const articulosManufacturados = await articuloManufacturadoService.manufacturados(
+          url, sucursalIdNumber, await getAccessTokenSilently({})
         );
   
-        setArticulosManufacturados(manufacturadosFiltrados);
-      } else {
         setArticulosManufacturados(articulosManufacturados);
-      }
+      } 
     } catch (error) {
       console.error("Error al obtener los artículos manufacturados:", error);
     }

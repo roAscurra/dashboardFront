@@ -15,7 +15,6 @@ import Sidebar from "../../ui/Sider/SideBar.tsx";
 import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import { useParams } from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
-import ModalSubCategoria from "../../ui/Modal/Categoria/ModalSubCategoria.tsx";
 
 const Categoria = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -167,12 +166,6 @@ const Categoria = () => {
                   onDelete={handleEliminar} 
                   getCategories={() => fetchCategorias()}
                   onClose={() => setEliminarModalOpen(false)}
-                />
-                <ModalSubCategoria 
-                  open={modalOpen}
-                  categoria={selectedCategoria}
-                  onClose={handleCloseModal}
-                  getCategories={() => fetchCategorias()}
                 />
               </Container>
             </Box>
