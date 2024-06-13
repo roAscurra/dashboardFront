@@ -3,6 +3,31 @@ import { Estado } from "../types/enums/Estado";
 import BackendClient from "./BackendClient";
 
 export default class PedidoService extends BackendClient<Pedido> {
+
+  async cambiarEstado(url: string, pedidoId: string, nuevoEstado: Estado, token: string): Promise<Pedido> {
+    const path = `${url}/${pedidoId}/estado?nuevoEstado=${nuevoEstado}`;
+    console.log(path)
+    const options: RequestInit = {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    };
+    return this.request(path, options);
+  }
+
+  async getPedidosFiltrados(url: string, rol: string, token: string): Promise<Pedido[]> {
+    const path = `${url}/filtrado?rol=${rol}`;
+    const options: RequestInit = {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    };
+    console.log(`GET Request to: ${path}`);
+    return this.requestAll(path, options);
+  }
+
     public async pedidosSucursal(url: string, idSucursal: number, token: string): Promise<Pedido[]> {
         try {
           const path = `${url}pedido/sucursal/${idSucursal}`;
@@ -23,21 +48,9 @@ export default class PedidoService extends BackendClient<Pedido> {
           throw error;
         }
       }
-    async cambiarEstado(url: string, pedidoId: string, nuevoEstado: Estado): Promise<Pedido> {
-        const path = `${url}/${pedidoId}/estado?nuevoEstado=${nuevoEstado}`;
-        console.log(path)
-        const options: RequestInit = {
-          method: "PUT",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
-        return this.request(path, options);
-      }
 
-    async getRankingInsumos(url: string, token: string): Promise<any[][]> {
-        const path = `${url}pedido/ranking/insumos/data`;
+    async getRankingInsumos(url: string, sucursalId: string | undefined, token: string): Promise<any[][]> {
+        const path = `${url}pedido/ranking/insumos/data/${sucursalId}`;
         console.log(path)
         const options: RequestInit = {
             method: "GET",
@@ -50,8 +63,8 @@ export default class PedidoService extends BackendClient<Pedido> {
         return (this.request(path, options) as unknown) as any[][];
     }
 
-    async getPedidosPorCliente(url: string, token: string): Promise<any[][]> {
-        const path = `${url}pedido/ranking/pedidos/cliente/data`;
+    async getPedidosPorCliente(url: string, sucursalId: string | undefined, token: string): Promise<any[][]> {
+        const path = `${url}pedido/ranking/pedidos/cliente/data/${sucursalId}`;
         console.log(path)
         const options: RequestInit = {
             method: "GET",
@@ -64,8 +77,8 @@ export default class PedidoService extends BackendClient<Pedido> {
         return (this.request(path, options) as unknown) as any[][];
     }
 
-    async getIngresos(url: string, token: string): Promise<any[][]> {
-        const path = `${url}pedido/ranking/ingresos/data`;
+    async getIngresos(url: string, sucursalId: string | undefined, token: string): Promise<any[][]> {
+        const path = `${url}pedido/ranking/ingresos/data/${sucursalId}`;
         console.log(path)
         const options: RequestInit = {
             method: "GET",
@@ -78,8 +91,8 @@ export default class PedidoService extends BackendClient<Pedido> {
         return (this.request(path, options) as unknown) as any[][];
     }
 
-    async getGanancias(url: string, token: string): Promise<any[][]> {
-        const path = `${url}pedido/ranking/ganancias/data`;
+    async getGanancias(url: string, sucursalId: string | undefined, token: string): Promise<any[][]> {
+        const path = `${url}pedido/ranking/ganancias/data/${sucursalId}`;
         console.log(path)
         const options: RequestInit = {
             method: "GET",
@@ -90,5 +103,18 @@ export default class PedidoService extends BackendClient<Pedido> {
             },
         };
         return (this.request(path, options) as unknown) as any[][];
+    }
+
+    async crearFactura(url: string, pedidoId: string, token: string): Promise<any> {
+      const path = `${url}crear/${pedidoId}`;
+      const options: RequestInit = {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      return this.request(path, options);
     }
 }

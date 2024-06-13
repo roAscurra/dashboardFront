@@ -131,7 +131,7 @@ export const ListaUnidadesMedida = () => {
                     <CircularProgress />
                   </Box>
                 ) : (
-                  <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} handleOpenDeleteModal={handleOpenDeleteModal} />
+                  <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} handleOpenDeleteModal={handleOpenDeleteModal} isListaPedidos={false}/>
                 )}
 
                 <ModalUnidadMedida getUnidades={fetchUnidades} unidadToEdit={unidadToEdit !== null ? unidadToEdit : undefined} modalName="modal" />

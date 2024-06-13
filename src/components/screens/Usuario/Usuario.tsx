@@ -15,6 +15,7 @@ import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import { CCol, CContainer, CRow } from "@coreui/react";
 import Sidebar from "../../ui/Sider/SideBar.tsx";
 import {useAuth0} from "@auth0/auth0-react";
+import {useParams} from "react-router-dom";
 
 interface Row {
   [key: string]: any;
@@ -41,11 +42,13 @@ export const ListaUsuarios = () => {
   const globalUsuario = useAppSelector(
       (state) => state.usuario.data
   );
+  const { sucursalId } = useParams();
 
   // Definiendo fetchUsuarios con useCallback
   const fetchUsuarios = useCallback(async () => {
     try {
-      const usuarios = await usuarioService.getAll(url + 'usuarioCliente', await getAccessTokenSilently({}));
+      const usuarios = (await usuarioService.getAll(url + 'usuarioCliente', await getAccessTokenSilently({})))
+          .filter((usuario) => usuario.empleado.sucursal.id === +(sucursalId || 0));
       dispatch(setUsuario(usuarios));
       setFilterData(usuarios);
       setLoading(false);
@@ -72,7 +75,11 @@ export const ListaUsuarios = () => {
       eliminado: rowData.eliminado,
       username: rowData.username,
       email: rowData.email,
-      rol: rowData.rol
+      rol: rowData.rol,
+      empleado: {
+        tipoEmpleado: rowData.rol,
+        sucursal: {id: +(sucursalId || 0)}
+      }
     });
     dispatch(toggleModal({ modalName: 'modal' }));
   };
@@ -88,7 +95,11 @@ export const ListaUsuarios = () => {
       eliminado: rowData.eliminado,
       username: rowData.username,
       email: rowData.email,
-      rol: rowData.rol
+      rol: rowData.rol,
+      empleado: {
+        tipoEmpleado: rowData.rol,
+        sucursal: {id: +(sucursalId || 0)}
+      }
     });
     setDeleteModalOpen(true);
   };
@@ -181,12 +192,12 @@ export const ListaUsuarios = () => {
                   <CircularProgress />
                 </Box>
               ) : (
-                <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} handleOpenDeleteModal={handleOpenDeleteModal} />
+                <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} handleOpenDeleteModal={handleOpenDeleteModal} isListaPedidos={false}/>
               )}
 
               
               {/* Modal de Usuario */}
-              <ModalUsuario getUsuarios={fetchUsuarios} usuarioToEdit={usuarioToEdit !== null ? usuarioToEdit : undefined} />
+              <ModalUsuario surcursalId={+(sucursalId || 0)} getUsuarios={fetchUsuarios} usuarioToEdit={usuarioToEdit !== null ? usuarioToEdit : undefined} />
 
               {/* Modal de Eliminar Usuario */}
               <ModalEliminarUsuario show={deleteModalOpen} onHide={handleCloseDeleteModal} usuario={usuarioToEdit} onDelete={handleDeleteUsuario} />

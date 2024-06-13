@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Typography, Container, Select, MenuItem } from "@mui/material";
+import { Box, Typography, Container } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import TableComponent from "../../ui/Table/Table.tsx";
 import { CCol, CContainer, CRow } from "@coreui/react";
@@ -11,10 +11,10 @@ import Pedido from "../../../types/Pedido.ts";
 import { setPedido } from "../../../redux/slices/Pedido.ts";
 import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import Sidebar from "../../ui/Sider/SideBar.tsx";
-import { Estado } from "../../../types/enums/Estado.ts";
-import ModalPedido from "../../ui/Modal/Pedido/ModalPedido.tsx"; 
-import { SelectChangeEvent } from '@mui/material';
-import {useAuth0} from "@auth0/auth0-react";
+import ModalPedido from "../../ui/Modal/Pedido/ModalPedido.tsx";
+import { useAuth0 } from "@auth0/auth0-react";
+import Usuario from "../../../types/Usuario.ts";
+import UsuarioService from "../../../services/UsuarioService.ts";
 
 interface Row {
   [key: string]: any;
@@ -29,43 +29,91 @@ interface Column {
 export const ListaPedidos = () => {
   const { getAccessTokenSilently } = useAuth0();
   const url = import.meta.env.VITE_API_URL;
-  const dispatch = useAppDispatch();
+  const dispatchPedido = useAppDispatch();
   const pedidoService = new PedidoService();
   const [filteredData, setFilterData] = useState<Row[]>([]);
   const [pedidoToEdit, setPedidoToEdit] = useState<Pedido | null>(null);
   const { sucursalId } = useParams();
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const { user, isLoading, isAuthenticated } = useAuth0();
+  const [usuario, setUsuario] = useState<Usuario>();
+  const usuarioService = new UsuarioService();
+  const [usuarioIsLoading, setUsuarioIsLoading] = useState<boolean>(true);
+  const [rolUsuario, setRolUsuario] = useState<string | undefined>();
 
   const globalArticuloManufacturado = useAppSelector(
     (state) => state.articuloManufacturado.data
   );
 
+  const fetchUsuario = async () => {
+    try {
+      const usuario = await usuarioService.getByEmail(url + "usuarioCliente/role/" + user?.email, {
+        headers: {
+            Authorization: `Bearer ${await getAccessTokenSilently({})}`
+        }
+    });
+      if (usuario) {
+        setUsuario(usuario);
+        setRolUsuario(usuario.rol);
+      } else {
+        // Manejar el caso en que usuario sea undefined
+      }
+    } catch (error) {
+      console.error("Error al obtener el usuario:", error);
+    } finally {
+      setUsuarioIsLoading(false);
+    }
+  };
+
   const fetchPedidos = useCallback(async () => {
     try {
-
-      if (sucursalId) {
-        const sucursalIdNumber = parseInt(sucursalId);
-        const pedidos = await pedidoService.pedidosSucursal(url, sucursalIdNumber, await getAccessTokenSilently({}));
-
-        dispatch(setPedido(pedidos));
-        setFilterData(pedidos);
+      if (rolUsuario) { // Verificar si se ha obtenido el rol del usuario
+        const pedidos = (await pedidoService.getPedidosFiltrados(url + 'pedido', rolUsuario, await getAccessTokenSilently({}))).filter((v) => !v.eliminado);
+  
+        let pedidosFiltrados = pedidos;
+  
+        if (sucursalId) {
+          const sucursalIdNumber = parseInt(sucursalId);
+          pedidosFiltrados = pedidos.filter(pedido =>
+            pedido.sucursal &&
+            pedido.sucursal.id === sucursalIdNumber
+          );
+        }
+  
+        // Actualizar el estado con los pedidos obtenidos o filtrados
+        dispatchPedido(setPedido(pedidosFiltrados));
+        setFilterData(pedidosFiltrados);
       }
     } catch (error) {
       console.error("Error al obtener los pedidos:", error);
     }
-  }, [dispatch, pedidoService, url, sucursalId]);
+  }, [dispatchPedido, pedidoService, url, sucursalId, getAccessTokenSilently, rolUsuario]);
+  
 
   useEffect(() => {
-    fetchPedidos();
-    onSearch('');
-  }, []);
+    if (user) {
+      fetchUsuario();
+    }
+  }, [user]);
 
-  const handleEstadoChange = (event: SelectChangeEvent<string>, rowData: Row) => {
-    const updatedPedidos = filteredData.map((pedido) =>
-      pedido.id === rowData.id ? { ...pedido, estado: event.target.value as Estado } : pedido
-    );
-    setFilterData(updatedPedidos);
-  };
+  useEffect(() => {
+    if (usuario) {
+      fetchPedidos();
+    }
+  }, [usuario, fetchPedidos]);
+
+  if (isAuthenticated) {
+    if (isLoading || usuarioIsLoading) {
+      return (
+        <div
+          style={{ height: "calc(100vh - 88px)" }}
+          className="d-flex flex-column justify-content-center align-items-center"
+        >
+          <div className="spinner-border" role="status"></div>
+        </div>
+      );
+    }
+  }
 
   const handleOpenEditModal = (rowData: Row) => {
     setPedidoToEdit({
@@ -91,7 +139,7 @@ export const ListaPedidos = () => {
 
   const handleSavePedido = async (pedido: Pedido) => {
     try {
-      await pedidoService.cambiarEstado(url + 'pedido', pedido.id.toString(), pedido.estado);
+      await pedidoService.cambiarEstado(url + 'pedido', pedido.id.toString(), pedido.estado, await getAccessTokenSilently({}) );
       setEditModalOpen(false);
       fetchPedidos();
     } catch (error) {
@@ -107,18 +155,7 @@ export const ListaPedidos = () => {
     { id: "horaEstimadaFinalizacion", label: "Hora Estimada Finalizacion", renderCell: (rowData) => <>{rowData.horaEstimadaFinalizacion}</> },
     { id: "total", label: "Total", renderCell: (rowData) => <>{rowData.total}</> },
     { id: "totalCosto", label: "Total Costo", renderCell: (rowData) => <>{rowData.totalCosto}</> },
-    { id: "estado", label: "Estado", renderCell: (rowData) => (
-      <Select
-        value={rowData.estado}
-        onChange={(event) => handleEstadoChange(event, rowData)}
-      >
-        {Object.values(Estado).map((estado) => (
-          <MenuItem key={estado} value={estado}>
-            {estado}
-          </MenuItem>
-        ))}
-      </Select>
-    ) },
+    { id: "estado", label: "Estado", renderCell: (rowData) => <> {rowData.estado}</> },
     { id: "tipoEnvio", label: "Tipo Envio", renderCell: (rowData) => <>{rowData.tipoEnvio}</> },
     { id: "formaPago", label: "Forma Pago", renderCell: (rowData) => <>{rowData.formaPago}</> },
     { id: "fechaPedido", label: "Fecha Pedido", renderCell: (rowData) => <>{rowData.fechaPedido}</> },
@@ -152,6 +189,7 @@ export const ListaPedidos = () => {
       </>
     );
   }
+  
 
   return (
     <React.Fragment>
@@ -198,7 +236,7 @@ export const ListaPedidos = () => {
                   <SearchBar onSearch={onSearch} />
                 </Box>
 
-                <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenEditModal} handleOpenEditModal={handleOpenEditModal} />
+                <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenEditModal} handleOpenEditModal={handleOpenEditModal} isListaPedidos={true} />
 
               </Container>
             </Box>

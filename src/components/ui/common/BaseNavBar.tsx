@@ -71,7 +71,7 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
     }
   return (
     <Box sx={{ marginBottom: 1 }}>
-      <AppBar position="static" sx={{ bgcolor: "#9c27b0", height: 80, marginBottom: 1 }}>
+      <AppBar position="static" sx={{ bgcolor: "#9c27b0", height: 80, marginBottom: 1, display: 'flex', justifyContent: 'center' }}>
         <Toolbar>
           <Typography
             variant="h6"
