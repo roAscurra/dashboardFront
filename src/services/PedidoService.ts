@@ -106,7 +106,7 @@ export default class PedidoService extends BackendClient<Pedido> {
     }
 
     async crearFactura(url: string, pedidoId: string, token: string): Promise<any> {
-      const path = `${url}crear/${pedidoId}`;
+      const path = `${url}factura/crear/${pedidoId}`;
       const options: RequestInit = {
         method: "POST",
         headers: {
