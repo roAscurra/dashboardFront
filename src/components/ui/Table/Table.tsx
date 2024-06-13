@@ -70,13 +70,25 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
     }
   };
 
-  const crearFactura = async (pedidoId: string) => {
+  const crearFactura = async (pedidoId: string, clienteEmail: string) => {
     try {
       await pedidoService.crearFactura(url, pedidoId, await getAccessTokenSilently({}));
-      setFacturaCreada(true);
       console.log(facturaCreada)
+      setFacturaCreada(true);
+      enviarFactura(pedidoId, clienteEmail);
     } catch (error) {
       console.error('Error al crear la factura:', error);
+    }
+  };
+
+
+  const enviarFactura = async (pedidoId: string, userEmail: string) => {
+    console.log(userEmail)
+    try {
+      await pedidoService.enviarFactura(url, pedidoId, userEmail, await getAccessTokenSilently({}));
+      console.log('Factura enviada por correo electrónico');
+    } catch (error) {
+      console.error('Error al enviar la factura:', error);
     }
   };
 
@@ -121,25 +133,25 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
                   </td>
                 ))}
                 <td>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
-                    <EditIcon />
-                  </IconButton>
-                  {isListaPedidos && rolUsuario && (rolUsuario === 'ADMIN' || rolUsuario === 'CAJERO') && row.estado === Estado.FACTURADO && !row.factura && (
-                  <Button
-                  className="btn btn-primary"
-                  onClick={() => crearFactura(row.id)}
-                  style={{ backgroundColor: "#9c27b0", borderColor: "#9c27b0", color: "#fff" }}
-                >
-                  Generar Factura
-                </Button>
-                )}
-                  {!isListaPedidos && (
-                    <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
-                      <DeleteIcon />
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
+                      <EditIcon />
                     </IconButton>
-                  )}
-                </Box>
+                    {isListaPedidos && rolUsuario && (rolUsuario === 'ADMIN' || rolUsuario === 'CAJERO') && row.estado === Estado.FACTURADO && !row.factura && (
+                      <Button
+                        className="btn btn-primary"
+                        onClick={() => crearFactura(row.id, row.cliente.email)}
+                        style={{ backgroundColor: "#9c27b0", borderColor: "#9c27b0", color: "#fff" }}
+                      >
+                        Generar Factura
+                      </Button>
+                    )}
+                    {!isListaPedidos && (
+                      <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
+                  </Box>
                 </td>
               </tr>
             ))}
