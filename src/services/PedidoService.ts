@@ -104,4 +104,17 @@ export default class PedidoService extends BackendClient<Pedido> {
         };
         return (this.request(path, options) as unknown) as any[][];
     }
+
+    async crearFactura(url: string, pedidoId: string, token: string): Promise<any> {
+      const path = `${url}crear/${pedidoId}`;
+      const options: RequestInit = {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      return this.request(path, options);
+    }
 }
