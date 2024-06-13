@@ -45,6 +45,7 @@ export const ListaPedidos = () => {
   const [orderDate, setOrderDate] = useState("");
   const [cliente, setCliente] = useState<string | undefined>();
   const [originalData, setOriginalData] = useState<Row[]>([]);
+
   const fetchUsuario = async () => {
     try {
       const usuario = await usuarioService.getByEmail(url + "usuarioCliente/role/" + user?.email, {
@@ -102,7 +103,43 @@ export const ListaPedidos = () => {
       fetchPedidos();
       onSearch("");
     }
-  }, [usuario, fetchPedidos]);
+  }, [usuario]);
+
+  const onSearch = (query: string) => {
+    console.log(query)
+    // Verificamos si el campo de búsqueda está vacío o no
+    const isQueryEmpty = query.trim() === "";
+    // Si el campo de búsqueda está vacío o es "false", mostramos todos los resultados sin filtrar
+    if (isQueryEmpty) {
+      setFilterData(originalData);
+      return;
+    }
+    console.log(originalData)
+    // Aplicamos la búsqueda sobre los datos filtrados
+    const filtered = originalData.filter(
+      (row) =>
+        // Verificamos si la propiedad es una cadena antes de llamar a toLowerCase()
+        (typeof row.horaEstimadaFinalizacion === "string" &&
+          row.horaEstimadaFinalizacion
+            .toLowerCase()
+            .includes(query.toLowerCase())) ||
+        (typeof row.total === "string" &&
+          row.total.toLowerCase().includes(query.toLowerCase())) ||
+        (typeof row.estado === "string" &&
+          row.estado.toLowerCase().includes(query.toLowerCase())) ||
+        (typeof row.tipoEnvio === "string" &&
+          row.tipoEnvio.toLowerCase().includes(query.toLowerCase())) ||
+        (typeof row.formaPago === "string" &&
+          row.formaPago.toLowerCase().includes(query.toLowerCase())) ||
+        (typeof row.fechaPedido === "string" &&
+          row.fechaPedido.toLowerCase().includes(query.toLowerCase())) || 
+        (typeof row.cliente?.nombre === "string" &&
+          row.cliente?.nombre.toLowerCase().includes(query.toLowerCase())) 
+    );
+
+    // Actualizamos los datos filtrados con los resultados de la búsqueda
+    setFilterData(filtered);
+  };
 
   if (isAuthenticated) {
     if (isLoading || usuarioIsLoading) {
@@ -165,40 +202,6 @@ export const ListaPedidos = () => {
     }
   };
 
-  const onSearch = (query: string) => {
-    // Verificamos si el campo de búsqueda está vacío o no
-    const isQueryEmpty = query.trim() === "";
-    // Si el campo de búsqueda está vacío o es "false", mostramos todos los resultados sin filtrar
-    if (isQueryEmpty) {
-      setFilterData(originalData);
-      return;
-    }
-    // Aplicamos la búsqueda sobre los datos filtrados
-    const filtered = originalData.filter(
-      (row) =>
-        // Verificamos si la propiedad es una cadena antes de llamar a toLowerCase()
-        (typeof row.horaEstimadaFinalizacion === "string" &&
-          row.horaEstimadaFinalizacion
-            .toLowerCase()
-            .includes(query.toLowerCase())) ||
-        (typeof row.total === "string" &&
-          row.total.toLowerCase().includes(query.toLowerCase())) ||
-        (typeof row.estado === "string" &&
-          row.estado.toLowerCase().includes(query.toLowerCase())) ||
-        (typeof row.tipoEnvio === "string" &&
-          row.tipoEnvio.toLowerCase().includes(query.toLowerCase())) ||
-        (typeof row.formaPago === "string" &&
-          row.formaPago.toLowerCase().includes(query.toLowerCase())) ||
-        (typeof row.fechaPedido === "string" &&
-          row.fechaPedido.toLowerCase().includes(query.toLowerCase())) || 
-        (typeof row.cliente === "string" &&
-          row.cliente.toLowerCase().includes(query.toLowerCase())) 
-    );
-
-    // Actualizamos los datos filtrados con los resultados de la búsqueda
-    setFilterData(filtered);
-  };
-
 
   const columns: Column[] = [
     { id: "horaEstimadaFinalizacion", label: "Hora Estimada Finalizacion", renderCell: (rowData) => <>{rowData.horaEstimadaFinalizacion}</> },
@@ -221,17 +224,17 @@ export const ListaPedidos = () => {
     },
   ];
 
-  if (filteredData.length === 0) {
-    return (
-      <>
-        <div style={{ height: "calc(100vh - 56px)" }} className={"d-flex flex-column justify-content-center align-items-center w-100"}>
-          <div className="spinner-border" role="status">
-          </div>
-          <div>Cargando los pedidos</div>
-        </div>
-      </>
-    );
-  }
+  // if (filteredData.length === 0 && originalData.length === 0) {
+  //   return (
+  //     <>
+  //       <div style={{ height: "calc(100vh - 56px)" }} className={"d-flex flex-column justify-content-center align-items-center w-100"}>
+  //         <div className="spinner-border" role="status">
+  //         </div>
+  //         <div>Cargando los pedidos</div>
+  //       </div>
+  //     </>
+  //   );
+  // }
   
 
   return (
