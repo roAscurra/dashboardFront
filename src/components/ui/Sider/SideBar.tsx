@@ -66,36 +66,18 @@ const Sidebar: React.FC = () => {
       >
         <CSidebarNav style={{ display: "flex", flexDirection: "column" }}>
           <CNavTitle style={{ marginBottom: "10px" }}>Dashboard</CNavTitle>
-          {/* <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              backgroundColor: "#ffeeba",
-              color: "#856404",
-              padding: "5px",
-              fontWeight: "bold",
-              borderRadius: "5px",
-            }}
-          >
-            <CNavItem>
-              <Link
-                to={`/usuario/${sucursalId}`}
-                className="nav-link"
-                style={{ color: "#856404" }}
-              >
-                <CIcon customClassName="nav-icon" icon={icon.cilPeople} />
-                Usuarios
-              </Link>
-            </CNavItem>
-          </div> */}
-            <CNavItem>
-              <Link to="/" className="nav-link">
-                <CIcon customClassName="nav-icon" icon={icon.cilHamburgerMenu} />
-                Inicio
-              </Link>
-            </CNavItem>
           {
             ['ADMIN'].includes(usuario?.rol || '')
+            ? <CNavItem>
+                <Link to="/" className="nav-link">
+                  <CIcon customClassName="nav-icon" icon={icon.cilHamburgerMenu} />
+                  Inicio
+                </Link>
+              </CNavItem>
+            : ''
+          }
+          {
+            ['ADMIN', 'COCINERO'].includes(usuario?.rol || '')
             ? <CNavItem hidden={hasRole(['ADMIN'])}>
                 <Link to={`/productos/lista/${sucursalId}`} className="nav-link">
                   <CIcon customClassName="nav-icon" icon={icon.cilFastfood} />
@@ -125,7 +107,7 @@ const Sidebar: React.FC = () => {
             : ''
           }
           {
-            ['ADMIN'].includes(usuario?.rol || '')
+            ['ADMIN', 'COCINERO'].includes(usuario?.rol || '')
             ? <CNavItem>
                   <Link
                     to={`/articuloInsumo/Lista/${sucursalId}`} className="nav-link">
@@ -168,7 +150,7 @@ const Sidebar: React.FC = () => {
           {
             ['ADMIN'].includes(usuario?.rol || '')
                 ? <CNavItem>
-                  <Link to={`/reportes`} className="nav-link">
+                  <Link to={`/reportes/${sucursalId}`} className="nav-link">
                     <CIcon customClassName="nav-icon" icon={icon.cilChart} />
                     Reportes
                   </Link>
