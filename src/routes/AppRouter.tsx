@@ -10,7 +10,7 @@ import {ListaEmpresa} from "../components/screens/Empresa/Empresa.tsx";
 import UnidadMedida from '../components/screens/UnidadMedida/UnidadMedida.tsx';
 import {AuthenticationGuard} from "../auth0/AuthenticationGuard.tsx";
 import { ListaPedidos } from '../components/screens/Pedidos/ListaPedidos.tsx';
-import {Reporte} from "../components/screens/Reporte.tsx";
+import {Reporte} from "../components/screens/Reporte/Reporte.tsx";
 
 
 const AppRouter = () => {
@@ -26,7 +26,7 @@ const AppRouter = () => {
       <Route path="/promociones/lista/:sucursalId" element={<AuthenticationGuard component={ListaPromocion} />} />
       <Route path="/sucursal/:empresaId" element={<AuthenticationGuard component={ListaSucursal} />} />
       <Route path="/pedidos/:sucursalId" element={<AuthenticationGuard component={ListaPedidos} />}/>
-      <Route path="/reportes" element={<AuthenticationGuard component={Reporte} />}/>
+      <Route path="/reportes/:sucursalId" element={<AuthenticationGuard component={Reporte} />}/>
     </Routes>
   );
 };

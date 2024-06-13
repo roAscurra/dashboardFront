@@ -118,7 +118,8 @@ export const ListaProductos = () => {
       tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
       preparacion: rowData.preparacion,
       articuloManufacturadoDetalles: rowData.articuloManufacturado,
-      categoria: rowData.categoria
+      categoria: rowData.categoria,
+      sucursal: rowData.sucursal
     });
     setDeleteModalOpen(true);
   };
@@ -165,7 +166,8 @@ export const ListaProductos = () => {
       tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
       preparacion: rowData.preparacion,
       articuloManufacturadoDetalles: rowData.articuloManufacturadoDetalles,
-      categoria: rowData.categoria
+      categoria: rowData.categoria,
+      sucursal: rowData.sucursal
     });
     dispatch(toggleModal({ modalName: 'modal' }));
   };

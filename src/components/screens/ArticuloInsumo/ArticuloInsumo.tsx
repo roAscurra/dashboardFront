@@ -105,7 +105,8 @@ export const ListaArticulosInsumo = () => {
       stockMinimo: rowData.stockMinimo,
       esParaElaborar: rowData.esParaElaborar,
       unidadMedida: rowData.unidadMedida,
-      categoria: rowData.categoria
+      categoria: rowData.categoria,
+      sucursal: rowData.sucursal
     });
     setDeleteModalOpen(true);
   };
@@ -163,7 +164,8 @@ export const ListaArticulosInsumo = () => {
       stockMinimo: rowData.stockMinimo,
       esParaElaborar: rowData.esParaElaborar,
       unidadMedida: rowData.unidadMedida,
-      categoria: rowData.categoria
+      categoria: rowData.categoria,
+      sucursal: rowData.sucursal
     });
     dispatch(toggleModal({ modalName: "modal" }));
   };

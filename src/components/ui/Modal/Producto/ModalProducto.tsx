@@ -29,16 +29,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 }) => {
   const productoService = new ArticuloManufacturadoService();
   const unidadService = new UnidadMedidaService();
-  // const insumoService = new ArticuloInsumoService();
   const insumoService = new ArticuloInsumoShortService();
   const { sucursalId } = useParams();
   const categoriaService = new CategoriaService();
-  // const categoriaService = new CategoriaShorService();
-  // const articuloDetalleService = new ArticuloManufacturadoDetalleService();
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
   const [insumos, setInsumos] = useState<ArticuloInsumoShortDto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  // const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
   const [showInsumoModal, setShowInsumoModal] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [articuloManufacturadoDetalles, setArticuloManufacturadoDetalles] =
@@ -96,6 +92,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   denominacion: "",
                   esInsumo: false,
                 },
+            sucursal: detalle.articuloInsumo.sucursal.id,
           },
         }))
       : [],
@@ -109,6 +106,22 @@ const ModalProducto: React.FC<ModalProductProps> = ({
           subCategorias: [],
           sucursales: [],
         },
+    sucursal: productToEdit?.sucursal
+    ? { ...productToEdit.sucursal }
+    : {
+        id: 0,
+        eliminado: false,
+        nombre: "",
+        domicilio: {
+          id: 0,
+          eliminado: false,
+          calle: "",
+          numero: 0,
+          cp: 0,
+          piso: 0,
+          nroDpto: 0
+        },
+      },
   };
 
   const modal = useAppSelector((state: any) => state.modal.modal);
@@ -126,26 +139,15 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 
   const fetchArticuloInsumo = async () => {
     try {
-      const articulosInsumos = await insumoService.getAll(
-        `${url}articuloInsumo`, await getAccessTokenSilently({})
-      );
-
       // Asegúrate de que sucursalId esté definido y conviértelo a un número
       if (sucursalId) {
         const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
 
         // Filtrar los insumos por sucursal y categoría
-        const insumosFiltrados = articulosInsumos.filter(
-          (insumo) =>
-            insumo.categoria && // Verificar si categoria está definido
-            Array.isArray(insumo.categoria.sucursales) && // Verificar si sucursales es un array en categoria
-            insumo.categoria.sucursales.some(
-              (sucursal) => sucursal.id === sucursalIdNumber
-            )
+        const articulosInsumos = await insumoService.insumos(
+          `${url}`, sucursalIdNumber, await getAccessTokenSilently({})
         );
-
-        setInsumos(insumosFiltrados);
-      } else {
+  
         setInsumos(articulosInsumos);
       }
     } catch (error) {
@@ -247,7 +249,10 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                 productoId = productToEdit.id.toString();
               } else {
                 values.articuloManufacturadoDetalles = detalles;
-
+                if(sucursalId){
+                  const sucursalIdNumber = parseInt(sucursalId);
+                  values.sucursal.id = sucursalIdNumber;
+                }
                 const response = await productoService.post(
                   url + "articuloManufacturado",
                   values, await getAccessTokenSilently({})
