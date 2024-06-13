@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell, TablePagination, IconButton, Box, Button } from '@mui/material';
+import { TablePagination, IconButton, Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -101,57 +101,66 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
 
   return (
     <>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {columns.map((column) => (
-              <TableCell key={column.id}>{column.label}</TableCell>
-            ))}
-            <TableCell>Acciones</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-            <TableRow key={index}>
+      <div className="table-responsive">
+        <table className="table responsive">
+          <thead>
+            <tr>
               {columns.map((column) => (
-                <TableCell key={column.id}>
-                  {column.renderCell ? column.renderCell(row) : row[column.id]}
-                </TableCell>
+                <th key={column.id}>{column.label}</th>
               ))}
-              <TableCell>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
-                    <EditIcon />
-                  </IconButton>
-                  {isListaPedidos && rolUsuario && (rolUsuario === 'ADMIN' || rolUsuario === 'CAJERO') && row.estado === Estado.FACTURADO && !row.factura && (
-                  <Button
-                  className="btn btn-primary"
-                  onClick={() => crearFactura(row.id)}
-                  style={{ backgroundColor: "#9c27b0", borderColor: "#9c27b0", color: "#fff" }}
-                >
-                  Generar Factura
-                </Button>
-                )}
-                  {!isListaPedidos && (
-                    <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
-                      <DeleteIcon />
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+              <tr key={index}>
+                {columns.map((column) => (
+                  <td key={column.id}>
+                    {column.renderCell ? column.renderCell(row) : row[column.id]}
+                  </td>
+                ))}
+                <td>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
+                      <EditIcon />
                     </IconButton>
-                  )}
-                </Box>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+                    {isListaPedidos && rolUsuario && (rolUsuario === 'ADMIN' || rolUsuario === 'CAJERO') && (
+                      <>
+                        {row.estado === Estado.FACTURADO && (
+                          <IconButton
+                            aria-label="descargar"
+                            onClick={() =>
+                              window.open(`http://localhost:8080/pedido/downloadPdf/${row.id}`, '_blank')
+                              
+                            }
+                          >
+                            <Download />
+                          </IconButton>
+                        )}
+                      </>
+                    )}
+                    {!isListaPedidos && (
+                      <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
+                  </Box>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </ table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </div>
+
     </>
   );
 };

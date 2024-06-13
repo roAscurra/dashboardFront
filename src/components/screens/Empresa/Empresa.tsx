@@ -39,7 +39,7 @@ export const ListaEmpresa = () => {
   const [filterData, setFilterData] = useState<Row[]>([]);
   const [empresaToEdit, setEmpresaToEdit] = useState<Empresa | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const { user, isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { user, isLoading, isAuthenticated, getAccessTokenSilently, logout } = useAuth0();
   const [ usuario, setUsuario ] = useState<Usuario>();
   const [ usuarioIsLoading, setUsuarioIsLoading ] = useState<boolean>(true);
 
@@ -138,6 +138,14 @@ export const ListaEmpresa = () => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
+  const handleLogout = () => {
+    logout({
+      logoutParams: {
+        // returnTo: "https://dashboard-front-five.vercel.app/"
+        returnTo: "http://localhost:5173/"
+      }
+    })
+  }
   if(isAuthenticated) {
       if(isLoading || usuarioIsLoading) {
           return <div style={{height: "calc(100vh - 88px)"}} className="d-flex flex-column justify-content-center align-items-center">
@@ -153,13 +161,18 @@ if (!user) {
       <h1>Necesitas logearte para continuar</h1>
       <p>Prueba iniciar session!</p>
   </div>;
-  } else if(!usuario) {
-      return <div style={{height: "calc(100vh - 88px)"}} className={"d-flex flex-column justify-content-center align-items-center"}>
+} else if(!usuario) {
+    return (
+      <>
+        <div style={{height: "calc(100vh - 88px)"}} className={"d-flex flex-column justify-content-center align-items-center"}>
           <h1>No tienes permisos para usar este dashboard</h1>
           <p>Prueba pedir permisos!</p>
-      </div>;
+          <button className="btn btn-success text-light" onClick={handleLogout}>Cerrar sesión</button>
+        </div>
+      </>
+    );
   }
-
+  
     switch (usuario.rol) {
         case 'COCINERO':
             navigate(`pedidos/${usuario?.empleado?.sucursal?.id}`);
