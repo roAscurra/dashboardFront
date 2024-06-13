@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, TablePagination, IconButton, Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Download } from '@mui/icons-material';
+import { useAuth0 } from '@auth0/auth0-react';
+import Usuario from '../../../types/Usuario';
+import UsuarioService from '../../../services/UsuarioService';
+import PedidoService from '../../../services/PedidoService';
+import { Estado } from '../../../types/enums/Estado';
 
 interface Row {
   [key: string]: any;
@@ -11,7 +16,7 @@ interface Row {
 interface Column {
   id: keyof Row;
   label: string;
-  renderCell: (rowData: Row) => JSX.Element; 
+  renderCell: (rowData: Row) => JSX.Element;
 }
 
 interface Props {
@@ -25,6 +30,15 @@ interface Props {
 const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, handleOpenDeleteModal, isListaPedidos }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const { user, isLoading, isAuthenticated } = useAuth0();
+  const [usuario, setUsuario] = useState<Usuario>();
+  const usuarioService = new UsuarioService();
+  const [usuarioIsLoading, setUsuarioIsLoading] = useState<boolean>(true);
+  const [rolUsuario, setRolUsuario] = useState<string | undefined>();
+  const url = import.meta.env.VITE_API_URL;
+  const { getAccessTokenSilently } = useAuth0();
+  const [facturaCreada, setFacturaCreada] = useState(false);
+  const pedidoService = new PedidoService();
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -34,6 +48,70 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const fetchUsuario = async () => {
+    try {
+      const usuario = await usuarioService.getByEmail(url + "usuarioCliente/role/" + user?.email, {
+        headers: {
+          Authorization: `Bearer ${await getAccessTokenSilently({})}`
+        }
+      });
+      if (usuario) {
+        setUsuario(usuario);
+        setRolUsuario(usuario.rol);
+
+      } else {
+        // Manejar el caso en que usuario sea undefined
+      }
+    } catch (error) {
+      console.error("Error al obtener el usuario:", error);
+    } finally {
+      setUsuarioIsLoading(false);
+    }
+  };
+
+  const crearFactura = async (pedidoId: string) => {
+    try {
+      await pedidoService.crearFactura(url, pedidoId, await getAccessTokenSilently({}));
+      setFacturaCreada(true);
+    } catch (error) {
+      console.error('Error al crear la factura:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isListaPedidos && rolUsuario && (rolUsuario === 'ADMIN' || rolUsuario === 'CAJERO')) {
+      data.forEach(async (row) => {
+        if (row.estado === Estado.FACTURADO && !facturaCreada) {
+          if (row.id) { // Verifica que row.id esté definido y sea válido
+            await crearFactura(row.id); // Llama a la función crearFactura
+          } else {
+            console.error('ID del pedido no válido:', row.id);
+          }
+        }
+      });
+    }
+  }, [data, isListaPedidos, rolUsuario, facturaCreada, pedidoService, url, getAccessTokenSilently]);
+
+  useEffect(() => {
+    if (user) {
+      fetchUsuario();
+      console.log(usuario);
+    }
+  }, [user]);
+
+  if (isAuthenticated) {
+    if (isLoading || usuarioIsLoading) {
+      return (
+        <div
+          style={{ height: "calc(100vh - 88px)" }}
+          className="d-flex flex-column justify-content-center align-items-center"
+        >
+          <div className="spinner-border" role="status"></div>
+        </div>
+      );
+    }
+  }
 
   return (
     <>
@@ -59,13 +137,22 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
                   <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
                     <EditIcon />
                   </IconButton>
-                  {isListaPedidos ? (
-                    <IconButton aria-label="descargar" 
-                    // onClick={() => window.open(`http://localhost:8080/pedido/downloadPdf/${row.id}`, "_blank")}
-                    >
-                      <Download />
-                    </IconButton>
-                  ) : (
+                  {isListaPedidos && rolUsuario && (rolUsuario === 'ADMIN' || rolUsuario === 'CAJERO') && (
+                    <>
+                      {row.estado === Estado.FACTURADO && (
+                        <IconButton
+                          aria-label="descargar"
+                          onClick={() =>
+                            window.open(`http://localhost:8080/pedido/downloadPdf/${row.id}`, '_blank')
+                            
+                          }
+                        >
+                          <Download />
+                        </IconButton>
+                      )}
+                    </>
+                  )}
+                  {!isListaPedidos && (
                     <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
                       <DeleteIcon />
                     </IconButton>
