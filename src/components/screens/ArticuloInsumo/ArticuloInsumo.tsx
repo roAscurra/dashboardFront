@@ -295,6 +295,7 @@ export const ListaArticulosInsumo = () => {
                   columns={columns}
                   handleOpenEditModal={handleOpenEditModal}
                   handleOpenDeleteModal={handleOpenDeleteModal}
+                  isListaPedidos={false}
                 />
                 <ModalEliminarArticuloInsumo
                   show={deleteModalOpen}

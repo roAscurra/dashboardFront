@@ -189,6 +189,7 @@ export const ListaPedidos = () => {
       </>
     );
   }
+  
 
   return (
     <React.Fragment>
@@ -235,7 +236,7 @@ export const ListaPedidos = () => {
                   <SearchBar onSearch={onSearch} />
                 </Box>
 
-                <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenEditModal} handleOpenEditModal={handleOpenEditModal} />
+                <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenEditModal} handleOpenEditModal={handleOpenEditModal} isListaPedidos={true} />
 
               </Container>
             </Box>

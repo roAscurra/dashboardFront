@@ -52,8 +52,6 @@ const ModalPedido: React.FC<ModalPedidoProps> = ({ open, onClose, pedido, onSave
             availableStates = [Estado.PREPARACION, Estado.EN_DELIVERY, Estado.FACTURADO];
         } else if (role === "COCINERO") {
             availableStates = [Estado.TERMINADO];
-        } else if (role === "DELIVERY") {
-            availableStates = [Estado.ENTREGADO];
         } else {
             availableStates = Object.values(Estado);
         }

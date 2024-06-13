@@ -274,7 +274,7 @@ export const ListaProductos = () => {
                 <SearchBar onSearch={onSearch} />
               </Box>
               {/* Componente de tabla para mostrar los artículos manufacturados */}
-              <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} />
+              <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} isListaPedidos={false} />
 
               {/* Llamando a ModalCupon con la prop fetchCupones y cuponToEdit */}
               <ModalProducto getProducts={fetchProductos} productToEdit={productToEdit !== null ? productToEdit : undefined} />
