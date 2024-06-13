@@ -29,7 +29,7 @@ interface Column {
 export const ListaPedidos = () => {
   const { getAccessTokenSilently } = useAuth0();
   const url = import.meta.env.VITE_API_URL;
-  const dispatchPedido = useAppDispatch();
+  const dispatch = useAppDispatch();
   const pedidoService = new PedidoService();
   const [filteredData, setFilterData] = useState<Row[]>([]);
   const [pedidoToEdit, setPedidoToEdit] = useState<Pedido | null>(null);
@@ -81,14 +81,14 @@ export const ListaPedidos = () => {
         }
   
         // Actualizar el estado con los pedidos obtenidos o filtrados
-        dispatchPedido(setPedido(pedidosFiltrados));
+        dispatch(setPedido(pedidosFiltrados));
         setFilterData(pedidosFiltrados);
         setOriginalData(pedidosFiltrados)
       }
     } catch (error) {
       console.error("Error al obtener los pedidos:", error);
     }
-  }, [dispatchPedido, pedidoService, url, sucursalId, getAccessTokenSilently, rolUsuario]);
+  }, [dispatch, pedidoService, url, sucursalId, getAccessTokenSilently, rolUsuario]);
   
 
   useEffect(() => {
