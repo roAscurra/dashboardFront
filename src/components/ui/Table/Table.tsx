@@ -7,6 +7,7 @@ import Usuario from '../../../types/Usuario';
 import UsuarioService from '../../../services/UsuarioService';
 import PedidoService from '../../../services/PedidoService';
 import { Estado } from '../../../types/enums/Estado';
+import { Button } from 'react-bootstrap';
 
 interface Row {
   [key: string]: any;
@@ -120,31 +121,25 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
                   </td>
                 ))}
                 <td>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
-                      <EditIcon />
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
+                    <EditIcon />
+                  </IconButton>
+                  {isListaPedidos && rolUsuario && (rolUsuario === 'ADMIN' || rolUsuario === 'CAJERO') && row.estado === Estado.FACTURADO && !row.factura && (
+                  <Button
+                  className="btn btn-primary"
+                  onClick={() => crearFactura(row.id)}
+                  style={{ backgroundColor: "#9c27b0", borderColor: "#9c27b0", color: "#fff" }}
+                >
+                  Generar Factura
+                </Button>
+                )}
+                  {!isListaPedidos && (
+                    <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
+                      <DeleteIcon />
                     </IconButton>
-                    {isListaPedidos && rolUsuario && (rolUsuario === 'ADMIN' || rolUsuario === 'CAJERO') && (
-                      <>
-                        {row.estado === Estado.FACTURADO && (
-                          <IconButton
-                            aria-label="descargar"
-                            onClick={() =>
-                              window.open(`http://localhost:8080/pedido/downloadPdf/${row.id}`, '_blank')
-                              
-                            }
-                          >
-                            <Download />
-                          </IconButton>
-                        )}
-                      </>
-                    )}
-                    {!isListaPedidos && (
-                      <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    )}
-                  </Box>
+                  )}
+                </Box>
                 </td>
               </tr>
             ))}

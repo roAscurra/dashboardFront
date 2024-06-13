@@ -130,6 +130,7 @@ export const ListaPedidos = () => {
       fechaPedido: rowData.fechaPedido,
       detallePedidos: rowData.detallePedidos,
       sucursal: rowData.sucursal,
+      factura: rowData.factura,
       cliente: rowData.cliente
     });
     setEditModalOpen(true);
