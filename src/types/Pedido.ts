@@ -1,5 +1,6 @@
 import DataModel from "./DataModel";
 import DetallePedido from "./DetallePedido";
+import Factura from "./Factura";
 import SucursalShorDto from "./dto/SucursalShortDto";
 import { Estado } from "./enums/Estado";
 import { FormaPago } from "./enums/FormaPago";
@@ -17,4 +18,5 @@ export default interface Pedido extends DataModel<Pedido> {
   fechaPedido: Date;
   detallePedidos: DetallePedido[];
   sucursal: SucursalShorDto;
+  factura: Factura
 }

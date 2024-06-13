@@ -127,7 +127,8 @@ export const ListaPedidos = () => {
       formaPago: rowData.formaPago,
       fechaPedido: rowData.fechaPedido,
       detallePedidos: rowData.detallePedidos,
-      sucursal: rowData.sucursal
+      sucursal: rowData.sucursal,
+      factura: rowData.factura
     });
     setEditModalOpen(true);
   };

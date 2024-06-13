@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableHead, TableBody, TableRow, TableCell, TablePagination, IconButton, Box } from '@mui/material';
+import { Table, TableHead, TableBody, TableRow, TableCell, TablePagination, IconButton, Box, Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { Download } from '@mui/icons-material';
 import { useAuth0 } from '@auth0/auth0-react';
 import Usuario from '../../../types/Usuario';
 import UsuarioService from '../../../services/UsuarioService';
@@ -74,24 +73,11 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
     try {
       await pedidoService.crearFactura(url, pedidoId, await getAccessTokenSilently({}));
       setFacturaCreada(true);
+      console.log(facturaCreada)
     } catch (error) {
       console.error('Error al crear la factura:', error);
     }
   };
-
-  useEffect(() => {
-    if (isListaPedidos && rolUsuario && (rolUsuario === 'ADMIN' || rolUsuario === 'CAJERO')) {
-      data.forEach(async (row) => {
-        if (row.estado === Estado.FACTURADO && !facturaCreada) {
-          if (row.id) { // Verifica que row.id esté definido y sea válido
-            await crearFactura(row.id); // Llama a la función crearFactura
-          } else {
-            console.error('ID del pedido no válido:', row.id);
-          }
-        }
-      });
-    }
-  }, [data, isListaPedidos, rolUsuario, facturaCreada, pedidoService, url, getAccessTokenSilently]);
 
   useEffect(() => {
     if (user) {
@@ -137,21 +123,15 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
                   <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
                     <EditIcon />
                   </IconButton>
-                  {isListaPedidos && rolUsuario && (rolUsuario === 'ADMIN' || rolUsuario === 'CAJERO') && (
-                    <>
-                      {row.estado === Estado.FACTURADO && (
-                        <IconButton
-                          aria-label="descargar"
-                          onClick={() =>
-                            window.open(`http://localhost:8080/pedido/downloadPdf/${row.id}`, '_blank')
-                            
-                          }
-                        >
-                          <Download />
-                        </IconButton>
-                      )}
-                    </>
-                  )}
+                  {isListaPedidos && rolUsuario && (rolUsuario === 'ADMIN' || rolUsuario === 'CAJERO') && row.estado === Estado.FACTURADO && !row.factura && (
+                  <Button
+                  className="btn btn-primary"
+                  onClick={() => crearFactura(row.id)}
+                  style={{ backgroundColor: "#9c27b0", borderColor: "#9c27b0", color: "#fff" }}
+                >
+                  Generar Factura
+                </Button>
+                )}
                   {!isListaPedidos && (
                     <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
                       <DeleteIcon />
