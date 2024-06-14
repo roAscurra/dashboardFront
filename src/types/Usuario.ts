@@ -1,6 +1,6 @@
 import DataModel from "./DataModel";
 
-interface Usuario  extends DataModel<Usuario>{
+interface Usuario extends DataModel<Usuario> {
     id: number;
     username: string;
     email: string;
@@ -10,8 +10,8 @@ interface Usuario  extends DataModel<Usuario>{
         tipoEmpleado: string;
         sucursal: {
             id: number;
-        }
-    }
-  }
-  
-  export default Usuario
+        };
+    };
+}
+
+export default Usuario;

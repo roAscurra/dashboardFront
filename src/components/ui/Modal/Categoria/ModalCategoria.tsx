@@ -9,7 +9,6 @@ import { toggleModal } from "../../../../redux/slices/Modal";
 import { useParams } from "react-router-dom";
 import SucursalService from "../../../../services/SucursalService";
 import Sucursal from "../../../../types/Sucursal";
-import CategoriaShorService from "../../../../services/dtos/CategoriaShorService";
 import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalCategoriaProps {
@@ -26,7 +25,6 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
   categoryToEdit,
 }) => {
   const categoriaService = new CategoriaService();
-  const categoriaShortService = new CategoriaShorService();
   const url = import.meta.env.VITE_API_URL;
   const { getAccessTokenSilently } = useAuth0();
   const { sucursalId } = useParams();
@@ -115,14 +113,6 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
           onSubmit={async (values) => {
             try {
               if (categoryToEdit) {
-                // Realizar PUT para cada subcategoría de manera secuencial usando .map
-                values.subCategorias.map(async (subCategoria) => {
-                  await categoriaShortService.put(
-                    url + "categoria",
-                    subCategoria.id.toString(),
-                    subCategoria, await getAccessTokenSilently({})
-                  );
-                });
                 await categoriaService.put(
                   url + "categoria",
                   values.id.toString(),
@@ -131,22 +121,13 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
                 console.log("Categoría actualizada correctamente.", values);
               } else {
                 const sucursalesSeleccionadas = values.sucursales;
-                console.log(
-                  "Sucursales seleccionadas:",
-                  sucursalesSeleccionadas
-                );
-
                 // Ahora, en lugar de agregar una sola sucursal (como la de ID 1),
                 // añadimos todas las sucursales seleccionadas al array de sucursales en values
                 values.sucursales = sucursalesSeleccionadas;
 
-                console.log("Valores actualizados:", values);
-
                 await categoriaService.post(url + "categoria", values, await getAccessTokenSilently({}));
                 console.log("Categoría agregada correctamente.", values);
 
-                // const respuesta = await sucursalService.get(url + 'sucursal', '1');
-                // console.log("Respuesta: ", respuesta);
               }
               getCategories();
               handleClose();
