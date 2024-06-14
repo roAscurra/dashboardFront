@@ -34,7 +34,7 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
   >([]);
 
   useEffect(() => {
-    const updatedFilteredInsumos = insumos.filter((insumo) =>
+    const updatedFilteredInsumos = insumos?.filter((insumo) =>
       insumo.denominacion.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredInsumos(updatedFilteredInsumos);
@@ -73,7 +73,7 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
     }
   };
   
-  
+  console.log(detalles)
 
   const handleCantidadChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -96,6 +96,7 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
   const handleGuardarInsumo = () => {
     handleAddInsumo(detalles);
     handleClose();
+    setDetalles([])
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,7 +108,7 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const paginatedInsumos = filteredInsumos.slice(
+  const paginatedInsumos = filteredInsumos?.slice(
     indexOfFirstItem,
     indexOfLastItem
   );
@@ -181,7 +182,7 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
               </tr>
             </thead>
             <tbody>
-              {paginatedInsumos.map((insumo, index) => (
+              {paginatedInsumos?.map((insumo, index) => (
                 <tr key={index}>
                   <td>{insumo.denominacion}</td>
                   <td>{insumo.precioVenta}</td>
@@ -202,7 +203,7 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={filteredInsumos.length}
+            count={filteredInsumos?.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
