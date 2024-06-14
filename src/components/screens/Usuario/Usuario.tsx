@@ -136,7 +136,7 @@ export const ListaUsuarios = () => {
   return (
     <React.Fragment>
     <BaseNavBar title="" />
-    <CContainer fluid>
+    <CContainer fluid style={{backgroundColor: "#fff"}}>
       <CRow>
         {/* Sidebar */}
         <CCol xs="auto" className="sidebar">

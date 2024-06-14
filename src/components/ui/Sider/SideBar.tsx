@@ -90,7 +90,7 @@ const Sidebar: React.FC = () => {
             ['ADMIN'].includes(usuario?.rol || '')
             ? <CNavItem>
                 <Link to={`/categorias/${sucursalId}`} className="nav-link">
-                <CIcon customClassName="nav-icon" icon={icon.cilSitemap} />
+                <CIcon customClassName="nav-icon" icon={icon.cilLineSpacing} />
                   Categorías
                 </Link>
               </CNavItem>
@@ -141,7 +141,7 @@ const Sidebar: React.FC = () => {
             ['ADMIN', 'COCINERO', 'CAJERO'].includes(usuario?.rol || '')
               ? <CNavItem>
                   <Link to={`/pedidos/${sucursalId}`} className="nav-link">
-                    <CIcon customClassName="nav-icon" icon={icon.cilPeople} />
+                    <CIcon customClassName="nav-icon" icon={icon.cilApps} />
                     Pedidos
                   </Link>
                 </CNavItem>
