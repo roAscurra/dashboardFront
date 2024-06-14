@@ -88,6 +88,17 @@ export const ListaEmpresa = () => {
 
             setUsuario(usuario);
 
+            switch (usuario?.rol) {
+              case 'COCINERO':
+                  navigate(`pedidos/${usuario?.empleado?.sucursal?.id}`);
+                  break;
+              case 'CAJERO':
+                  navigate(`pedidos/${usuario?.empleado?.sucursal?.id}`);
+                  break;
+              case 'ADMIN':
+                  navigate(``);
+                  break;
+          }
         } catch (error) {
             console.error("Error al obtener el usuario:", error);
         } finally {
@@ -172,20 +183,6 @@ if (!user) {
       </>
     );
   }
-  
-    switch (usuario.rol) {
-        case 'COCINERO':
-            navigate(`pedidos/${usuario?.empleado?.sucursal?.id}`);
-            break;
-        case 'CAJERO':
-            navigate(`pedidos/${usuario?.empleado?.sucursal?.id}`);
-            break;
-        case 'ADMIN':
-            navigate(``);
-            break;
-    }
-
-
 
   return (
       <>

@@ -47,7 +47,7 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
     logout({
       logoutParams: {
         // returnTo: "https://dashboard-front-five.vercel.app/"
-        returnTo: "https://localhost:5173/"
+        returnTo: "http://localhost:5173/"
       }
     })
   }
