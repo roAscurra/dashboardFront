@@ -86,7 +86,7 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
     console.log(userEmail)
     try {
       await pedidoService.enviarFactura(url, pedidoId, userEmail, await getAccessTokenSilently({}));
-      console.log('Factura enviada por correo electrónico');
+      alert('Factura enviada por correo electrónico');
     } catch (error) {
       console.error('Error al enviar la factura:', error);
     }

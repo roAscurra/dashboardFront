@@ -262,7 +262,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
             }
           }}
         >
-          {({ values, setFieldValue }) => (
+          {({ values, setFieldValue, isSubmitting }) => (
             <Form autoComplete="off">
               <Row>
                 <Col>
@@ -466,9 +466,11 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     : articuloManufacturadoDetalles || []
                 }
               />
-              <Button type="submit" className="btn btn-primary mt-3">
-                {productToEdit ? "Guardar Cambios" : "Agregar Producto"}
-              </Button>
+              <div className="text-end">
+                <Button type="submit" className="btn btn-primary mt-3" disabled={isSubmitting}>
+                  {isSubmitting ? "Enviando..." : "Enviar"}
+                </Button>
+              </div>
             </Form>
           )}
         </Formik>
