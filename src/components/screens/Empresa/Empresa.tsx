@@ -181,7 +181,7 @@ if (!user) {
             navigate(`pedidos/${usuario?.empleado?.sucursal?.id}`);
             break;
         case 'ADMIN':
-            navigate(`inicio/${usuario?.empleado?.sucursal?.id}`);
+            navigate(``);
             break;
     }
 

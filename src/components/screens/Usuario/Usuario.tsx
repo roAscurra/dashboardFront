@@ -48,7 +48,7 @@ export const ListaUsuarios = () => {
   const fetchUsuarios = useCallback(async () => {
     try {
       const usuarios = (await usuarioService.getAll(url + 'usuarioCliente', await getAccessTokenSilently({})))
-          .filter((usuario) => usuario.empleado.sucursal.id === +(sucursalId || 0));
+          .filter((usuario) => usuario?.empleado?.sucursal?.id === +(sucursalId || 0));
       dispatch(setUsuario(usuarios));
       setFilterData(usuarios);
       setLoading(false);
