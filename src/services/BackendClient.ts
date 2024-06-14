@@ -137,4 +137,27 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
 
     return fetch(path, options);
   }
+  // Función para eliminar una imagen asociada a un artículo
+async deleteImage(url: string, id: string, token: string): Promise<Response> {
+  const path = `${url}/${id}`; // Ajustar la URL según tu API, por ejemplo: url + "/articuloInsumo/deleteImage/" + id
+  const options: RequestInit = {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json", // Ajusta según el tipo de contenido necesario por tu backend
+    },
+  };
+
+  try {
+    const response = await fetch(path, options);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response;
+  } catch (error) {
+    console.error("Error al eliminar la imagen:", error);
+    throw error; // O maneja el error según tus necesidades
+  }
+}
+
 }

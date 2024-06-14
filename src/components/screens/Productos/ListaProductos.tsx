@@ -46,41 +46,39 @@ export const ListaProductos = () => {
   );
   
 
-  const fetchImages = useCallback(async (productoId: string) =>{
-    try{
-      const response = await productoService.get(url + 'articuloManufacturado/getAllImagesByArticuloManufacturadoId', productoId, await getAccessTokenSilently({}));
-
-      if(Array.isArray(response) && response.length > 0){
+  const fetchImages = useCallback(async (productoId: string) => {
+    try {
+      const response = await productoService.get(
+        url + 'articuloManufacturado/getAllImagesByArticuloManufacturadoId',
+        productoId,
+        await getAccessTokenSilently({})
+      );
+      console.log(response);
+      if (Array.isArray(response) && response.length > 0) {
         return response[0].url;
       }
       return 'https://via.placeholder.com/150';
-    }catch(error){
+    } catch (error) {
+      console.error('Error fetching images:', error);
       return 'https://via.placeholder.com/150';
     }
-  },[productoService, url]);
-
+  }, [productoService, url]);
+  
   const fetchProductos = useCallback(async () => {
-    try {      
-      // Asegúrate de que sucursalId esté definido y conviértelo a un número
+    try {
+      // Asegúrate de que sucursalId esté definido y conviértelo a un número si es necesario
       if (sucursalId) {
-        const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
-        
-        const productos = (await productoService.manufacturados(url, sucursalIdNumber, await getAccessTokenSilently({}))).filter((v) => !v.eliminado);
-  
-        const productoConImagenes = await Promise.all(
-          productos.map(async (product) => {
-            const imagenUrl = await fetchImages(product.id.toString());
-            return { ...product, imagen: imagenUrl };
-          })
-        );
-  
-        dispatch(setArticuloManufacturado(productoConImagenes));
-        setFilterData(productoConImagenes);
+        const sucursalIdNumber = parseInt(sucursalId, 10); // Convertir sucursalId a número si es una cadena
+        const productos = (await productoService.manufacturados(url, sucursalIdNumber, await getAccessTokenSilently({})));
+        console.log(productos);
+        dispatch(setArticuloManufacturado(productos));
+        setFilterData(productos);
       }
     } catch (error) {
-      console.error("Error al obtener los productos:", error);
+      console.error('Error fetching productos:', error);
     }
-  }, [dispatch, productoService, url, fetchImages, sucursalId]);
+  }, [productoService, url, fetchImages, sucursalId, dispatch, setFilterData]);
+  
   
   useEffect(() => {
     fetchProductos();

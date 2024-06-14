@@ -62,16 +62,9 @@ export const ListaArticulosInsumo = () => {
       if (sucursalId) {
         const sucursalIdNumber = parseInt(sucursalId); // Convertir sucursalId a número si es una cadena
         const articulosInsumo = await articuloInsumoService.insumos(url, sucursalIdNumber, await getAccessTokenSilently({}));
-        const artInsumoConImagenes = await Promise.all(
-          articulosInsumo.map(async (articuloInsumo) => {
-            const imagenUrl = await fetchImages(articuloInsumo.id.toString());
-            return { ...articuloInsumo, imagen: imagenUrl };
-          })
-        );
-  
-        console.log(artInsumoConImagenes);
-        dispatch(setArticuloInsumo(artInsumoConImagenes));
-        setFilterData(artInsumoConImagenes);
+
+        dispatch(setArticuloInsumo(articulosInsumo));
+        setFilterData(articulosInsumo);
       }
     } catch (error) {
       console.error("Error al obtener los artículos de insumo:", error);
@@ -104,28 +97,9 @@ export const ListaArticulosInsumo = () => {
     setDeleteModalOpen(true);
   };
 
-  // const handleDelete = async () => {
-  //   try {
-  //     if (articuloToEdit && articuloToEdit.id) {
-  //       await articuloInsumoService.delete(
-  //         url + "articuloInsumo",
-  //         articuloToEdit.id.toString()
-  //       );
-  //       console.log("Artículo de insumo eliminado correctamente.");
-  //       handleCloseDeleteModal();
-  //       fetchArticulosInsumo();
-  //     } else {
-  //       console.error(
-  //         "No se puede eliminar el artículo de insumo porque no se proporcionó un ID válido."
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error("Error al eliminar el artículo de insumo:", error);
-  //   }
-  // };
-
   const handleCloseDeleteModal = () => {
     setDeleteModalOpen(false);
+    fetchArticulosInsumo();
   };
   const handleAddArticuloInsumo = () => {
     // Verificar si el insumo ya existe en la lista mostrada
@@ -212,27 +186,6 @@ export const ListaArticulosInsumo = () => {
     },
 
   ];
-
-  {/*
-    {
-      id: "imagenes",
-      label: "Imágenes",
-      renderCell: (rowData) => {
-        const imagenes = rowData.imagenes;
-        if (imagenes && imagenes.length > 0) {
-          return (
-            <div style={{ display: 'flex', gap: '5px' }}>
-              {imagenes.map((imagen: any, index: number) => (
-                <img key={index} src={imagen.url} alt={`Imagen ${index + 1}`} style={{ width: '100px', height: 'auto' }} />
-              ))}
-            </div>
-          );
-        } else {
-          return <span>No hay imágenes disponibles</span>;
-        }
-      }
-    },
-     */}
 
   return (
     <React.Fragment>
