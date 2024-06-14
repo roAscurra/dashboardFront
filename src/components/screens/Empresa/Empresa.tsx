@@ -96,7 +96,7 @@ export const ListaEmpresa = () => {
                   navigate(`pedidos/${usuario?.empleado?.sucursal?.id}`);
                   break;
               case 'ADMIN':
-                  navigate(``);
+                  navigate(`/inicio/${usuario?.empleado?.sucursal?.id}`);
                   break;
           }
         } catch (error) {
