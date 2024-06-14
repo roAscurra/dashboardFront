@@ -51,84 +51,76 @@ const ModalProducto: React.FC<ModalProductProps> = ({
     eliminado: productToEdit ? productToEdit.eliminado : false,
     denominacion: productToEdit?.denominacion || "",
     precioVenta: productToEdit?.precioVenta || 0,
-    imagenes:
-      productToEdit?.imagenes?.map((imagen: any) => imagen.denominacion) || [],
-    unidadMedida: productToEdit?.unidadMedida
-      ? { ...productToEdit.unidadMedida }
-      : {
-          id: 0,
-          eliminado: false,
-          denominacion: "",
-        },
+    imagenes: productToEdit?.imagenes?.map((imagen: any) => imagen.denominacion) || [],
+    unidadMedida: productToEdit?.unidadMedida ? { ...productToEdit.unidadMedida } : {
+      id: 0,
+      eliminado: false,
+      denominacion: "",
+    },
     descripcion: productToEdit?.descripcion || "",
     tiempoEstimadoMinutos: productToEdit?.tiempoEstimadoMinutos || 0,
     preparacion: productToEdit?.preparacion || "",
-    articuloManufacturadoDetalles: productToEdit?.articuloManufacturadoDetalles
-      ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({
-          id: detalle.id,
-          cantidad: detalle.cantidad,
+    articuloManufacturadoDetalles: productToEdit?.articuloManufacturadoDetalles ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => {
+      const articuloInsumo = detalle.articuloInsumo || {};
+      const categoria = articuloInsumo.categoria || {};
+      const sucursal = articuloInsumo.sucursal || { id: 0 };
+  
+      return {
+        id: detalle.id,
+        cantidad: detalle.cantidad,
+        eliminado: detalle.eliminado,
+        articuloInsumo: {
+          id: articuloInsumo.id || 0,
           eliminado: detalle.eliminado,
-          articuloInsumo: {
-            id: detalle.articuloInsumo.id,
-            eliminado: detalle.eliminado,
-            denominacion: detalle.articuloInsumo.denominacion,
-            precioVenta: detalle.articuloInsumo.precioVenta,
-            unidadMedida: detalle.unidadMedida,
-            precioCompra: detalle.precioCompra,
-            stockActual: detalle.stockActual,
-            stockMaximo: detalle.stockMaximo,
-            stockMinimo: detalle.stockMinimo,
-            esParaElaborar: detalle.esParaElaborar,
-            categoria: detalle.articuloInsumo.categoria
-              ? {
-                  id: detalle.articuloInsumo.categoria.id,
-                  eliminado: detalle.articuloInsumo.categoria.eliminado,
-                  denominacion: detalle.articuloInsumo.categoria.denominacion,
-                  esInsumo: detalle.articuloInsumo.categoria.esInsumo,
-                }
-              : {
-                  id: 0,
-                  eliminado: false,
-                  denominacion: "",
-                  esInsumo: false,
-                },
-            sucursal: detalle.articuloInsumo.sucursal.id,
+          denominacion: articuloInsumo.denominacion || "",
+          precioVenta: articuloInsumo.precioVenta || 0,
+          unidadMedida: detalle.unidadMedida || "",
+          precioCompra: detalle.precioCompra || 0,
+          stockActual: detalle.stockActual || 0,
+          stockMaximo: detalle.stockMaximo || 0,
+          stockMinimo: detalle.stockMinimo || 0,
+          esParaElaborar: detalle.esParaElaborar || false,
+          categoria: {
+            id: categoria.id || 0,
+            eliminado: categoria.eliminado || false,
+            denominacion: categoria.denominacion || "",
+            esInsumo: categoria.esInsumo || false,
           },
-        }))
-      : [],
-    categoria: productToEdit?.categoria
-      ? { ...productToEdit.categoria }
-      : {
-          id: 0,
-          eliminado: false,
-          denominacion: "",
-          esInsumo: false,
-          subCategorias: [],
-          sucursales: [],
+          sucursal: sucursal.id,
         },
-    sucursal: productToEdit?.sucursal
-    ? { ...productToEdit.sucursal }
-    : {
+      };
+    }) : [],
+    categoria: productToEdit?.categoria ? { ...productToEdit.categoria } : {
+      id: 0,
+      eliminado: false,
+      denominacion: "",
+      esInsumo: false,
+      subCategorias: [],
+      sucursales: [],
+    },
+    sucursal: productToEdit?.sucursal ? { ...productToEdit.sucursal } : {
+      id: 0,
+      eliminado: false,
+      nombre: "",
+      domicilio: {
         id: 0,
         eliminado: false,
-        nombre: "",
-        domicilio: {
-          id: 0,
-          eliminado: false,
-          calle: "",
-          numero: 0,
-          cp: 0,
-          piso: 0,
-          nroDpto: 0
-        },
+        calle: "",
+        numero: 0,
+        cp: 0,
+        piso: 0,
+        nroDpto: 0,
       },
+    },
   };
+  
 
   const modal = useAppSelector((state: any) => state.modal.modal);
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
     dispatch(toggleModal({ modalName: "modal" }));
+    setInsumos([])
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -198,7 +190,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
   useEffect(() => {
     setDetalles(productToEdit?.articuloManufacturadoDetalles || []);
   }, [productToEdit]);
-
+  console.log(insumos)
   return (
     <Modal
       id={"modal"}
@@ -443,26 +435,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     {productToEdit ? "Editar Insumos" : "Agregar insumos"}
                   </Button>
                 </Col>
-                {/* <Col>
-                                    <ul className="list-group">
-                                        {productToEdit ? (
-                                            productToEdit.articuloManufacturadoDetalles.map((detalle, index) => (
-                                                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                                                    <span>{detalle.articuloInsumo.denominacion}</span>
-                                                    <span>Cantidad: {detalle.cantidad}</span>
-                                                </li>
-                                            ))
-                                        ) : (
-                                            articuloManufacturadoDetalles.map((detalle, index) => (
-                                                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                                                    <span>{detalle.articuloInsumo.denominacion}</span>
-                                                    <span>Cantidad: {detalle.cantidad}</span>
-                                                </li>
-                                            ))
-                                        )}
-                                    </ul>
-
-                                </Col> */}
               </Row>
               <ModalInsumo
                 insumos={insumos}

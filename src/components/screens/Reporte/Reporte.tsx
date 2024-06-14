@@ -3,6 +3,8 @@ import {Col, Row, Form} from "react-bootstrap";
 import {useState} from "react";
 import {useParams} from "react-router-dom";
 import {Graphs} from "../../ui/Graphs/Graphs.tsx";
+import Sidebar from "../../ui/Sider/SideBar.tsx";
+import { CCol } from "@coreui/react";
 
 export const Reporte = () => {
 
@@ -32,6 +34,9 @@ export const Reporte = () => {
     return <>
         <BaseNavBar title="Sucursales" />
         <Row>
+        <CCol xs="auto" className="sidebar">
+          <Sidebar />
+        </CCol>
             <Col>
                 <div style={{padding: "1rem"}}>
                     <h2>Reportes basados en tiempo</h2>
@@ -68,21 +73,21 @@ export const Reporte = () => {
                     </Row>
                     <Row className={"p-3"}>
                         <Col>
-                            <a style={{width: "100%"}} className="btn btn-success"
+                            <a style={{width: "100%", backgroundColor: "#9c27b0"}} className="btn text-light"
                                onClick={() => generarExcel(sucursalId, desde, hasta, 'ranking/insumos/excel')}>Descargar ranking insumos</a>
                         </Col>
                         <Col>
-                            <a style={{width: "100%"}} className="btn btn-success"
+                            <a style={{width: "100%", backgroundColor: "#9c27b0"}} className="btn text-light"
                                onClick={() => generarExcel(sucursalId, desde, hasta, 'ranking/pedidos/cliente/excel')}>Descargar pedidos por cliente</a>
                         </Col>
                     </Row>
                     <Row className={"p-3"}>
                         <Col>
-                            <a style={{width: "100%"}} className="btn btn-success"
+                            <a style={{width: "100%", backgroundColor: "#9c27b0"}} className="btn text-light"
                                onClick={() => generarExcel(sucursalId, desde, hasta, 'ranking/ingresos/excel')}>Descargar ingresos</a>
                         </Col>
                         <Col>
-                            <a style={{width: "100%"}} className="btn btn-success"
+                            <a style={{width: "100%", backgroundColor: "#9c27b0"}} className="btn text-light"
                                onClick={() => generarExcel(sucursalId, desde, hasta, 'ranking/ganancias/excel')}>Descargar ganancias</a>
                         </Col>
                     </Row>
