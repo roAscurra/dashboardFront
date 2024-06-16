@@ -1,75 +1,70 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
-import Divider from '@mui/material/Divider';
 import SucursalService from '../../../services/SucursalService';
 import { useParams } from 'react-router-dom';
-import {useAuth0} from "@auth0/auth0-react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface BaseNavBarProps {
   title: string;
 }
+
 export const BaseNavBar = ({ title }: BaseNavBarProps) => {
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
-
-  const handleProfileMenuOpen = () => {
-    setDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setDialogOpen(false);
-  };
-  const url = import.meta.env.VITE_API_URL;
-  const { getAccessTokenSilently } = useAuth0();
-  const { sucursalId } = useParams(); // Obtén el ID de la URL
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { isAuthenticated, loginWithRedirect, logout, getAccessTokenSilently, user } = useAuth0();
+  const { sucursalId } = useParams<{ sucursalId: string }>();
+  const [sucursalName, setSucursalName] = useState<string>("");
   const sucursalService = new SucursalService();
-  const [sucursalName, setSucursalName] = useState(""); // Variable de estado para almacenar el nombre de la sucursal
+  const url = import.meta.env.VITE_API_URL;
+
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogin = () => {
     loginWithRedirect();
-  }
+  };
 
   const handleLogout = () => {
     logout({
       logoutParams: {
-        // returnTo: "https://dashboard-front-five.vercel.app/"
-        returnTo: "http://localhost:5173/"
+        // returnTo: "http://localhost:5173/"
+        returnTo: "https://dashboard-front-five.vercel.app/"
       }
-    })
-  }
+    });
+  };
 
   const fetchSucursalData = async () => {
-      try {
-          if (sucursalId) {
-              const sucursal = await sucursalService.get(url + 'sucursal', sucursalId, await getAccessTokenSilently({}));
-              setSucursalName(sucursal.nombre)
-          }
-      } catch (error) {
-          console.error("Error al obtener los datos de la sucursal:", error);
+    try {
+      if (sucursalId) {
+        const sucursal = await sucursalService.get(url + 'sucursal', sucursalId, await getAccessTokenSilently({}));
+        setSucursalName(sucursal.nombre);
       }
-  };
-  
-  useEffect(() => {
-      fetchSucursalData();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sucursalId]); // Dependencia actualizada
-    if(title === ''){
-      title = `Sucursal ${sucursalName}`;
+    } catch (error) {
+      console.error("Error al obtener los datos de la sucursal:", error);
     }
+  };
+
+  useEffect(() => {
+    fetchSucursalData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sucursalId]);
+
+  const displayedTitle = title === '' ? `Sucursal ${sucursalName}` : title;
+
   return (
     <Box sx={{ marginBottom: 1 }}>
       <AppBar position="static" sx={{ bgcolor: "#9c27b0", height: 80, marginBottom: 1, display: 'flex', justifyContent: 'center' }}>
@@ -78,51 +73,62 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
             variant="h6"
             noWrap
             component="div"
-            sx={{ flexGrow: 1, justifyContent: 'center' ,fontSize: '1.7rem' }}
+            sx={{ flexGrow: 1, fontSize: '1.7rem' }}
           >
-            {title}
+            {displayedTitle}
           </Typography>
-          <IconButton
-            size="large"
-            edge="end"
-            aria-label="account of current user"
-            onClick={handleProfileMenuOpen}
-            color="inherit"
-          >
-            <AccountCircle />
-          </IconButton>
+          <Box component="div" sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+            <p style={{ margin: 0}}>
+              {user?.name}
+            </p>
+            <IconButton
+              size="large"
+              edge="end"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleProfileMenuOpen}
+              color="inherit"
+            >
+              <AccountCircle />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              {!isAuthenticated && (
+                <MenuItem onClick={() => { handleLogin(); handleMenuClose(); }}>
+                  <ListItemIcon>
+                    <LoginOutlinedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Login" />
+                </MenuItem>
+              )}
+              {isAuthenticated && (
+                <MenuItem onClick={() => { handleLogout(); handleMenuClose(); }}>
+                  <ListItemIcon>
+                    <LoginOutlinedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Cerrar Sesión" />
+                </MenuItem>
+              )}
+            </Menu>
+          </Box>
         </Toolbar>
       </AppBar>
-      <Dialog onClose={handleDialogClose} open={dialogOpen}>
-        <DialogTitle>Opciones de Usuario</DialogTitle>
-        <List>
-          <ListItem hidden={!isAuthenticated} button>
-            <ListItemIcon>
-              <Person2OutlinedIcon />
-            </ListItemIcon>
-            <ListItemText primary="Perfil" />
-          </ListItem>
-          <ListItem hidden={!isAuthenticated} button>
-            <ListItemIcon>
-              <SettingsOutlinedIcon />
-            </ListItemIcon>
-            <ListItemText primary="Ajustes" />
-          </ListItem>
-          <Divider />
-          <ListItem onClick={handleLogin} hidden={isAuthenticated} button>
-            <ListItemIcon>
-              <LoginOutlinedIcon />
-            </ListItemIcon>
-            <ListItemText primary="Login" />
-          </ListItem>
-          <ListItem onClick={handleLogout}  hidden={!isAuthenticated} button>
-            <ListItemIcon>
-              <LoginOutlinedIcon />
-            </ListItemIcon>
-            <ListItemText primary="Cerrar Sesión" />
-          </ListItem>
-        </List>
-      </Dialog>
     </Box>
   );
-}
+};
+
+export default BaseNavBar;

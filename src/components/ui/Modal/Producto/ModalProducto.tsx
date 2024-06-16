@@ -120,7 +120,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 
   const handleClose = () => {
     dispatch(toggleModal({ modalName: "modal" }));
-    setInsumos([])
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -190,7 +189,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
   useEffect(() => {
     setDetalles(productToEdit?.articuloManufacturadoDetalles || []);
   }, [productToEdit]);
-  console.log(insumos)
+
   return (
     <Modal
       id={"modal"}
@@ -263,7 +262,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
             }
           }}
         >
-          {({ values, setFieldValue }) => (
+          {({ values, setFieldValue, isSubmitting }) => (
             <Form autoComplete="off">
               <Row>
                 <Col>
@@ -435,6 +434,26 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     {productToEdit ? "Editar Insumos" : "Agregar insumos"}
                   </Button>
                 </Col>
+                {/* <Col>
+                                    <ul className="list-group">
+                                        {productToEdit ? (
+                                            productToEdit.articuloManufacturadoDetalles.map((detalle, index) => (
+                                                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>{detalle.articuloInsumo.denominacion}</span>
+                                                    <span>Cantidad: {detalle.cantidad}</span>
+                                                </li>
+                                            ))
+                                        ) : (
+                                            articuloManufacturadoDetalles.map((detalle, index) => (
+                                                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>{detalle.articuloInsumo.denominacion}</span>
+                                                    <span>Cantidad: {detalle.cantidad}</span>
+                                                </li>
+                                            ))
+                                        )}
+                                    </ul>
+
+                                </Col> */}
               </Row>
               <ModalInsumo
                 insumos={insumos}
@@ -447,9 +466,11 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     : articuloManufacturadoDetalles || []
                 }
               />
-              <Button type="submit" className="btn btn-primary mt-3">
-                {productToEdit ? "Guardar Cambios" : "Agregar Producto"}
-              </Button>
+              <div className="text-end">
+                <Button type="submit" className="btn btn-primary mt-3" disabled={isSubmitting}>
+                  {isSubmitting ? "Enviando..." : "Enviar"}
+                </Button>
+              </div>
             </Form>
           )}
         </Formik>

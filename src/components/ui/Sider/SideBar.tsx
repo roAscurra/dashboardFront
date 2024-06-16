@@ -69,7 +69,7 @@ const Sidebar: React.FC = () => {
           {
             ['ADMIN'].includes(usuario?.rol || '')
             ? <CNavItem>
-                <Link to="/" className="nav-link">
+                <Link to="/inicio/1" className="nav-link">
                   <CIcon customClassName="nav-icon" icon={icon.cilHamburgerMenu} />
                   Inicio
                 </Link>

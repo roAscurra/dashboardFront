@@ -74,7 +74,7 @@ export const Reporte = () => {
                     <Row className={"p-3"}>
                         <Col>
                             <a style={{width: "100%", backgroundColor: "#9c27b0"}} className="btn text-light"
-                               onClick={() => generarExcel(sucursalId, desde, hasta, 'ranking/insumos/excel')}>Descargar ranking insumos</a>
+                               onClick={() => generarExcel(sucursalId, desde, hasta, 'ranking/insumos/excel')}>Descargar ranking productos</a>
                         </Col>
                         <Col>
                             <a style={{width: "100%", backgroundColor: "#9c27b0"}} className="btn text-light"
