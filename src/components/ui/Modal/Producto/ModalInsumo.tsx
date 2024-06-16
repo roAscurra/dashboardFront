@@ -100,7 +100,8 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    // setRowsPerPage();
+    parseInt(event.target.value, 10)
     setCurrentPage(0); // Reiniciar a la primera página al cambiar el número de filas por página
   };
 
