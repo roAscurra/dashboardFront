@@ -49,7 +49,7 @@ const ModalPedido: React.FC<ModalPedidoProps> = ({ open, onClose, pedido, onSave
     const getAvailableStates = (role?: string, currentState?: Estado): Estado[] => {
         let availableStates: Estado[] = [];
         if (role === "CAJERO") {
-            availableStates = [Estado.PREPARACION, Estado.EN_DELIVERY, Estado.FACTURADO];
+            availableStates = [Estado.PREPARACION, Estado.EN_DELIVERY, Estado.FACTURADO, Estado.RECHAZADO];
         } else if (role === "COCINERO") {
             availableStates = [Estado.TERMINADO];
         } else {
