@@ -32,27 +32,20 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const [file, setFile] = useState<File | null>(null);
   const [showInsumoModal, setShowInsumoModal] = useState(false);
   const [modalColor, setModalColor] = useState<string>(""); // Estado para controlar el color de fondo de la modal
-  const [articulosManufacturados, setArticulosManufacturados] = useState<
-    ArticuloManufacturadoShorDto[]
-  >([]);
-  const articuloManufacturadoService =
-    new ArticuloManufacturadoShorDtoService();
-  const [promocionDetalles, setPromocionDetalles] = useState<
-    PromocionDetalle[]
-  >(promocionToEdit?.promocionDetalle || []);
-
+  const [articulosManufacturados, setArticulosManufacturados] = useState<ArticuloManufacturadoShorDto[]>([]);
+  const articuloManufacturadoService = new ArticuloManufacturadoShorDtoService();
+  const [promocionDetalles, setPromocionDetalles] = useState<PromocionDetalle[]>(promocionToEdit?.promocionDetalle || []);
   const [detalles, setDetalles] = useState<PromocionDetalle[]>([]);
   const url = import.meta.env.VITE_API_URL;
   const { getAccessTokenSilently } = useAuth0();
   const today = new Date();
   const { sucursalId } = useParams();
   const promocionDetalleService = new PromocionDetalleService();
-  // const sucursalService = new SucursalService();
   const sucursalService = new SucursalShortDtoService();
-  // const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [sucursales, setSucursales] = useState<SucursalShorDto[]>([]);
   const modal = useAppSelector((state) => state.modal.modal);
   const dispatch = useAppDispatch();
+  const [totalPrecioPromocional, setTotalPrecioPromocional] = useState<number>(0);
   const initialValues: Promocion = {
     id: promocionToEdit ? promocionToEdit.id : 0,
     eliminado: promocionToEdit ? promocionToEdit.eliminado : false,
@@ -187,6 +180,12 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
     console.log("Detalles a guardar:", detalles);
     setPromocionDetalles(detalles);
     setDetalles(detalles); // Guardar los detalles en el estado
+
+    const sumaPrecios = detalles.map((detalle: any) =>
+      detalle.cantidad * detalle.articuloManufacturado.precioVenta
+    ).reduce((total: number, precioPromocional: number) => total + precioPromocional, 0);    
+    setTotalPrecioPromocional(sumaPrecios);
+
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -194,7 +193,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
         setFile(e.target.files[0]);
     }
   };
-
+  
   useEffect(() => {
     setDetalles(promocionToEdit?.promocionDetalle || []);
   }, [promocionToEdit]);
@@ -423,7 +422,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     type="text"
                     placeholder="Precio promocional"
                     className="form-control mt-2"
-                  />
+                    value={promocionToEdit? promocionToEdit.precioPromocional: totalPrecioPromocional}
+                    />
                   <ErrorMessage
                     name="precioPromocional"
                     className="error-message"
