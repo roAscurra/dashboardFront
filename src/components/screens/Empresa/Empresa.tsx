@@ -152,8 +152,8 @@ export const ListaEmpresa = () => {
   const handleLogout = () => {
     logout({
       logoutParams: {
-        // returnTo: "https://dashboard-front-five.vercel.app/"
-        returnTo: "http://localhost:5173/"
+        returnTo: "https://dashboard-front-five.vercel.app/"
+        // returnTo: "http://localhost:5173/"
       }
     })
   }
