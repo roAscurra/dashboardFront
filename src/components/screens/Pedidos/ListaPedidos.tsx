@@ -184,7 +184,8 @@ export const ListaPedidos = () => {
     setCurrentDetallePedidos([]);
     setCliente("")
     setOrderDate("");
-    window.location.reload();
+    // window.location.reload();
+    fetchPedidos();
   };
 
   const handleCloseEditModal = () => {
