@@ -34,9 +34,9 @@ export const Reporte = () => {
     return <>
         <BaseNavBar title="Sucursales" />
         <Row>
-        <CCol xs="auto" className="sidebar">
-          <Sidebar />
-        </CCol>
+            <CCol xs="auto" className="sidebar">
+            <Sidebar />
+            </CCol>
             <Col>
                 <div style={{padding: "1rem"}}>
                     <h2>Reportes basados en tiempo</h2>
@@ -91,9 +91,8 @@ export const Reporte = () => {
                                onClick={() => generarExcel(sucursalId, desde, hasta, 'ranking/ganancias/excel')}>Descargar ganancias</a>
                         </Col>
                     </Row>
-                    <br></br>
                     <hr/>
-                    <Graphs/>
+                    <Graphs />
                 </div>
             </Col>
         </Row>
