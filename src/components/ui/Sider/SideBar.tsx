@@ -62,7 +62,6 @@ const Sidebar: React.FC = () => {
     <div>
       <CSidebar
         className="border-end d-flex flex-column"
-        style={{ height: "100vh" }}
       >
         <CSidebarNav style={{ display: "flex", flexDirection: "column" }}>
           <CNavTitle style={{ marginBottom: "10px" }}>Dashboard</CNavTitle>
