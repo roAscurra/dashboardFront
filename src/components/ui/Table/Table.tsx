@@ -105,7 +105,6 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
     if (isLoading || usuarioIsLoading) {
       return (
         <div
-          style={{ height: "calc(100vh - 88px)" }}
           className="d-flex flex-column justify-content-center align-items-center"
         >
           <div className="spinner-border" role="status"></div>
@@ -121,21 +120,21 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
           <thead>
             <tr>
               {columns.map((column) => (
-                <th key={column.id}>{column.label}</th>
+                <th className='text-center' key={column.id}>{column.label}</th>
               ))}
-              <th>Acciones</th>
+              <th className='text-center'>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
               <tr key={index}>
                 {columns.map((column) => (
-                  <td key={column.id}>
+                  <td className='text-center' key={column.id}>
                     {column.renderCell ? column.renderCell(row) : row[column.id]}
                   </td>
                 ))}
                 <td>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center',alignItems: 'center', }}>
                     <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
                       <EditIcon />
                     </IconButton>
@@ -169,7 +168,6 @@ const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, h
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </div>
-
     </>
   );
 };

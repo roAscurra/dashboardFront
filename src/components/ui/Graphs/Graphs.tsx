@@ -57,47 +57,49 @@ export const Graphs = () => {
         getGanancias();
     }, []);
 
-    return <>
-        <h2>Reportes historicos</h2>
-        <Row className={"py-3"}>
-            <Col>
-                <h4>Insumos vendidos</h4>
-                <Chart
-                    chartType="PieChart"
-                    data={dataRankingInsumos}
-                    height={"400px"}
-                    options={options}
-                />
+    return (
+        <>
+          <h2>Reportes históricos</h2>
+          <Row className={"p-3"}>
+            <Col md={6}>
+              <h4>Insumos vendidos</h4>
+              <Chart
+                chartType="PieChart"
+                data={dataRankingInsumos}
+                width={"100%"}
+                options={options}
+              />
             </Col>
-            <Col>
-                <h4>Pedidos por cliente</h4>
-                <Chart
-                     chartType="PieChart"
-                    data={dataPedidosPorCliente}
-                    height={"400px"}
-                     options={options}
-            />
+            <Col md={6}>
+              <h4>Pedidos por cliente</h4>
+              <Chart
+                chartType="PieChart"
+                data={dataPedidosPorCliente}
+                width={"100%"}
+                options={options}
+              />
             </Col>
-        </Row>
-        <Row className={"py-3"}>
-            <Col>
-                <h4>Ingresos</h4>
-                <Chart
-                    chartType="Bar"
-                    data={dataIngresos}
-                    height={"400px"}
-                    options={options}
-                />
+          </Row>
+          <Row className={"p-2"}>
+            <Col md={6}>
+              <h4>Ingresos</h4>
+              <Chart
+                chartType="Bar"
+                data={dataIngresos}
+                width={"100%"}
+                options={options}
+              />
             </Col>
-            <Col>
-                <h4>Ganancias</h4>
-                <Chart
-                    chartType="Bar"
-                    data={dataGanancias}
-                    height={"400px"}
-                    options={options}
-                />
+            <Col md={6}>
+              <h4>Ganancias</h4>
+              <Chart
+                chartType="Bar"
+                data={dataGanancias}
+                width={"100%"}
+                options={options}
+              />
             </Col>
-        </Row>
-    </>
-}
+          </Row>
+        </>
+      );
+    };
