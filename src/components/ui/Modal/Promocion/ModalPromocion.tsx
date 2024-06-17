@@ -181,11 +181,13 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const handelAddArticulosManufacturados = (detalles: PromocionDetalle[]) => {
     console.log("Detalles a guardar:", detalles);
     setPromocionDetalles(detalles);
+    console.log(promocionDetalles)
     setDetalles(detalles); // Guardar los detalles en el estado
     const sumaPrecios = detalles.map((detalle: any) =>
       detalle.cantidad * detalle.articuloManufacturado.precioVenta
     ).reduce((total: number, precioPromocional: number) => total + precioPromocional, 0);    
     setTotalPrecioPromocional(sumaPrecios);
+    console.log(totalPrecioPromocional)
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
