@@ -51,7 +51,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
 
   
   const handleAgregarInsumos = () => {
-    const existingInsumos = selectedInsumos.filter(insumo => detalles.some(detalle => detalle.articuloInsumo.id === insumo.id));
+    const existingInsumos = selectedInsumos.filter(insumo => detalles.some(detalle => detalle.articuloManufacturado.id === insumo.id));
     
     if (existingInsumos.length > 0) {
       alert(`Los siguientes insumos ya están agregados: ${existingInsumos.map(insumo => insumo.denominacion).join(", ")}`);
@@ -137,20 +137,22 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
             value={searchQuery}
             onChange={handleSearchChange}
           />
-          <Button
-            variant="primary"
-            onClick={handleAgregarInsumos}
-            className="col-md-4"
-          >
-            {selectedInsumos.length > 1 ? 'Agregar articulosManufacturados' : 'Agregar articuloManufacturado'}
-          </Button>
+          {selectedInsumos.length > 1 && (
+            <Button variant="primary" onClick={handleAgregarInsumos} className="col-md-4">
+              Agregar productos
+            </Button>
+          )}
+          {selectedInsumos.length === 1 && (
+            <Button variant="primary" onClick={handleAgregarInsumos} className="col-md-4">
+              Agregar producto
+            </Button>
+          )}
         </div>
         <table className="table">
           <thead>
             <tr>
               <th>Denominación</th>
               <th>Precio de Venta</th>
-              <th>Stock Actual</th>
               <th>Categoria</th>
               <th>Unidad de Medida</th>
               <th></th>
@@ -161,7 +163,6 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
               <tr key={index}>
                 <td>{producto.denominacion}</td>
                 <td>{producto.precioVenta}</td>
-                <td>{producto.stockActual}</td>
                 <td>{producto.categoria.denominacion}</td>
                 <td>{producto.unidadMedida.denominacion}</td>
                 <td>
@@ -224,7 +225,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleGuardarInsumo}>
-          Guardar Insumo
+          Guardar Productos
         </Button>
       </Modal.Footer>
     </Modal>
