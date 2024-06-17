@@ -32,27 +32,21 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const [file, setFile] = useState<File | null>(null);
   const [showInsumoModal, setShowInsumoModal] = useState(false);
   const [modalColor, setModalColor] = useState<string>(""); // Estado para controlar el color de fondo de la modal
-  const [articulosManufacturados, setArticulosManufacturados] = useState<
-    ArticuloManufacturadoShorDto[]
-  >([]);
-  const articuloManufacturadoService =
-    new ArticuloManufacturadoShorDtoService();
-  const [promocionDetalles, setPromocionDetalles] = useState<
-    PromocionDetalle[]
-  >(promocionToEdit?.promocionDetalle || []);
-
+  const [articulosManufacturados, setArticulosManufacturados] = useState<ArticuloManufacturadoShorDto[]>([]);
+  const articuloManufacturadoService = new ArticuloManufacturadoShorDtoService();
+  const [promocionDetalles, setPromocionDetalles] = useState<PromocionDetalle[]>(promocionToEdit?.promocionDetalle || []);
   const [detalles, setDetalles] = useState<PromocionDetalle[]>([]);
   const url = import.meta.env.VITE_API_URL;
   const { getAccessTokenSilently } = useAuth0();
   const today = new Date();
   const { sucursalId } = useParams();
   const promocionDetalleService = new PromocionDetalleService();
-  // const sucursalService = new SucursalService();
   const sucursalService = new SucursalShortDtoService();
-  // const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [sucursales, setSucursales] = useState<SucursalShorDto[]>([]);
   const modal = useAppSelector((state) => state.modal.modal);
   const dispatch = useAppDispatch();
+  const [totalPrecioPromocional, setTotalPrecioPromocional] = useState<number>(0);
+
   const initialValues: Promocion = {
     id: promocionToEdit ? promocionToEdit.id : 0,
     eliminado: promocionToEdit ? promocionToEdit.eliminado : false,
@@ -183,10 +177,17 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
       setModalColor(""); // Si no, dejar el color de fondo predeterminado
     }
   }, [showInsumoModal]);
+
   const handelAddArticulosManufacturados = (detalles: PromocionDetalle[]) => {
     console.log("Detalles a guardar:", detalles);
     setPromocionDetalles(detalles);
+    console.log(promocionDetalles)
     setDetalles(detalles); // Guardar los detalles en el estado
+    const sumaPrecios = detalles.map((detalle: any) =>
+      detalle.cantidad * detalle.articuloManufacturado.precioVenta
+    ).reduce((total: number, precioPromocional: number) => total + precioPromocional, 0);    
+    setTotalPrecioPromocional(sumaPrecios);
+    console.log(totalPrecioPromocional)
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -194,10 +195,11 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
         setFile(e.target.files[0]);
     }
   };
-
+  
   useEffect(() => {
     setDetalles(promocionToEdit?.promocionDetalle || []);
   }, [promocionToEdit]);
+
   return (
     <Modal
       id="modal"
@@ -319,7 +321,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
             }
           }}
         >
-          {({ values, setFieldValue, isSubmitting }) => (
+          {({ values, setFieldValue, isSubmitting  }) => (
             <Form autoComplete="off">
               <div className="row">
                 <div className="col-md-4 mb-4">
@@ -420,10 +422,10 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   <label htmlFor="precioPromocional">Precio Promocional:</label>
                   <Field
                     name="precioPromocional"
-                    type="text"
+                    type="number"
                     placeholder="Precio promocional"
                     className="form-control mt-2"
-                  />
+                    />
                   <ErrorMessage
                     name="precioPromocional"
                     className="error-message"
@@ -448,14 +450,14 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 </div>
                 <div className="col-md-4 mb-4">
                   <label htmlFor="imagen">Imagen:</label>
-                                      <input
-                                          name="imagen"
-                                          type="file"
-                                          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                                              handleFileChange(event);
-                                          }}
-                                          className="form-control my-2"
-                                      />
+                  <input
+                      name="imagen"
+                      type="file"
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                          handleFileChange(event);
+                      }}
+                      className="form-control my-2"
+                  />
                 </div>
                
                 <div className="mb-4">
@@ -531,7 +533,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 initialDetalles={
                   promocionToEdit
                     ? promocionToEdit.promocionDetalle
-                    : promocionDetalles || []
+                    : []
                 }
               />
             </Form>
