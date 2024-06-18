@@ -67,7 +67,7 @@ const Sidebar: React.FC = () => {
         <CSidebarNav style={{ display: "flex", flexDirection: "column" }}>
           <CNavTitle style={{ marginBottom: "10px" }}>Dashboard</CNavTitle>
           {
-            ['ADMIN'].includes(usuario?.rol || '')
+            ['ADMIN', 'SUPERADMIN'].includes(usuario?.rol || '')
             ? <CNavItem>
                 <Link to="/inicio/1" className="nav-link">
                   <CIcon customClassName="nav-icon" icon={icon.cilHamburgerMenu} />
@@ -77,7 +77,7 @@ const Sidebar: React.FC = () => {
             : ''
           }
           {
-            ['ADMIN', 'COCINERO'].includes(usuario?.rol || '')
+            ['ADMIN', 'COCINERO', 'SUPERADMIN'].includes(usuario?.rol || '')
             ? <CNavItem hidden={hasRole(['ADMIN'])}>
                 <Link to={`/productos/lista/${sucursalId}`} className="nav-link">
                   <CIcon customClassName="nav-icon" icon={icon.cilFastfood} />
@@ -87,7 +87,7 @@ const Sidebar: React.FC = () => {
             : ''
           }
           {
-            ['ADMIN'].includes(usuario?.rol || '')
+            ['ADMIN', 'SUPERADMIN'].includes(usuario?.rol || '')
             ? <CNavItem>
                 <Link to={`/categorias/${sucursalId}`} className="nav-link">
                 <CIcon customClassName="nav-icon" icon={icon.cilLineSpacing} />
@@ -97,7 +97,7 @@ const Sidebar: React.FC = () => {
             : ''
           }
           {
-            ['ADMIN'].includes(usuario?.rol || '')
+            ['ADMIN', 'SUPERADMIN'].includes(usuario?.rol || '')
             ? <CNavItem>
                 <Link to={`/unidadMedida/${sucursalId}`} className="nav-link">
                   <CIcon customClassName="nav-icon" icon={icon.cilMediaStop} />
@@ -107,7 +107,7 @@ const Sidebar: React.FC = () => {
             : ''
           }
           {
-            ['ADMIN', 'COCINERO'].includes(usuario?.rol || '')
+            ['ADMIN', 'COCINERO', 'SUPERADMIN'].includes(usuario?.rol || '')
             ? <CNavItem>
                   <Link
                     to={`/articuloInsumo/Lista/${sucursalId}`} className="nav-link">
@@ -118,7 +118,7 @@ const Sidebar: React.FC = () => {
             : ''
           }
           {
-            ['ADMIN', 'CAJERO'].includes(usuario?.rol || '')
+            ['ADMIN', 'CAJERO', 'SUPERADMIN'].includes(usuario?.rol || '')
             ? <CNavItem>
                   <Link to={`/promociones/lista/${sucursalId}`} className="nav-link">
                   <CIcon customClassName="nav-icon" icon={icon.cilCash} />
@@ -128,7 +128,7 @@ const Sidebar: React.FC = () => {
             : ''
           }
           {
-            ['ADMIN'].includes(usuario?.rol || '')
+            ['ADMIN', 'SUPERADMIN'].includes(usuario?.rol || '')
             ? <CNavItem>
                 <Link to={`/usuario/${sucursalId}`} className="nav-link">
                   <CIcon customClassName="nav-icon" icon={icon.cilPeople} />
@@ -138,7 +138,7 @@ const Sidebar: React.FC = () => {
             : ''
           }
           {
-            ['ADMIN', 'COCINERO', 'CAJERO'].includes(usuario?.rol || '')
+            ['ADMIN', 'COCINERO', 'CAJERO', 'SUPERADMIN'].includes(usuario?.rol || '')
               ? <CNavItem>
                   <Link to={`/pedidos/${sucursalId}`} className="nav-link">
                     <CIcon customClassName="nav-icon" icon={icon.cilApps} />
@@ -148,7 +148,7 @@ const Sidebar: React.FC = () => {
               : ''
           }
           {
-            ['ADMIN'].includes(usuario?.rol || '')
+            ['ADMIN', 'SUPERADMIN'].includes(usuario?.rol || '')
                 ? <CNavItem>
                   <Link to={`/reportes/${sucursalId}`} className="nav-link">
                     <CIcon customClassName="nav-icon" icon={icon.cilChart} />

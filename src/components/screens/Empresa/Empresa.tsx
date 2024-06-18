@@ -208,7 +208,7 @@ if (!user) {
                       style={{ minHeight: "80vh", paddingTop: "1rem" }}
                   >
                       {
-                          ['ADMIN'].includes(usuario?.rol)
+                          ['ADMIN', 'SUPERADMIN'].includes(usuario?.rol)
                            ? <Grid item xs={12} sm={6} md={4} onClick={handleAddEmpresa}>
                           <Card
                               sx={{
