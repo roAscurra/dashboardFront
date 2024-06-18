@@ -63,41 +63,65 @@ export const Graphs = () => {
           <Row className={"p-3"}>
             <Col md={6}>
               <h4>Insumos vendidos</h4>
-              <Chart
-                chartType="PieChart"
-                data={dataRankingInsumos}
-                width={"100%"}
-                options={options}
-              />
+              {
+                !dataRankingInsumos
+                ? <div style={{height: "200px"}} className="d-flex flex-column justify-content-center align-items-center">
+                  <div className="spinner-border" role="status"></div>
+                </div>
+                : <Chart
+                  chartType="PieChart"
+                  data={dataRankingInsumos}
+                  width={"100%"}
+                  options={options}
+                />
+              }
             </Col>
             <Col md={6}>
               <h4>Pedidos por cliente</h4>
-              <Chart
-                chartType="PieChart"
-                data={dataPedidosPorCliente}
-                width={"100%"}
-                options={options}
-              />
+              {
+                !dataPedidosPorCliente
+                ? <div style={{height: "200px"}} className="d-flex flex-column justify-content-center align-items-center">
+                  <div className="spinner-border" role="status"></div>
+                </div>
+                : <Chart
+                  chartType="PieChart"
+                  data={dataPedidosPorCliente}
+                  width={"100%"}
+                  options={options}
+                />
+              }
             </Col>
           </Row>
           <Row className={"p-2"}>
             <Col md={6}>
               <h4>Ingresos</h4>
-              <Chart
-                chartType="Bar"
-                data={dataIngresos}
-                width={"100%"}
-                options={options}
-              />
+              {
+                !dataIngresos
+                ? <div style={{height: "200px"}} className="d-flex flex-column justify-content-center align-items-center">
+                  <div className="spinner-border" role="status"></div>
+                </div>
+                : <Chart
+                  chartType="Bar"
+                  data={dataIngresos}
+                  width={"100%"}
+                  options={options}
+                />
+              }
             </Col>
             <Col md={6}>
               <h4>Ganancias</h4>
-              <Chart
-                chartType="Bar"
-                data={dataGanancias}
-                width={"100%"}
-                options={options}
-              />
+              {
+                !dataGanancias
+                ? <div style={{height: "200px"}} className="d-flex flex-column justify-content-center align-items-center">
+                  <div className="spinner-border" role="status"></div>
+                </div>
+                : <Chart
+                  chartType="Bar"
+                  data={dataGanancias}
+                  width={"100%"}
+                  options={options}
+                />
+              }
             </Col>
           </Row>
         </>
