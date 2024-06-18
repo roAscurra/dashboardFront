@@ -114,6 +114,7 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, surcursalId, u
                     <option value="COCINERO">Cocinero</option>
                     <option value="DELIVERY">Delivery</option>
                     <option value="ADMIN">Admin</option>
+                    <option value="SUPERADMIN">Super admin</option>
                   </Field>
                   <ErrorMessage name="rol" className="error-message" component="div"/>
                 </div>
