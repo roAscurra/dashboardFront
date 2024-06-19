@@ -69,11 +69,13 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
     window.history.back(); // Simular el comportamiento de navegar hacia atrás en el historial del navegador
   };
 
+  console.log(user)
+
   return (
     <Box sx={{ marginBottom: 1 }}>
       <AppBar position="static" sx={{ bgcolor: "#9c27b0", height: 80, marginBottom: 1, display: 'flex', justifyContent: 'center' }}>
         <Toolbar>
-          {location.pathname !== '/' && (
+          {location.pathname !== '/' && user['https://buensaborgrupal.com/roles'][0] === 'SUPERADMIN' && (
             <IconButton
               size="large"
               edge="start"
