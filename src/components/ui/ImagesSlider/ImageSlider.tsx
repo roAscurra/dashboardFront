@@ -44,10 +44,9 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, urlParteVariable }) =
       setIsLoading(false); // Desactivar indicador de carga
     }
   };
-
   return (
     <>
-      {isLoading && <Spinner className='text-center' animation="border" role="status" />} {/* Indicador de carga */}
+      {isLoading && <Spinner className='text-center' animation="border" role="status" />}
       <Carousel style={{ visibility: isLoading ? 'hidden' : 'visible' }}> {/* Ocultar el Carousel mientras se carga */}
         {sliderImages.map((image) => (
           <Carousel.Item key={image.id}>

@@ -7,12 +7,14 @@ import IUnidadMedida from "../../../../types/UnidadMedida";
 import { toggleModal } from "../../../../redux/slices/Modal";
 import ArticuloInsumo from "../../../../types/ArticuloInsumoType";
 import UnidadMedidaService from "../../../../services/UnidadMedidaService";
-import { useEffect, useState, ChangeEvent, useCallback } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import CategoriaService from "../../../../services/CategoriaService";
 import Categoria from "../../../../types/Categoria";
 import ImagenArticulo from "../../../../types/ImagenArticulo";
 import { useParams } from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
+import ImagenArticuloService from "../../../../services/ImagenArticuloService";
+import ImageSlider from "../../ImagesSlider/ImageSlider";
 
 interface ModalArticuloInsumoProps {
   getArticulosInsumo: () => void;
@@ -27,6 +29,8 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   const articuloInsumoService = new ArticuloInsumoService();
   const unidadService = new UnidadMedidaService();
   const categoriaService = new CategoriaService();
+  const imagenService = new ImagenArticuloService();
+  const [images, setImages] = useState<ImagenArticulo[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<IUnidadMedida[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [file, setFile] = useState<File | null>(null);
@@ -92,6 +96,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
+    setImages([])
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
@@ -100,7 +105,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       setFile(e.target.files[0]);
     }
   };
-  const fetchCategorias = useCallback(async () => {
+  const fetchCategorias = async () => {
     try {
       if (sucursalId) {
         const parsedSucursalId = parseInt(sucursalId, 10); 
@@ -113,7 +118,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       console.error("Error al obtener las categorías:", error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, categoriaService, url]);
+  };
 
   const fetchUnidadesMedida = async () => {
     try {
@@ -124,12 +129,28 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     }
   };
 
+  // Función para obtener las imágenes del artículo
+  const fetchImagenes = async () => {
+    try {
+      const imagenes = await imagenService.getAll(url + "articuloInsumo/getAllImagesByInsumoId/" + articuloToEdit?.id, await getAccessTokenSilently({}));
+      setImages(imagenes);
+    } catch (error) {
+      console.error("Error al obtener las imágenes", error);
+    }
+  };
   useEffect(() => {
-    fetchUnidadesMedida();
     fetchCategorias();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+    fetchUnidadesMedida();
+    // Llamada a la función fetchImagenes
+    if (articuloToEdit?.id != 0) {
+      fetchImagenes();
+    }else{
+      setImages([])
+    }
+  }, [articuloToEdit?.id]);
+  
+  console.log(articuloToEdit?.id)
+    console.log(images)
   return (
     <Modal
       id={"modal"}
@@ -168,8 +189,8 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   values.id.toString(),
                   values, await getAccessTokenSilently({})
                 );
-                console.log("Se ha actualizado correctamente.");
-                articuloId = values.id.toString();
+                // console.log("Se ha actualizado correctamente.");
+                articuloId = values.id.toString();             
               } else {
                 console.log(values);
                 if(sucursalId){
@@ -374,6 +395,11 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   ))}
                 </Field>
               </Row>
+              {articuloToEdit && images.length > 0 && (
+                <Row>
+                  <ImageSlider images={images} urlParteVariable="articuloInsumo" />
+                </Row>
+              )}
               <Row className="mt-4">
                 <Col className="text-end">
                   <Button
