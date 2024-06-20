@@ -19,7 +19,7 @@ export abstract class AbstractBackendClient<T> {
     abstract uploadFile(url: string, file: File, id: string, token: string): Promise<Response>;
 
     //Método abstracto para eliminar imagen
-    abstract deleteImage(url: string, publicId: string, id: string, token: string): Promise<Response>;
+    abstract deleteImage(url: string, publicId: string,  id: string, token: string): Promise<Response>;
 
   }
   

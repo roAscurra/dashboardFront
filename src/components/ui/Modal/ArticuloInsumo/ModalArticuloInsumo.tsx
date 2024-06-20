@@ -13,8 +13,8 @@ import Categoria from "../../../../types/Categoria";
 import ImagenArticulo from "../../../../types/ImagenArticulo";
 import { useParams } from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
-import ImagenArticuloService from "../../../../services/ImagenArticuloService";
-import ImageSlider from "../../ImagesSlider/ImageSlider";
+import ImageSlider from "../../ImagesSlicer/ImageSlider";
+// import ImagenArticuloService from "../../../../services/ImagenArticuloService";
 
 interface ModalArticuloInsumoProps {
   getArticulosInsumo: () => void;
@@ -29,11 +29,11 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   const articuloInsumoService = new ArticuloInsumoService();
   const unidadService = new UnidadMedidaService();
   const categoriaService = new CategoriaService();
-  const imagenService = new ImagenArticuloService();
-  const [images, setImages] = useState<ImagenArticulo[]>([]);
+  // const imagenService = new ImagenArticuloService();
+  // const [images, setImages] = useState<ImagenArticulo[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<IUnidadMedida[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const url = import.meta.env.VITE_API_URL;
 
   const initialValues: ArticuloInsumo = {
@@ -46,15 +46,15 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     stockMaximo: articuloToEdit ? articuloToEdit.stockMaximo : 0,
     stockMinimo: articuloToEdit ? articuloToEdit.stockMinimo : 0,
     esParaElaborar: articuloToEdit ? articuloToEdit.esParaElaborar : false,
-    imagenes: articuloToEdit
-      ? articuloToEdit.imagenes?.map(
-          (imagen: any) =>
-            ({
-              url: imagen.url,
-              name: "image",
-            } as ImagenArticulo)
-        )
-      : [],
+    imagenes: articuloToEdit ? articuloToEdit.imagenes.map(
+        (imagen: any) =>
+          ({
+            url: imagen.url,
+            name: "image",
+            id: imagen.id
+          } as ImagenArticulo)
+      )
+    : [],
     unidadMedida:
       articuloToEdit && articuloToEdit.unidadMedida
         ? { ...articuloToEdit.unidadMedida }
@@ -96,28 +96,25 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
-    setImages([])
     dispatch(toggleModal({ modalName: "modal" }));
+    getArticulosInsumo(); // Llamar a la función para actualizar los datos
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      setFiles(Array.from(e.target.files));
     }
   };
   const fetchCategorias = async () => {
     try {
       if (sucursalId) {
         const parsedSucursalId = parseInt(sucursalId, 10); 
-
         const categorias = await categoriaService.categoriaSucursal(url, parsedSucursalId, await getAccessTokenSilently({}));
-  
         setCategorias(categorias);
       }
     } catch (error) {
       console.error("Error al obtener las categorías:", error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   };
 
   const fetchUnidadesMedida = async () => {
@@ -129,28 +126,31 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     }
   };
 
-  // Función para obtener las imágenes del artículo
-  const fetchImagenes = async () => {
-    try {
-      const imagenes = await imagenService.getAll(url + "articuloInsumo/getAllImagesByInsumoId/" + articuloToEdit?.id, await getAccessTokenSilently({}));
-      setImages(imagenes);
-    } catch (error) {
-      console.error("Error al obtener las imágenes", error);
+  useEffect(() => {
+    fetchUnidadesMedida();
+    fetchCategorias();
+  }, []);
+  const handleUpload = async (articuloId: string) => {
+    if (files.length > 0 && articuloId) {
+      try {
+        const accessToken = await getAccessTokenSilently({});
+        const uploadPromises = files.map(file =>
+          articuloInsumoService.uploadFile(
+            `${url}articuloInsumo/uploads`,
+            file,
+            articuloId,
+            accessToken
+          )
+        );
+        const responses = await Promise.all(uploadPromises);
+        console.log("Upload successful:", responses);
+      } catch (error) {
+        console.error("Error uploading files:", error);
+      }
+    } else {
+      console.log("No files or articuloId not set.");
     }
   };
-  useEffect(() => {
-    fetchCategorias();
-    fetchUnidadesMedida();
-    // Llamada a la función fetchImagenes
-    if (articuloToEdit?.id != 0) {
-      fetchImagenes();
-    }else{
-      setImages([])
-    }
-  }, [articuloToEdit?.id]);
-  
-  console.log(articuloToEdit?.id)
-    console.log(images)
   return (
     <Modal
       id={"modal"}
@@ -184,15 +184,21 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
               let articuloId: string | null = null;
 
               if (articuloToEdit) {
+                // Guardar el ID del artículo actualizado si es necesario
+                articuloId = values.id.toString();     
+                if (files.length > 0 && articuloId) {
+                  handleUpload(articuloId);
+                } 
+                // Llamar al servicio put y capturar la respuesta
                 await articuloInsumoService.put(
                   url + "articuloInsumo",
                   values.id.toString(),
-                  values, await getAccessTokenSilently({})
+                  values,
+                  await getAccessTokenSilently({})
                 );
-                // console.log("Se ha actualizado correctamente.");
-                articuloId = values.id.toString();             
+                                
+                handleClose();       
               } else {
-                console.log(values);
                 if(sucursalId){
                   const sucursalIdNumber = parseInt(sucursalId);
                   values.sucursal.id = sucursalIdNumber;
@@ -201,23 +207,13 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   url + "articuloInsumo",
                   values, await getAccessTokenSilently({})
                 );
-
-                console.log("Se ha agregado correctamente.");
-
                 articuloId = response.id.toString();
+                if (files.length > 0 && articuloId) {
+                  handleUpload(articuloId);
+                }
+                handleClose();
               }
 
-              if (file && articuloId) {
-                const response = await articuloInsumoService.uploadFile(
-                  url + "articuloInsumo/uploads",
-                  file,
-                  articuloId, await getAccessTokenSilently({})
-                );
-                console.log("Upload successful:", response);
-              }
-
-              getArticulosInsumo();
-              handleClose();
             } catch (error) {
               console.error("Error al realizar la operación:", error);
             }
@@ -265,6 +261,46 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                     className="error-message"
                     component="div"
                   />
+                  <label htmlFor="esParaElaborar">Es para elaborar:</label>
+                  <Field
+                    name="esParaElaborar"
+                    as="select" // Utiliza "as" para especificar que este campo es un select
+                    className="form-control"
+                  >
+                    <option value="true">Sí</option> {/* Opción "Sí" */}
+                    <option value="false">No</option> {/* Opción "No" */}
+                  </Field>
+                  <ErrorMessage
+                    name="esParaElaborar"
+                    className="error-message"
+                    component="div"
+                  />
+                  <label htmlFor="categoria">Categoria:</label>
+                  <Field
+                    name="categoria"
+                    as="select"
+                    className="form-control"
+                    onChange={(event: { target: { value: string } }) => {
+                      const categoriaSelect = parseInt(event.target.value);
+                      const selectedCategoria = categorias.find(
+                        (categoria) => categoria.id === categoriaSelect
+                      );
+
+                      if (selectedCategoria) {
+                        setFieldValue("categoria", selectedCategoria);
+                      } else {
+                        console.error("No se encontró la categoria seleccionada");
+                      }
+                    }}
+                    value={values.categoria ? values.categoria.id : ""}
+                  >
+                    <option value="">Seleccionar categoria</option>
+                    {categorias.map((categoria) => (
+                      <option key={categoria.id} value={categoria.id}>
+                        {categoria.denominacion}
+                      </option>
+                    ))}
+                  </Field>
                 </Col>
                 <Col>
                   <label htmlFor="stockActual">Stock Actual:</label>
@@ -329,75 +365,19 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                       </option>
                     ))}
                   </Field>
-
-                  <label htmlFor="esParaElaborar" className="mt-3">
-                    Es para elaborar:
-                  </label>
-                  <Field
-                    name="esParaElaborar"
-                    type="checkbox"
-                    className="form-check-input mx-2 mt-4"
-                    style={{ border: "1px solid #333" }}
-                  />
-                  <ErrorMessage
-                    name="esParaElaborar"
-                    className="error-message"
-                    component="div"
-                  />
-                </Col>
-              </Row>
-
-              <Row className="mt-3">
-                <Col>
                   <label htmlFor="imagenes">Imágenes:</label>
                   <input
                     name="imagen"
                     type="file"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                      const files = event.target.files;
-                      if (files && files.length > 0) {
-                        // Si se selecciona una imagen nueva, maneja el cambio de archivo
-                        handleFileChange(event);
-                      } else {
-                        
-                        // Si no se selecciona ninguna imagen nueva, no hagas nada para mantener las imágenes existentes
-                      }
-                    }}
                     className="form-control my-2"
+                    onChange={handleFileChange}
+                    multiple
                   />
                 </Col>
               </Row>
-              <Row>
-                <label htmlFor="categoria">Categoria:</label>
-                <Field
-                  name="categoria"
-                  as="select"
-                  className="form-control"
-                  onChange={(event: { target: { value: string } }) => {
-                    const categoriaSelect = parseInt(event.target.value);
-                    const selectedCategoria = categorias.find(
-                      (categoria) => categoria.id === categoriaSelect
-                    );
-
-                    if (selectedCategoria) {
-                      setFieldValue("categoria", selectedCategoria);
-                    } else {
-                      console.error("No se encontró la categoria seleccionada");
-                    }
-                  }}
-                  value={values.categoria ? values.categoria.id : ""}
-                >
-                  <option value="">Seleccionar categoria</option>
-                  {categorias.map((categoria) => (
-                    <option key={categoria.id} value={categoria.id}>
-                      {categoria.denominacion}
-                    </option>
-                  ))}
-                </Field>
-              </Row>
-              {articuloToEdit && images.length > 0 && (
+              {values.imagenes.length > 0 && (
                 <Row>
-                  <ImageSlider images={images} urlParteVariable="articuloInsumo" />
+                  <ImageSlider images={values.imagenes} urlParteVariable="articuloInsumo" />
                 </Row>
               )}
               <Row className="mt-4">

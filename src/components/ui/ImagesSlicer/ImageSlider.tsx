@@ -25,42 +25,54 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, urlParteVariable }) =
       '¿Estás seguro de que deseas eliminar esta imagen?'
     );
     if (!confirmDelete) return;
-
-    setIsLoading(true); // Activar indicador de carga
-
+  
+    setIsLoading(true); // Establecer isLoading a true antes de comenzar la eliminación
+  
     try {
+      // Realizar eliminación de imagen
       await imagenService.deleteImage(
         `${url}${urlParteVariable}`, // Concatenar la parte variable a la URL
         publicId,
         imagenId.toString(),
         await getAccessTokenSilently()
       );
+      
+      // Actualizar el estado después de eliminar la imagen
       const updatedImages = sliderImages.filter((image) => image.id !== imagenId);
       setSliderImages(updatedImages);
       console.log('Imagen eliminada correctamente.');
     } catch (error) {
       console.error('Error al eliminar la imagen:', error);
     } finally {
-      setIsLoading(false); // Desactivar indicador de carga
+      setIsLoading(false); // Establecer isLoading a false después de completar la operación, ya sea exitosa o con error
     }
   };
+  
   return (
     <>
-      {isLoading && <Spinner className='text-center' animation="border" role="status" />}
-      <Carousel style={{ visibility: isLoading ? 'hidden' : 'visible' }}> {/* Ocultar el Carousel mientras se carga */}
+      {isLoading && (
+        <div className='d-flex justify-content-center align-items-center' style={{ minHeight: '150px' }}>
+          <Spinner animation="border" role="status" />
+        </div>
+      )}
+      <Carousel 
+      prevIcon={<span className="carousel-control-prev-icon" />}
+      nextIcon={<span className="carousel-control-next-icon" />}>
         {sliderImages.map((image) => (
-          <Carousel.Item key={image.id}>
-            <div className="d-flex justify-content-center align-items-center" style={{ height: '300px' }}>
+          <Carousel.Item key={image.url}>
+            <div className="d-flex justify-content-center align-items-center" style={{ height: '150px' }}>
               <img
                 className="img-fluid"
                 src={image.url}
                 alt="Imagen del artículo"
-                style={{ maxWidth: '100%', maxHeight: '80%', objectFit: 'contain' }} // Estilos para ajustar el tamaño de la imagen
+                style={{ maxWidth: '100%', maxHeight: '80%', objectFit: 'contain' }}
               />
             </div>
+            <br />
             <Carousel.Caption>
               <Button
                 variant="danger"
+                className='text-light'
                 size="sm"
                 onClick={() => handleDeleteImage(image.url, image.id)}
               >
@@ -73,5 +85,6 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, urlParteVariable }) =
     </>
   );
 };
+
 
 export default ImageSlider;
