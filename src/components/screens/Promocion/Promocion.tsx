@@ -100,8 +100,6 @@ const handleOpenDeleteModal = (rowData: Row) => {
   }, [dispatch, promocionService, sucursalId, url]);
   
   
-  
-  
   useEffect(() => {
     fetchPromocion();
     onSearch('');
