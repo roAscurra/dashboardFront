@@ -36,7 +36,14 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, urlParteVariable }) =
         imagenId.toString(),
         await getAccessTokenSilently()
       );
-      
+  
+      // Verificar si queda una sola imagen antes de eliminarla
+      if (sliderImages.length === 1) {
+        // Si queda una sola imagen, no permitir eliminarla y mostrar un mensaje
+        alert("No puedes eliminar la última imagen.");
+        return;
+      }
+  
       // Actualizar el estado después de eliminar la imagen
       const updatedImages = sliderImages.filter((image) => image.id !== imagenId);
       setSliderImages(updatedImages);
@@ -47,6 +54,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, urlParteVariable }) =
       setIsLoading(false); // Establecer isLoading a false después de completar la operación, ya sea exitosa o con error
     }
   };
+  
   
   return (
     <>
