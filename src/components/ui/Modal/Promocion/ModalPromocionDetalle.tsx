@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, FormControl } from "react-bootstrap";
 import { TablePagination } from "@mui/material";
 import PromocionDetalle from "../../../../types/PromocionDetalle";
-import ArticuloManufacturadoShorDto from "../../../../types/dto/ArticuloManufacturadoShorDto";
+import ArticuloDto from "../../../../types/dto/ArticuloDto";
 
 interface ModalPromocionDetalleProps {
-  articulosManufacturados: ArticuloManufacturadoShorDto[];
+  articulos: ArticuloDto[];
   show: boolean;
   handleClose: () => void;
   handleAddInsumo: (detalles: PromocionDetalle[]) => void;
@@ -14,7 +14,7 @@ interface ModalPromocionDetalleProps {
 }
 
 const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
-  articulosManufacturados,
+  articulos,
   show,
   handleClose,
   handleAddInsumo,
@@ -22,21 +22,22 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
 }) => {
   const [detalles, setDetalles] = useState<PromocionDetalle[]>(initialDetalles || []);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 5;
-  const [filteredInsumos, setFilteredInsumos] = useState<ArticuloManufacturadoShorDto[]>(articulosManufacturados);
-  const [selectedInsumos, setSelectedInsumos] = useState<ArticuloManufacturadoShorDto[]>([]);
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+  const [filteredInsumos, setFilteredInsumos] = useState<ArticuloDto[]>(articulos);
+  const [selectedInsumos, setSelectedInsumos] = useState<ArticuloDto[]>([]);
 
   useEffect(() => {
-    const updatedFilteredInsumos = articulosManufacturados.filter((insumo) =>
+    const updatedFilteredInsumos = articulos.filter((insumo) =>
       insumo.denominacion.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredInsumos(updatedFilteredInsumos);
-  }, [articulosManufacturados, searchQuery]);
+    setPage(0);  // Reset to first page on search query change
+  }, [articulos, searchQuery]);
 
   const handleCheckboxChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    insumo: ArticuloManufacturadoShorDto
+    insumo: ArticuloDto
   ) => {
     const isChecked = e.target.checked;
     if (isChecked) {
@@ -49,9 +50,8 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
     }
   };
 
-  
   const handleAgregarInsumos = () => {
-    const existingInsumos = selectedInsumos.filter(insumo => detalles.some(detalle => detalle.articuloManufacturado.id === insumo.id));
+    const existingInsumos = selectedInsumos.filter(insumo => detalles.some(detalle => detalle.articulo.id === insumo.id));
     
     if (existingInsumos.length > 0) {
       alert(`Los siguientes insumos ya están agregados: ${existingInsumos.map(insumo => insumo.denominacion).join(", ")}`);
@@ -59,7 +59,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
       const newDetalles = selectedInsumos.map((insumo) => ({
         cantidad: 1,
         eliminado: false,
-        articuloManufacturado: insumo,
+        articulo: insumo,
         id: 0,
       }));
     
@@ -87,18 +87,15 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-    setCurrentPage(1);
   };
 
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const indexOfLastItem = (page + 1) * rowsPerPage;
+  const indexOfFirstItem = page * rowsPerPage;
   const paginatedInsumos = filteredInsumos.slice(indexOfFirstItem, indexOfLastItem);
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setPage(0);  // Reset to first page on rows per page change
   };
 
   const handleChangePage = (_event: unknown, newPage: number) => {
@@ -109,6 +106,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
     const updatedDetalles = detalles.filter((_, index) => index !== detalleIndex);
     setDetalles(updatedDetalles);
   };
+
   return (
     <Modal
       id={"modal"}
@@ -121,7 +119,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
       style={{ boxShadow: "0 0 20px rgba(0, 0, 2, 0.5)" }}
     >
       <Modal.Header closeButton>
-        <Modal.Title>Agregar Insumo</Modal.Title>
+        <Modal.Title>Agregar Producto</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div
@@ -133,7 +131,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
         >
           <FormControl
             type="text"
-            placeholder="Buscar insumo por nombre"
+            placeholder="Buscar producto por nombre"
             value={searchQuery}
             onChange={handleSearchChange}
           />
@@ -159,8 +157,8 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
             </tr>
           </thead>
           <tbody>
-            {paginatedInsumos.map((producto, index) => (
-              <tr key={index}>
+            {paginatedInsumos.map((producto) => (
+              <tr key={producto.id}>
                 <td>{producto.denominacion}</td>
                 <td>{producto.precioVenta}</td>
                 <td>{producto.categoria.denominacion}</td>
@@ -168,7 +166,8 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
                 <td>
                   <input
                     type="checkbox"
-                    id={`insumo-${index}`}
+                    id={`insumo-${producto.id}`}
+                    checked={selectedInsumos.some(insumo => insumo.id === producto.id)}
                     onChange={(e) => handleCheckboxChange(e, producto)}
                   />
                 </td>
@@ -187,7 +186,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
         />
         {detalles && detalles.length > 0 && (
           <div>
-            <h3>Artículos Manufacturados Agregados</h3>
+            <h3>Artículos Agregados</h3>
             <table className="table">
               <thead>
                 <tr>
@@ -198,7 +197,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
               <tbody>
                 {detalles.map((detalle, index) => (
                   <tr key={index}>
-                    <td>{detalle.articuloManufacturado.denominacion}</td>
+                    <td>{detalle.articulo.denominacion}</td>
                     <td>
                       <input
                         type="number"
@@ -221,7 +220,6 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
             </table>
           </div>
         )}
-
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleGuardarInsumo}>
