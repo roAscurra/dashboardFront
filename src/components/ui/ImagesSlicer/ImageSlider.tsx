@@ -21,6 +21,12 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, urlParteVariable }) =
   const url = import.meta.env.VITE_API_URL;
 
   const handleDeleteImage = async (publicId: string, imagenId: number) => {
+    // Verificar si queda una sola imagen antes de eliminarla
+    if (sliderImages.length === 1) {
+      // Si queda una sola imagen, no permitir eliminarla y mostrar un mensaje
+      alert("No puedes eliminar la única imagen.");
+      return;
+    }
     const confirmDelete = window.confirm(
       '¿Estás seguro de que deseas eliminar esta imagen?'
     );
@@ -37,13 +43,6 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, urlParteVariable }) =
         await getAccessTokenSilently()
       );
   
-      // Verificar si queda una sola imagen antes de eliminarla
-      if (sliderImages.length === 1) {
-        // Si queda una sola imagen, no permitir eliminarla y mostrar un mensaje
-        alert("No puedes eliminar la última imagen.");
-        return;
-      }
-  
       // Actualizar el estado después de eliminar la imagen
       const updatedImages = sliderImages.filter((image) => image.id !== imagenId);
       setSliderImages(updatedImages);
@@ -55,7 +54,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, urlParteVariable }) =
     }
   };
   
-  
+  console.log(images)
   return (
     <>
       {isLoading && (
@@ -72,7 +71,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, urlParteVariable }) =
               <img
                 className="img-fluid"
                 src={image.url}
-                alt="Imagen del artículo"
+                alt="Imagen"
                 style={{ maxWidth: '100%', maxHeight: '80%', objectFit: 'contain' }}
               />
             </div>

@@ -44,7 +44,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const promocionDetalleService = new PromocionDetalleService();
   const sucursalService = new SucursalShortDtoService();
   const [sucursales, setSucursales] = useState<SucursalShorDto[]>([]);
-  const modal = useAppSelector((state) => state.modal.modal);
+  const modal = useAppSelector((state: any) => state.modal.modal);
   const dispatch = useAppDispatch();
   const [totalPrecioPromocional, setTotalPrecioPromocional] = useState<number>(0);
 

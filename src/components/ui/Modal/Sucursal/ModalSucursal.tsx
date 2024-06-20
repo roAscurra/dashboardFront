@@ -16,6 +16,8 @@ import Provincia from "../../../../types/Provincia";
 import PaisService from "../../../../services/PaisService";
 import Pais from "../../../../types/Pais";
 import {useAuth0} from "@auth0/auth0-react";
+import Imagen from "../../../../types/Imagen";
+import ImageSlider from "../../ImagesSlicer/ImageSlider";
 
 interface ModalSucursalProps {
   getSucursal: () => void;
@@ -53,63 +55,64 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-  const initialValues: Sucursal = sucursalToEdit
-    ? {
-      ...sucursalToEdit,
-      localidadId: sucursalToEdit.domicilio.localidad.id,
-    }
-    : {
-      id: 0,
-      eliminado: false,
-      nombre: "",
-      horarioApertura: formatTime(new Date()),
-      horarioCierre: formatTime(new Date()),
-      esCasaMatriz: false,
-      localidadId: 0, // Assuming localidadId is part of Sucursal
-      imagen: {
-        id: 0,
-        name: "",
-        url: "",
-        eliminado: false,
-      },
-      domicilio: {
-        id: 0,
-        eliminado: false,
-        calle: "",
-        numero: 0,
-        cp: 0,
-        piso: 0,
-        nroDpto: 0,
-        localidad: {
-          id: 0,
-          eliminado: false,
-          nombre: "",
-          provincia: {
-            id: 0,
-            eliminado: false,
-            nombre: "",
-            pais: {
-              id: 0,
-              eliminado: false,
-              nombre: "",
-            },
+  const initialValues: Sucursal = {
+    id: sucursalToEdit ? sucursalToEdit.id : 0,
+    eliminado: sucursalToEdit ? sucursalToEdit.eliminado : false,
+    nombre: sucursalToEdit ? sucursalToEdit.nombre : "",
+    horarioApertura: sucursalToEdit ? sucursalToEdit.horarioApertura : formatTime(new Date()),
+    horarioCierre: sucursalToEdit ? sucursalToEdit.horarioCierre : formatTime(new Date()),
+    esCasaMatriz: sucursalToEdit ? sucursalToEdit.esCasaMatriz : false,
+    localidadId: sucursalToEdit ? sucursalToEdit.localidadId : 0,
+    imagenes: sucursalToEdit ? (sucursalToEdit.imagenes.map(
+      (imagen: any): Imagen => ({
+        id: imagen.id,
+        eliminado: imagen.eliminado,
+        url: imagen.url,
+        name: "image",
+      })
+    ) || []) : [],
+    domicilio: {
+      id: sucursalToEdit ? sucursalToEdit.domicilio.id : 0,
+      eliminado: sucursalToEdit ? sucursalToEdit.domicilio.eliminado : false,
+      calle: sucursalToEdit ? sucursalToEdit.domicilio.calle : "",
+      numero: sucursalToEdit ? sucursalToEdit.domicilio.numero : 0,
+      cp: sucursalToEdit ? sucursalToEdit.domicilio.cp : 0,
+      piso: sucursalToEdit ? sucursalToEdit.domicilio.piso : 0,
+      nroDpto: sucursalToEdit ? sucursalToEdit.domicilio.nroDpto : 0,
+      localidad: {
+        id: sucursalToEdit ? sucursalToEdit.domicilio.localidad.id : 0,
+        eliminado: sucursalToEdit ? sucursalToEdit.domicilio.localidad.eliminado : false,
+        nombre: sucursalToEdit ? sucursalToEdit.domicilio.localidad.nombre : "",
+        provincia: {
+          id: sucursalToEdit ? sucursalToEdit.domicilio.localidad.provincia.id : 0,
+          eliminado: sucursalToEdit ? sucursalToEdit.domicilio.localidad.provincia.eliminado : false,
+          nombre: sucursalToEdit ? sucursalToEdit.domicilio.localidad.provincia.nombre : "",
+          pais: {
+            id: sucursalToEdit ? sucursalToEdit.domicilio.localidad.provincia.pais.id : 0,
+            eliminado: sucursalToEdit ? sucursalToEdit.domicilio.localidad.provincia.pais.eliminado : false,
+            nombre: sucursalToEdit ? sucursalToEdit.domicilio.localidad.provincia.pais.nombre : "",
           },
         },
       },
-      empresa: {
-        id: 0,
-        eliminado: false,
-        nombre: "",
-        razonSocial: "",
-        cuil: 0,
-        imagen: {
-          id: 0,
-          name: "",
-          url: "",
-          eliminado: false,
-        },
-      },
-    };
+    },
+    empresa: {
+      id: sucursalToEdit ? sucursalToEdit.empresa.id : 0,
+      eliminado: sucursalToEdit ? sucursalToEdit.empresa.eliminado : false,
+      nombre: sucursalToEdit ? sucursalToEdit.empresa.nombre : "",
+      razonSocial: sucursalToEdit ? sucursalToEdit.empresa.razonSocial : "",
+      cuil: sucursalToEdit ? sucursalToEdit.empresa.cuil : 0,
+      imagenes: sucursalToEdit ? (sucursalToEdit.empresa.imagenes.map(
+        (imagen: any): Imagen => ({
+          id: imagen.id,
+          eliminado: imagen.eliminado,
+          url: imagen.url,
+          name: "image",
+        })
+      ) || []) : [],
+    },
+  };
+  
+  
 
   const modal = useAppSelector((state: any) => state.modal[modalName]);
   const dispatch = useAppDispatch();
@@ -292,7 +295,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
             }
           }}
         >
-          {({ setFieldValue, isSubmitting }) => (
+          {({ values, setFieldValue, isSubmitting }) => (
             <Form autoComplete="off">
               <Row>
                 {/* Primera columna */}
@@ -420,6 +423,9 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                       setFieldValue("localidadId", value);
                     }}
                     disabled={!selectedProvincia || !selectedPais} // Deshabilita el selector si no se ha seleccionado una provincia
+                    value={
+                      initialValues.domicilio.localidad.id
+                    }
                   >
                     <option value="">
                       Seleccione una localidad
@@ -492,15 +498,16 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   <label htmlFor="logo">Logo:</label>
                   <br />
                   <input
-                    name="imagen"
                     type="file"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                      handleFileChange(event);
-                    }}
-                    className="form-control my-2"
+                    onChange={handleFileChange}
                   />
                 </Col>
               </Row>
+              {values.imagenes.length > 0 && (
+                  <div className="mb-4">
+                    <ImageSlider images={values.imagenes} urlParteVariable="empresa" />
+                  </div>
+                )}
               <div className="d-flex justify-content-end">
                 <Button
                   variant="outline-success"

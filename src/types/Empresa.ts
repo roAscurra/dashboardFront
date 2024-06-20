@@ -6,7 +6,7 @@ interface Empresa extends DataModel<Empresa>{
     nombre: string;
     razonSocial: string;
     cuil: number;
-    imagen: Imagen;
+    imagenes: Imagen [];
 }
 
 export default Empresa;

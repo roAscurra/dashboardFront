@@ -9,7 +9,7 @@ interface Sucursal extends DataModel<Sucursal>{
     horarioApertura: string;
     horarioCierre: string;
     esCasaMatriz: boolean;
-    imagen: Imagen;
+    imagenes: Imagen[];
     domicilio: Domicilio;
     empresa: Empresa;
 }
