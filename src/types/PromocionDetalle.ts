@@ -1,10 +1,10 @@
 // import IArticuloManufacturado from "./ArticuloManufacturado";
 import DataModel from "./DataModel";
-import ArticuloManufacturadoShorDto from "./dto/ArticuloManufacturadoShorDto";
+import ArticuloDto from "./dto/ArticuloDto";
 
 interface PromocionDetalle extends DataModel<PromocionDetalle>{
   cantidad: number,
-  articuloManufacturado: ArticuloManufacturadoShorDto
+  articulo: ArticuloDto
 }
 
 export default PromocionDetalle;
