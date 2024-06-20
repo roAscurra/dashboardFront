@@ -11,8 +11,9 @@ import ListItemText from '@mui/material/ListItemText';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
 import SucursalService from '../../../services/SucursalService';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { useAuth0 } from "@auth0/auth0-react";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface BaseNavBarProps {
   title: string;
@@ -25,6 +26,7 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
   const [sucursalName, setSucursalName] = useState<string>("");
   const sucursalService = new SucursalService();
   const url = import.meta.env.VITE_API_URL;
+  const location = useLocation();
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -41,7 +43,6 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
   const handleLogout = () => {
     logout({
       logoutParams: {
-        // returnTo: "http://localhost:5173/"
         returnTo: "https://dashboard-front-five.vercel.app/"
       }
     });
@@ -60,15 +61,32 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
 
   useEffect(() => {
     fetchSucursalData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sucursalId]);
 
   const displayedTitle = title === '' ? `Sucursal ${sucursalName}` : title;
+
+  const handleGoBack = () => {
+    window.history.back(); // Simular el comportamiento de navegar hacia atrás en el historial del navegador
+  };
+
+  console.log(user)
 
   return (
     <Box sx={{ marginBottom: 1 }}>
       <AppBar position="static" sx={{ bgcolor: "#9c27b0", height: 80, marginBottom: 1, display: 'flex', justifyContent: 'center' }}>
         <Toolbar>
+          {location.pathname !== '/' && user['https://buensaborgrupal.com/roles'][0] === 'SUPERADMIN' && (
+            <IconButton
+              size="large"
+              edge="start"
+              aria-label="go back"
+              color="inherit"
+              sx={{ marginRight: 1 }}
+              onClick={handleGoBack} // Manejar clic en el botón de flecha hacia atrás
+            >
+              <ArrowBackIcon />
+            </IconButton>
+          )}
           <Typography
             variant="h6"
             noWrap
@@ -77,8 +95,8 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
           >
             {displayedTitle}
           </Typography>
-          <Box component="div" sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-            <p style={{ margin: 0}}>
+          <Box component="div" sx={{ display: 'flex', alignItems: 'center' }}>
+            <p style={{ margin: 0 }}>
               {user?.name}
             </p>
             <IconButton
