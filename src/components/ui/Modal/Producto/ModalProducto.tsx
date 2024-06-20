@@ -243,9 +243,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({
             precioVenta: Yup.number().required("Campo requerido"),
             descripcion: Yup.string().required("Campo requerido"),
             preparacion: Yup.string().required("Campo requerido"),
-            // categoria: Yup.number().required('Campo requerido'), // Agregar validación para la categoría
-            // unidadMedida: Yup.string().required('Campo requerido'), // Agregar validación para la unidad de medida
             tiempoEstimadoMinutos: Yup.number().required("Campo requerido"),
+            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")
           })}
           initialValues={initialValues}
           onSubmit={async (values: ArticuloManufacturado) => {
@@ -303,7 +302,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   />
                   <ErrorMessage
                     name="denominacion"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
 
@@ -316,7 +315,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   />
                   <ErrorMessage
                     name="precioVenta"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
 
@@ -329,7 +328,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   />
                   <ErrorMessage
                     name="preparacion"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
 
@@ -354,7 +353,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     }}
                     value={values.categoria ? values.categoria.id : ""}
                   >
-                    <option value="">Seleccionar categoria</option>
                     {categorias.map((categoria) => (
                       <option key={categoria.id} value={categoria.id}>
                         {categoria.denominacion}
@@ -363,7 +361,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   </Field>
                   <ErrorMessage
                     name="categoria"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </Col>
@@ -379,7 +377,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   />
                   <ErrorMessage
                     name="tiempoEstimadoMinutos"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
 
@@ -392,7 +390,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   />
                   <ErrorMessage
                     name="descripcion"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
 
@@ -415,7 +413,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     }}
                     value={values.unidadMedida ? values.unidadMedida.id : ""}
                   >
-                    <option value="">Seleccionar Unidad de Medida</option>
                     {unidadesMedida.map((unidad) => (
                       <option key={unidad.id} value={unidad.id}>
                         {unidad.denominacion}
@@ -425,7 +422,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 
                   <ErrorMessage
                     name="unidadMedida"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                   <label htmlFor="imagenes">Imágenes:</label>
@@ -438,7 +435,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   />
                   <ErrorMessage
                     name="imagen"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </Col>

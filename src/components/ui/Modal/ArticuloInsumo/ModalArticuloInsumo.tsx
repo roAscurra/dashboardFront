@@ -176,25 +176,34 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
             stockActual: Yup.number().required("Campo requerido"),
             stockMaximo: Yup.number().required("Campo requerido"),
             esParaElaborar: Yup.boolean().required("Campo requerido"),
+            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")
           })}
           initialValues={initialValues}
           onSubmit={async (values: ArticuloInsumo) => {
             try {
               let articuloId: string | null = null;
-
+              
               if (articuloToEdit) {
-                // Guardar el ID del artículo actualizado si es necesario
-                articuloId = values.id.toString();     
-                if (files.length > 0 && articuloId) {
-                  handleUpload(articuloId);
-                } 
-                // Llamar al servicio put y capturar la respuesta
-                await articuloInsumoService.put(
-                  url + "articuloInsumo",
-                  values.id.toString(),
-                  values,
-                  await getAccessTokenSilently({})
-                );   
+                console.log( values.imagenes.length)
+                if (files.length === 0 && values.imagenes.length === 0) {
+                  // Si no hay archivos adjuntos (imágenes) nuevos y el artículo no tiene imágenes existentes, mostrar un mensaje de error
+                  alert("Debe agregar al menos una imagen.");
+                  return; // Salir de la función onSubmit sin continuar
+                }else{
+                  // Guardar el ID del artículo actualizado si es necesario
+                  articuloId = values.id.toString();     
+                  if (files.length > 0 && articuloId) {
+                    handleUpload(articuloId);
+                  } 
+                  // Llamar al servicio put y capturar la respuesta
+                  await articuloInsumoService.put(
+                    url + "articuloInsumo",
+                    values.id.toString(),
+                    values,
+                    await getAccessTokenSilently({})
+                  );  
+                }
+                 
               } else {
                 if(sucursalId){
                   const sucursalIdNumber = parseInt(sucursalId);
@@ -231,7 +240,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   />
                   <ErrorMessage
                     name="denominacion"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
 
@@ -244,7 +253,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   />
                   <ErrorMessage
                     name="precioVenta"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
 
@@ -257,7 +266,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   />
                   <ErrorMessage
                     name="precioCompra"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                   <label htmlFor="esParaElaborar">Es para elaborar:</label>
@@ -271,7 +280,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   </Field>
                   <ErrorMessage
                     name="esParaElaborar"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                   <label htmlFor="categoria">Categoria:</label>
@@ -293,7 +302,6 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                     }}
                     value={values.categoria ? values.categoria.id : ""}
                   >
-                    <option value="">Seleccionar categoria</option>
                     {categorias.map((categoria) => (
                       <option key={categoria.id} value={categoria.id}>
                         {categoria.denominacion}
@@ -323,7 +331,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   />
                   <ErrorMessage
                     name="stockMaximo"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                   <label htmlFor="stockMinimo">Stock Minimo:</label>
@@ -335,7 +343,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   />
                   <ErrorMessage
                     name="stockMinimo"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                   <label htmlFor="unidadMedida">Unidad de Medida:</label>
@@ -357,7 +365,6 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                     }}
                     value={values.unidadMedida ? values.unidadMedida.id : ""}
                   >
-                    <option value="">Seleccionar Unidad de Medida</option>
                     {unidadesMedida.map((unidad) => (
                       <option key={unidad.id} value={unidad.id}>
                         {unidad.denominacion}
@@ -371,6 +378,11 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                     className="form-control my-2"
                     onChange={handleFileChange}
                     multiple
+                  />
+                  <ErrorMessage
+                    name="imagenes"
+                    className="error-message text-danger"
+                    component="div"
                   />
                 </Col>
               </Row>

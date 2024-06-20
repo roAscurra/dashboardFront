@@ -246,6 +246,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
             fechaHasta: Yup.date().required("Campo requerido"),
             descripcionDescuento: Yup.string().required("Campo requerido"),
             precioPromocional: Yup.number().required("Campo requerido"),
+            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")
           })}
           initialValues={initialValues}
           onSubmit={async (values) => {
@@ -357,7 +358,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   />
                   <ErrorMessage
                     name="denominacion"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -370,7 +371,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   />
                   <ErrorMessage
                     name="fechaDesde"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -383,7 +384,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   />
                   <ErrorMessage
                     name="fechaHasta"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -402,7 +403,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   />
                   <ErrorMessage
                     name="horaDesde"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -421,7 +422,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   />
                   <ErrorMessage
                     name="horaHasta"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -437,7 +438,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   />
                   <ErrorMessage
                     name="descripcionDescuento"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -451,7 +452,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     />
                   <ErrorMessage
                     name="precioPromocional"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -467,7 +468,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   </Field>
                   <ErrorMessage
                     name="tipoPromocion"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>

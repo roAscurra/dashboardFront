@@ -82,7 +82,7 @@ const handleOpenDeleteModal = (rowData: Row) => {
 
    // Definiendo fetchSucursal con useCallback
    const fetchPromocion = useCallback(async () => {
-    try {  
+    try { 
       // Si hay una sucursal seleccionada, filtrar las promociones por la sucursal
       if (sucursalId) {
         
