@@ -130,7 +130,6 @@ export const ListaProductos = () => {
 
 
   const handleAddProduct = () => {
-    // Reset cuponToEdit to null when adding a new cupon
     setProductToEdit(null);
     dispatch(toggleModal({ modalName: "modal" }));
   };
@@ -182,24 +181,6 @@ export const ListaProductos = () => {
         } else {
           // Si la unidad de medida no está presente o no tiene denominacion, muestra un valor por defecto
           return <span>Sin unidad de medida</span>;
-        }
-      }
-    },
-    {
-      id: "imagenes",
-      label: "Imágenes",
-      renderCell: (rowData) => {
-        const imagenes = rowData.imagenes;
-        if (imagenes && imagenes.length > 0) {
-          return (
-            <div style={{ display: 'flex', gap: '5px' }}>
-              {imagenes.map((imagen: any, index: number) => (
-                <img key={index} src={imagen.url} alt={`Imagen ${index + 1}`} style={{ width: '100px', height: 'auto' }} />
-              ))}
-            </div>
-          );
-        } else {
-          return <span>No hay imágenes disponibles</span>;
         }
       }
     },

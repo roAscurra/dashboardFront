@@ -65,14 +65,9 @@ export const ListaEmpresa = () => {
   const fetchEmpresa = useCallback(async () => {
     try {
       const empresas = await empresaService.getAll(url + "empresa", await getAccessTokenSilently({}));
-      const empresasConImagenes = await Promise.all(
-        empresas.map(async (empresa) => {
-          const imagenUrl = await fetchImages(empresa.id.toString());
-          return { ...empresa, imagen: imagenUrl };
-        })
-      );
-      dispatch(setEmpresa(empresasConImagenes));
-      setFilterData(empresasConImagenes);
+      console.log(empresas)
+      dispatch(setEmpresa(empresas));
+      setFilterData(empresas);
     } catch (error) {
       console.error("Error al obtener las empresas:", error);
     }
@@ -122,7 +117,7 @@ export const ListaEmpresa = () => {
       nombre: rowData.nombre,
       razonSocial: rowData.razonSocial,
       cuil: rowData.cuil,
-      imagen: rowData.imagen.url,
+      imagenes: rowData.imagenes,
     });
     setDeleteModalOpen(true);
   };
@@ -144,7 +139,7 @@ export const ListaEmpresa = () => {
       nombre: rowData.nombre,
       razonSocial: rowData.razonSocial,
       cuil: rowData.cuil,
-      imagen: rowData.imagen,
+      imagenes: rowData.imagenes,
     });
     dispatch(toggleModal({ modalName: "modal" }));
   };
@@ -262,12 +257,12 @@ if (!user) {
                                           "&:hover": { transform: "scale(1.05)" },
                                       }}
                                   >
-                                      {empresa.imagen !== "" && (
+                                      {empresa.imagenes && empresa.imagenes.length > 0 && empresa.imagenes[0].url !== "" && (
                                           <CardMedia
                                               component="img"
                                               alt={empresa.nombre}
                                               height="140"
-                                              image={empresa.imagen}
+                                              image={empresa.imagenes[0].url}
                                               sx={{
                                                   objectFit: "cover",
                                                   borderRadius: "16px 16px 0 0",
@@ -278,16 +273,15 @@ if (!user) {
 
                                       <CardContent
                                           sx={
-                                              empresa.imagen == ""
-                                                  ? {
-                                                      display: "flex",
-                                                      flexDirection: "column",
-                                                      alignItems: "center",
-                                                      justifyContent: "center",
-                                                      height: "100%",
-                                                      minHeight: 200,
-                                                  }
-                                                  : {}
+                                              (!empresa.imagenes || empresa.imagenes.length === 0 || empresa.imagenes[0].url === "") ? {
+                                                  display: "flex",
+                                                  flexDirection: "column",
+                                                  alignItems: "center",
+                                                  justifyContent: "center",
+                                                  height: "100%",
+                                                  minHeight: 200,
+                                              }
+                                              : {}
                                           }
                                       >
                                           <Link

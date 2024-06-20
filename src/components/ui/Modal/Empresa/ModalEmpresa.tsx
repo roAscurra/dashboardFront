@@ -7,6 +7,8 @@ import { useAppDispatch, useAppSelector } from "../../../../hooks/redux";
 import { toggleModal } from "../../../../redux/slices/Modal";
 import { useState, ChangeEvent } from 'react';
 import {useAuth0} from "@auth0/auth0-react";
+import ImageSlider from "../../ImagesSlicer/ImageSlider";
+import Imagen from "../../../../types/Imagen";
 
 interface ModalEmpresaProps {
   getEmpresa: () => void;
@@ -19,32 +21,25 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
   const url = import.meta.env.VITE_API_URL;
   const { getAccessTokenSilently } = useAuth0();
   const [file, setFile] = useState<File | null>(null);
+console.log(empresaToEdit)
 
-
-  const initialValues: Empresa = empresaToEdit
-  ? {
-      ...empresaToEdit,
-      imagen: {
-        name: "",
-        url: "",
-        eliminado: false,
-        id: 0  // Asegúrate de proporcionar un valor para 'id'
-      }
-    }
-  : {
-      id: 0,
-      eliminado: false,
-      nombre: "",
-      razonSocial: "",
-      cuil: 0,
-      imagen: {
-        name: "",
-        url: "",
-        eliminado: false,
-        id: 0  // Asegúrate de proporcionar un valor para 'id'
-      }
-    };
-
+  const initialValues: Empresa = {
+    id: empresaToEdit ? empresaToEdit.id : 0,
+    eliminado: empresaToEdit ? empresaToEdit.eliminado : false,
+    nombre: empresaToEdit ? empresaToEdit.nombre : "",
+    razonSocial: empresaToEdit ? empresaToEdit.razonSocial : "",
+    cuil: empresaToEdit ? empresaToEdit.cuil : 0,
+    imagenes: empresaToEdit ? empresaToEdit.imagenes.map(
+      (imagen: any) =>
+        ({
+          id: imagen.id,
+          eliminado: imagen.eliminado,
+          url: imagen.url,
+          name: "image",
+        } as Imagen)
+    )
+    : [],
+  };
 
   const modal = useAppSelector((state) => state.modal[modalName]);
   const dispatch = useAppDispatch();
@@ -57,7 +52,6 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
       setFile(e.target.files[0]);
     }
   };
-
   return (
     <Modal
       id={"modal"}
@@ -110,7 +104,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
           }}
           
         >
-          {() => (
+          {({values}) => (
             <>
               <Form autoComplete="off">
                 <div className="mb-4">
@@ -160,9 +154,13 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
                   <input
                     type="file"
                     onChange={handleFileChange}
-                    multiple
                   />
                 </div>
+                {values.imagenes.length > 0 && (
+                  <div className="mb-4">
+                    <ImageSlider images={values.imagenes} urlParteVariable="empresa" />
+                  </div>
+                )}
                 <div className="d-flex justify-content-end">
                 <Button
                     variant="outline-secondary"

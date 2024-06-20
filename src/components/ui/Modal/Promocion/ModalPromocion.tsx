@@ -18,6 +18,7 @@ import SucursalShortDtoService from "../../../../services/dtos/SucursalShortDtoS
 import SucursalShorDto from "../../../../types/dto/SucursalShortDto";
 import { useParams } from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
+import ImageSlider from "../../ImagesSlicer/ImageSlider";
 
 interface ModalPromocionProps {
   getPromocion: () => void;
@@ -29,7 +30,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   promocionToEdit,
 }) => {
   const promocionService = new PromocionService();
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [showInsumoModal, setShowInsumoModal] = useState(false);
   const [modalColor, setModalColor] = useState<string>(""); // Estado para controlar el color de fondo de la modal
   const [articulosManufacturados, setArticulosManufacturados] = useState<ArticuloManufacturadoShorDto[]>([]);
@@ -43,7 +44,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const promocionDetalleService = new PromocionDetalleService();
   const sucursalService = new SucursalShortDtoService();
   const [sucursales, setSucursales] = useState<SucursalShorDto[]>([]);
-  const modal = useAppSelector((state) => state.modal.modal);
+  const modal = useAppSelector((state: any) => state.modal.modal);
   const dispatch = useAppDispatch();
   const [totalPrecioPromocional, setTotalPrecioPromocional] = useState<number>(0);
 
@@ -125,6 +126,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
             ({
               url: imagen.url,
               name: "image",
+              id: imagen.id
             } as Imagen)
         )
       : [],
@@ -192,7 +194,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-        setFile(e.target.files[0]);
+      setFiles(Array.from(e.target.files));
     }
   };
   
@@ -200,6 +202,27 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
     setDetalles(promocionToEdit?.promocionDetalle || []);
   }, [promocionToEdit]);
 
+  const handleUpload = async (articuloId: string) => {
+    if (files.length > 0 && articuloId) {
+      try {
+        const accessToken = await getAccessTokenSilently({});
+        const uploadPromises = files.map(file =>
+          promocionService.uploadFile(
+            `${url}promocion/uploads`,
+            file,
+            articuloId,
+            accessToken
+          )
+        );
+        const responses = await Promise.all(uploadPromises);
+        console.log("Upload successful:", responses);
+      } catch (error) {
+        console.error("Error uploading files:", error);
+      }
+    } else {
+      console.log("No files or articuloId not set.");
+    }
+  };
   return (
     <Modal
       id="modal"
@@ -223,6 +246,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
             fechaHasta: Yup.date().required("Campo requerido"),
             descripcionDescuento: Yup.string().required("Campo requerido"),
             precioPromocional: Yup.number().required("Campo requerido"),
+            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")
           })}
           initialValues={initialValues}
           onSubmit={async (values) => {
@@ -263,18 +287,19 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
 
                 const sucursalesSeleccionadas = values.sucursales;
 
-                // Ahora, en lugar de agregar una sola sucursal (como la de ID 1),
                 // añadimos todas las sucursales seleccionadas al array de sucursales en values
                 values.sucursales = sucursalesSeleccionadas;
-                console.log(values)
                 promocion = await promocionService.put(
                   url + "promocion",
                   values.id.toString(),
                   values, await getAccessTokenSilently({})
                 );
-                console.log("Se ha actualizado correctamente.");
+
+                const promocionId = promocion.id.toString();
+                if (files.length > 0 && promocionId) {
+                  handleUpload(promocionId);
+                }
               } else {
-                console.log(detalles);
                 // Realizar todas las solicitudes 'post' de manera concurrente y recolectar sus respuestas
                 const respuestas = await Promise.all(
                   detalles.map(async (detalle) => {
@@ -306,12 +331,11 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 console.log("Valores actualizados:", values);
 
                 promocion = await promocionService.post(url + "promocion", values, await getAccessTokenSilently({}));
-                console.log("Se ha agregado correctamente.");
-              }
 
-              if (file && promocion.id) {
-                const response = await promocionService.uploadFile(url + 'promocion/uploads', file, promocion.id.toString(), await getAccessTokenSilently({}));
-                console.log('Upload successful:', response);
+                const promocionId = promocion.id.toString();
+                if (files.length > 0 && promocionId) {
+                  handleUpload(promocionId);
+                }
               }
 
               getPromocion();
@@ -334,7 +358,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   />
                   <ErrorMessage
                     name="denominacion"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -347,7 +371,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   />
                   <ErrorMessage
                     name="fechaDesde"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -360,7 +384,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   />
                   <ErrorMessage
                     name="fechaHasta"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -379,7 +403,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   />
                   <ErrorMessage
                     name="horaDesde"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -398,7 +422,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   />
                   <ErrorMessage
                     name="horaHasta"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -414,7 +438,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   />
                   <ErrorMessage
                     name="descripcionDescuento"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -428,7 +452,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     />
                   <ErrorMessage
                     name="precioPromocional"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -444,19 +468,18 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   </Field>
                   <ErrorMessage
                     name="tipoPromocion"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
                 <div className="col-md-4 mb-4">
-                  <label htmlFor="imagen">Imagen:</label>
+                  <label htmlFor="imagenes">Imágenes:</label>
                   <input
-                      name="imagen"
-                      type="file"
-                      onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                          handleFileChange(event);
-                      }}
-                      className="form-control my-2"
+                    name="imagen"
+                    type="file"
+                    className="form-control my-2"
+                    onChange={handleFileChange}
+                    multiple
                   />
                 </div>
                
@@ -514,6 +537,11 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     {promocionToEdit ? "Editar productos" : "Agregar productos"}
                   </Button>
                 </div>
+                {values.imagenes.length > 0 && (
+                  <div className="col-md-4 mb-4">
+                    <ImageSlider images={values.imagenes} urlParteVariable="promocion" />
+                  </div>
+                )}
               </div>
               <div className="d-flex justify-content-end">
                 <Button

@@ -44,19 +44,6 @@ export const ListaArticulosInsumo = () => {
   );
   const {sucursalId} = useParams();
 
-  const fetchImages = useCallback(async (articuloInsumoId: string) => {
-    try {
-      const response = await articuloInsumoService.get(url + 'articuloInsumo/getAllImagesByInsumoId', articuloInsumoId, await getAccessTokenSilently({}));
-
-      if (Array.isArray(response) && response.length > 0) {
-        return response[0].url;
-      }
-      return 'https://via.placeholder.com/150';
-    } catch (error) {
-      return 'https://via.placeholder.com/150';
-    }
-  }, [articuloInsumoService, url]);
-
   const fetchArticulosInsumo = useCallback(async () => {
     try {
       if (sucursalId) {
@@ -69,7 +56,7 @@ export const ListaArticulosInsumo = () => {
     } catch (error) {
       console.error("Error al obtener los artículos de insumo:", error);
     }
-  }, [dispatch, articuloInsumoService, url, fetchImages, sucursalId]);
+  }, [dispatch, articuloInsumoService, url, sucursalId]);
   
 
   useEffect(() => {
@@ -102,17 +89,6 @@ export const ListaArticulosInsumo = () => {
     fetchArticulosInsumo();
   };
   const handleAddArticuloInsumo = () => {
-    // Verificar si el insumo ya existe en la lista mostrada
-    const insumoExistente = filterData.find((articulo) => articulo.id === articuloToEdit?.id);
-    
-    // Si el insumo existe, no permitir agregarlo
-    if (insumoExistente) {
-      // Mostrar un mensaje de error o realizar alguna otra acción, como alertar al usuario
-      console.error("No se puede agregar un insumo que ya existe.");
-      return;
-    }
-    
-    // Si el insumo no existe, abrir el modal para agregar un nuevo artículo
     setArticuloToEdit(null);
     dispatch(toggleModal({ modalName: "modal" }));
   };
@@ -165,26 +141,7 @@ export const ListaArticulosInsumo = () => {
           return <span>Sin unidad de medida</span>;
         }
       }
-    },
-    {
-      id: "imagenes",
-      label: "Imágenes",
-      renderCell: (rowData) => {
-        const imagenes = rowData.imagenes;
-        if (imagenes && imagenes.length > 0) {
-          return (
-            <div style={{ display: 'flex', gap: '5px' }}>
-              {imagenes.map((imagen: any, index: number) => (
-                <img key={index} src={imagen.url} alt={`Imagen ${index + 1}`} style={{ width: '100px', height: 'auto' }} />
-              ))}
-            </div>
-          );
-        } else {
-          return <span>No hay imágenes disponibles</span>;
-        }
-      }
-    },
-
+    }
   ];
 
   return (

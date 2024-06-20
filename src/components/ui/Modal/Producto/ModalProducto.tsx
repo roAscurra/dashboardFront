@@ -17,6 +17,8 @@ import ArticuloInsumoShortService from "../../../../services/dtos/ArticuloInsumo
 // import ArticuloManufacturadoDetalleService from "../../../../services/ArticuloManufacturadoDetalleService.ts";
 import { useParams } from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
+import ImagenArticulo from "../../../../types/ImagenArticulo.ts";
+import ImageSlider from "../../ImagesSlicer/ImageSlider.tsx";
 
 interface ModalProductProps {
   getProducts: () => void;
@@ -36,7 +38,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
   const [insumos, setInsumos] = useState<ArticuloInsumoShortDto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [showInsumoModal, setShowInsumoModal] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [articuloManufacturadoDetalles, setArticuloManufacturadoDetalles] =
     useState<ArticuloManufacturadoDetalle[]>(
       productToEdit?.articuloManufacturadoDetalles || []
@@ -51,8 +53,16 @@ const ModalProducto: React.FC<ModalProductProps> = ({
     eliminado: productToEdit ? productToEdit.eliminado : false,
     denominacion: productToEdit?.denominacion || "",
     precioVenta: productToEdit?.precioVenta || 0,
-    imagenes: productToEdit?.imagenes?.map((imagen: any) => imagen.denominacion) || [],
-    unidadMedida: productToEdit?.unidadMedida ? { ...productToEdit.unidadMedida } : {
+    imagenes: productToEdit ? productToEdit.imagenes.map(
+      (imagen: any) =>
+        ({
+          url: imagen.url,
+          name: "image",
+          id: imagen.id
+        } as ImagenArticulo)
+    )
+  : [],    
+  unidadMedida: productToEdit?.unidadMedida ? { ...productToEdit.unidadMedida } : {
       id: 0,
       eliminado: false,
       denominacion: "",
@@ -124,7 +134,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      setFiles(Array.from(e.target.files));
     }
   };
 
@@ -190,6 +200,27 @@ const ModalProducto: React.FC<ModalProductProps> = ({
     setDetalles(productToEdit?.articuloManufacturadoDetalles || []);
   }, [productToEdit]);
 
+  const handleUpload = async (articuloId: string) => {
+    if (files.length > 0 && articuloId) {
+      try {
+        const accessToken = await getAccessTokenSilently({});
+        const uploadPromises = files.map(file =>
+          productoService.uploadFile(
+            `${url}articuloManufacturado/uploads`,
+            file,
+            articuloId,
+            accessToken
+          )
+        );
+        const responses = await Promise.all(uploadPromises);
+        console.log("Upload successful:", responses);
+      } catch (error) {
+        console.error("Error uploading files:", error);
+      }
+    } else {
+      console.log("No files or articuloId not set.");
+    }
+  };
   return (
     <Modal
       id={"modal"}
@@ -212,9 +243,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({
             precioVenta: Yup.number().required("Campo requerido"),
             descripcion: Yup.string().required("Campo requerido"),
             preparacion: Yup.string().required("Campo requerido"),
-            // categoria: Yup.number().required('Campo requerido'), // Agregar validación para la categoría
-            // unidadMedida: Yup.string().required('Campo requerido'), // Agregar validación para la unidad de medida
             tiempoEstimadoMinutos: Yup.number().required("Campo requerido"),
+            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")
           })}
           initialValues={initialValues}
           onSubmit={async (values: ArticuloManufacturado) => {
@@ -231,6 +261,9 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   values, await getAccessTokenSilently({})
                 );
                 productoId = productToEdit.id.toString();
+                if (files.length > 0 && productoId) {
+                  handleUpload(productoId);
+                } 
               } else {
                 values.articuloManufacturadoDetalles = detalles;
                 if(sucursalId){
@@ -243,15 +276,9 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                 );
 
                 productoId = response.id.toString();
-              }
-
-              if (file && productoId) {
-                const response = await productoService.uploadFile(
-                  url + "articuloManufacturado/uploads",
-                  file,
-                  productoId, await getAccessTokenSilently({})
-                );
-                console.log("Upload successful:", response);
+                if (files.length > 0 && productoId) {
+                  handleUpload(productoId);
+                } 
               }
 
               getProducts();
@@ -275,7 +302,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   />
                   <ErrorMessage
                     name="denominacion"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
 
@@ -288,7 +315,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   />
                   <ErrorMessage
                     name="precioVenta"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
 
@@ -301,7 +328,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   />
                   <ErrorMessage
                     name="preparacion"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
 
@@ -326,7 +353,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     }}
                     value={values.categoria ? values.categoria.id : ""}
                   >
-                    <option value="">Seleccionar categoria</option>
                     {categorias.map((categoria) => (
                       <option key={categoria.id} value={categoria.id}>
                         {categoria.denominacion}
@@ -335,7 +361,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   </Field>
                   <ErrorMessage
                     name="categoria"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </Col>
@@ -351,7 +377,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   />
                   <ErrorMessage
                     name="tiempoEstimadoMinutos"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
 
@@ -364,7 +390,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   />
                   <ErrorMessage
                     name="descripcion"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
 
@@ -387,7 +413,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     }}
                     value={values.unidadMedida ? values.unidadMedida.id : ""}
                   >
-                    <option value="">Seleccionar Unidad de Medida</option>
                     {unidadesMedida.map((unidad) => (
                       <option key={unidad.id} value={unidad.id}>
                         {unidad.denominacion}
@@ -397,29 +422,20 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 
                   <ErrorMessage
                     name="unidadMedida"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
-
-                  <label htmlFor="imagen">Imagen:</label>
+                  <label htmlFor="imagenes">Imágenes:</label>
                   <input
                     name="imagen"
                     type="file"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                      const files = event.target.files;
-                      if (files && files.length > 0) {
-                        // Si se selecciona una imagen nueva, maneja el cambio de archivo
-                        handleFileChange(event);
-                      } else {
-                        
-                        // Si no se selecciona ninguna imagen nueva, no hagas nada para mantener las imágenes existentes
-                      }
-                    }}
                     className="form-control my-2"
+                    onChange={handleFileChange}
+                    multiple
                   />
                   <ErrorMessage
                     name="imagen"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </Col>
@@ -434,27 +450,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     {productToEdit ? "Editar Insumos" : "Agregar insumos"}
                   </Button>
                 </Col>
-                {/* <Col>
-                                    <ul className="list-group">
-                                        {productToEdit ? (
-                                            productToEdit.articuloManufacturadoDetalles.map((detalle, index) => (
-                                                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                                                    <span>{detalle.articuloInsumo.denominacion}</span>
-                                                    <span>Cantidad: {detalle.cantidad}</span>
-                                                </li>
-                                            ))
-                                        ) : (
-                                            articuloManufacturadoDetalles.map((detalle, index) => (
-                                                <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                                                    <span>{detalle.articuloInsumo.denominacion}</span>
-                                                    <span>Cantidad: {detalle.cantidad}</span>
-                                                </li>
-                                            ))
-                                        )}
-                                    </ul>
-
-                                </Col> */}
               </Row>
+              {values.imagenes.length > 0 && (
+                <Row>
+                  <ImageSlider images={values.imagenes} urlParteVariable="articuloManufacturado" />
+                </Row>
+              )}
               <ModalInsumo
                 insumos={insumos}
                 show={showInsumoModal}

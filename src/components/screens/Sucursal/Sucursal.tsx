@@ -136,7 +136,7 @@ export const ListaSucursal = () => {
       id: rowData.id,
       eliminado: rowData.eliminado,
       nombre: rowData.nombre,
-      imagen: rowData.imagen,
+      imagenes: rowData.imagenes,
       horarioApertura: rowData.horarioApertura,
       horarioCierre: rowData.horarioCierre,
       esCasaMatriz: rowData.esCasaMatriz,
@@ -176,7 +176,7 @@ export const ListaSucursal = () => {
       id: rowData.id,
       eliminado: rowData.eliminado,
       nombre: rowData.nombre,
-      imagen: rowData.imagen,
+      imagenes: rowData.imagenes,
       horarioApertura: rowData.horarioApertura,
       horarioCierre: rowData.horarioCierre,
       esCasaMatriz: rowData.esCasaMatriz, // Asegúrate de manejar undefined
@@ -277,20 +277,19 @@ export const ListaSucursal = () => {
                       "&:hover": { transform: "scale(1.05)" },
                     }}
                   >
-                    {sucursal.imagen !== "" && (
-                      <CardMedia
-                        component="img"
-                        alt={sucursal.nombre}
-                        height="140"
-                        image={sucursal.imagen}
-                        sx={{
-                          objectFit: "cover",
-                          borderRadius: "16px 16px 0 0",
-                          maxHeight: 140,
-                        }}
-                      />
+                    {sucursal.imagenes && sucursal.imagenes.length > 0 && sucursal.imagenes[0].url !== "" && (
+                        <CardMedia
+                            component="img"
+                            alt={sucursal.nombre}
+                            height="140"
+                            image={sucursal.imagenes[0].url}
+                            sx={{
+                                objectFit: "cover",
+                                borderRadius: "16px 16px 0 0",
+                                maxHeight: 140,
+                            }}
+                        />
                     )}
-
                     <CardContent
                       sx={
                         sucursal.imagen == ""

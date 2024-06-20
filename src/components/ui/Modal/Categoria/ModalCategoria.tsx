@@ -74,7 +74,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
           horarioApertura: sucursal.horarioApertura,
           horarioCierre: sucursal.horarioCierre,
           esCasaMatriz: sucursal.esCasaMatriz,
-          imagen: sucursal.imagen,
+          imagenes: sucursal.imagenes,
           domicilio: sucursal.domicilio,
           empresa: sucursal.empresa,
           eliminado: sucursal.eliminado || false,
