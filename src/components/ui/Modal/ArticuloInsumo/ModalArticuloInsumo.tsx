@@ -97,7 +97,6 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
 
   const handleClose = () => {
     dispatch(toggleModal({ modalName: "modal" }));
-    getArticulosInsumo(); // Llamar a la función para actualizar los datos
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -195,9 +194,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   values.id.toString(),
                   values,
                   await getAccessTokenSilently({})
-                );
-                                
-                handleClose();       
+                );   
               } else {
                 if(sucursalId){
                   const sucursalIdNumber = parseInt(sucursalId);
@@ -211,8 +208,10 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                 if (files.length > 0 && articuloId) {
                   handleUpload(articuloId);
                 }
-                handleClose();
               }
+
+              getArticulosInsumo(); 
+              handleClose();
 
             } catch (error) {
               console.error("Error al realizar la operación:", error);

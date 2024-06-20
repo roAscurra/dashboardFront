@@ -44,19 +44,6 @@ export const ListaArticulosInsumo = () => {
   );
   const {sucursalId} = useParams();
 
-  const fetchImages = useCallback(async (articuloInsumoId: string) => {
-    try {
-      const response = await articuloInsumoService.get(url + 'articuloInsumo/getAllImagesByInsumoId', articuloInsumoId, await getAccessTokenSilently({}));
-
-      if (Array.isArray(response) && response.length > 0) {
-        return response[0].url;
-      }
-      return 'https://via.placeholder.com/150';
-    } catch (error) {
-      return 'https://via.placeholder.com/150';
-    }
-  }, [articuloInsumoService, url]);
-
   const fetchArticulosInsumo = useCallback(async () => {
     try {
       if (sucursalId) {
@@ -69,7 +56,7 @@ export const ListaArticulosInsumo = () => {
     } catch (error) {
       console.error("Error al obtener los artículos de insumo:", error);
     }
-  }, [dispatch, articuloInsumoService, url, fetchImages, sucursalId]);
+  }, [dispatch, articuloInsumoService, url, sucursalId]);
   
 
   useEffect(() => {
