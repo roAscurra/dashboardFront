@@ -43,6 +43,7 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
   const handleLogout = () => {
     logout({
       logoutParams: {
+        // returnTo: "http://localhost:5173/"
         returnTo: "https://dashboard-front-five.vercel.app/"
       }
     });
@@ -69,7 +70,6 @@ export const BaseNavBar = ({ title }: BaseNavBarProps) => {
     window.history.back(); // Simular el comportamiento de navegar hacia atrás en el historial del navegador
   };
 
-  console.log(user)
 
   return (
     <Box sx={{ marginBottom: 1 }}>

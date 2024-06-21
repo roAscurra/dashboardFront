@@ -106,7 +106,7 @@ const ModalSubCategoria: React.FC<AgregarSubcategoriaModalProps> = ({
             }
           }}
         >
-          {({ handleSubmit }) => (
+          {({ handleSubmit, isSubmitting }) => (
             <Form autoComplete="off" onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label htmlFor="denominacion">Nombre:</label>
@@ -127,13 +127,16 @@ const ModalSubCategoria: React.FC<AgregarSubcategoriaModalProps> = ({
                 <Button
                   variant="secondary"
                   onClick={handleClose}
-                  className="mr-2"
-                  disabled={submitting}
+                  className="me-2"
                 >
                   Cancelar
                 </Button>
-                <Button variant="primary" type="submit" disabled={submitting}>
-                  Guardar
+                <Button
+                  type="submit"
+                  variant="primary"
+                  disabled={submitting}
+                >
+                  {isSubmitting ? "Guardando..." : "Guardar"}
                 </Button>
               </div>
             </Form>

@@ -158,7 +158,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
           }}
           
         >
-          {({values, setFieldValue}) => (
+          {({values, setFieldValue, isSubmitting}) => (
             <>
               <Form autoComplete="off">
                 <div className="mb-4">
@@ -226,20 +226,19 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
                   </div>
                 )}
                 <div className="d-flex justify-content-end">
-                <Button
-                    variant="outline-secondary"
-                    type="submit"
-                    className="custom-button"
-                    
+                  <Button
+                    variant="secondary"
+                    onClick={handleClose}
+                    className="me-2"
                   >
-                    Cerrar
+                    Cancelar
                   </Button>
                   <Button
-                    variant="outline-success"
+                    variant="primary"
                     type="submit"
-                    className="custom-button"
+                    disabled={isSubmitting}
                   >
-                    Añadir
+                    {isSubmitting ? "Guardando..." : "Guardar"}
                   </Button>
                 </div>
               </Form>

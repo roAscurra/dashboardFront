@@ -95,7 +95,7 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, surcursalId, u
             }
           }}
         >
-          {() => (
+          {({isSubmitting}) => (
               <Form autoComplete="off">
                 <div className="mb-4">
                   <label htmlFor="username">Usuario:</label>
@@ -119,8 +119,19 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, surcursalId, u
                   <ErrorMessage name="rol" className="error-message" component="div"/>
                 </div>
                 <div className="d-flex justify-content-end">
-                  <Button variant="outline-success" type="submit" className="custom-button">
-                    Enviar
+                  <Button
+                    variant="secondary"
+                    onClick={handleClose}
+                    className="me-2"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Guardando..." : "Guardar"}
                   </Button>
                 </div>
               </Form>
