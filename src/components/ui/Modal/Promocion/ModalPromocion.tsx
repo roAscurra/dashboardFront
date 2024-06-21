@@ -125,7 +125,8 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
       : [],
   };
   const handleClose = () => {
-    setDetalles([])
+    setFiles([]);
+    setDetalles([]);
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
@@ -244,8 +245,23 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
       } catch (error) {
         console.error("Error uploading files:", error);
       }
+      getPromocion();
     } else {
       console.log("No files or articuloId not set.");
+    }
+  };
+  const handleDeleteImage = async (images: any[], setFieldValue: any) => {
+    try {
+      console.log(images);
+      // Lógica para eliminar la imagen, por ejemplo, llamando a un servicio
+      console.log('Eliminar imagen con publicId');
+      // Actualizar values.imagenes eliminando la imagen correspondiente
+      // Llamar a setFieldValue para actualizar el estado con las imágenes actualizadas
+      setFieldValue("imagenes", images);
+      getPromocion(); 
+      console.log('Imagen eliminada correctamente.');
+    } catch (error) {
+      console.error('Error al eliminar la imagen:', error);
     }
   };
   return (
@@ -532,7 +548,9 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 </div>
                 {values.imagenes.length > 0 && (
                   <div className="col-md-4 mb-4">
-                    <ImageSlider images={values.imagenes} urlParteVariable="promocion" />
+                    <ImageSlider images={values.imagenes} urlParteVariable="promocion" 
+                    onDeleteImage={(images) => handleDeleteImage(images, setFieldValue)}
+                    />
                   </div>
                 )}
               </div>

@@ -40,7 +40,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   const empresaService = new EmpresaService();
   const domicilioService = new DomicilioService();
   const [localidades, setLocalidades] = useState<Localidad[]>([]);
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const { empresaId } = useParams();
   const paisService = new PaisService();
   const [paises, setPaises] = useState<Pais[]>([]);
@@ -50,6 +50,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   const [selectedProvincia, setSelectedProvincia] = useState<number | null>(
     null
   );
+  const [selectedLocalidad, setSelectedLocalidad] = useState<number | null>(null);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -62,7 +63,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
     horarioApertura: sucursalToEdit ? sucursalToEdit.horarioApertura : formatTime(new Date()),
     horarioCierre: sucursalToEdit ? sucursalToEdit.horarioCierre : formatTime(new Date()),
     esCasaMatriz: sucursalToEdit ? sucursalToEdit.esCasaMatriz : false,
-    localidadId: sucursalToEdit ? sucursalToEdit.localidadId : 0,
     imagenes: sucursalToEdit ? (sucursalToEdit.imagenes.map(
       (imagen: any): Imagen => ({
         id: imagen.id,
@@ -118,6 +118,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
+    setFiles([]);
     dispatch(toggleModal({ modalName }));
   };
 
@@ -192,12 +193,57 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProvincia]);
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>, setFieldValue: any, existingImages: Imagen[]) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      const newFilesArray = Array.from(e.target.files).map((file) => ({
+        file: file,
+        name: file.name, // Agregar el nombre del archivo
+        preview: URL.createObjectURL(file),
+      }));
+  
+      // Combinar imágenes existentes con las nuevas imágenes seleccionadas
+      const combinedImages = [...existingImages, ...newFilesArray];
+      setFieldValue("imagenes", combinedImages);
+      setFiles(Array.from(e.target.files));
     }
   };
-
+  const handleUpload = async (articuloId: string) => {
+    if (files.length > 0 && articuloId) {
+      try {
+        const accessToken = await getAccessTokenSilently({});
+        const uploadPromises = files.map(file =>
+          empresaService.uploadFile(
+            `${url}sucursal/uploads`,
+            file,
+            articuloId,
+            accessToken
+          )
+        );
+        const responses = await Promise.all(uploadPromises);
+        console.log("Upload successful:", responses);
+      } catch (error) {
+        console.error("Error uploading files:", error);
+      }
+      getSucursal(); 
+    } else {
+      console.log("No files or articuloId not set.");
+    }
+  };
+  const handleDeleteImage = async (images: any[], setFieldValue: any) => {
+    try {
+      console.log(images);
+      // Lógica para eliminar la imagen, por ejemplo, llamando a un servicio
+      console.log('Eliminar imagen con publicId');
+      // Actualizar values.imagenes eliminando la imagen correspondiente
+      // Llamar a setFieldValue para actualizar el estado con las imágenes actualizadas
+      setFieldValue("imagenes", images);
+      console.log(images)
+      getSucursal(); 
+      console.log('Imagen eliminada correctamente.');
+    } catch (error) {
+      console.error('Error al eliminar la imagen:', error);
+    }
+  };
   return (
     <Modal
       id={"modal"}
@@ -219,19 +265,19 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
             nombre: Yup.string().required("Campo requerido"),
             horarioApertura: Yup.string().required("Campo requerido"),
             horarioCierre: Yup.string().required("Campo requerido"),
-            localidadId: Yup.number().required(
-              "Debes seleccionar una localidad"
-            ),
+            domicilio: Yup.object().shape({calle: Yup.string().required('Campo requerido')}),
+            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")
           })}
           initialValues={initialValues}
           onSubmit={async (values: Sucursal, { setSubmitting }) => {
             try {
+              console.log(values)
               let newCompanyId: string | null = null;
 
               if (sucursalToEdit) {
                 const localidad = await localidadService.get(
                   url + "localidad",
-                  values.localidadId, await getAccessTokenSilently({})
+                  values.domicilio.localidad.id.toString(), await getAccessTokenSilently({})
                 );
                 values.domicilio.localidad = localidad;
                 // Update address (domicilio)
@@ -248,6 +294,9 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   values, await getAccessTokenSilently({})
                 );
                 newCompanyId = values.id.toString(); //asigno el id de la sucursal
+                if (files.length > 0 && newCompanyId) {
+                  handleUpload(newCompanyId);
+                } 
               } else {
                 if (empresaId) {
                   const empresa = await empresaService.get(
@@ -258,7 +307,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
                   const localidad = await localidadService.get(
                     url + "localidad",
-                    values.localidadId, await getAccessTokenSilently({})
+                    values.domicilio.localidad.id.toString(), await getAccessTokenSilently({})
                   );
                   values.domicilio.localidad = localidad;
 
@@ -273,19 +322,17 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                     alert("La empresa ya tiene una sucursal que es casa matriz. No se puede crear otra.");
                     return;
                   }
-
+                  values.imagenes = [];
                   const response = await sucursalService.post(
                     url + "sucursal",
                     values, await getAccessTokenSilently({})
                   );
                   newCompanyId = response.id.toString();
+                  if (files.length > 0 && newCompanyId) {
+                    handleUpload(newCompanyId);
+                  } 
                 }
               }
-              if (file && newCompanyId) {
-                const response = await sucursalService.uploadFile(url + 'sucursal/uploads', file, newCompanyId, await getAccessTokenSilently({}));
-                console.log('Upload successful:', response);
-              }
-
               getSucursal();
               handleClose();
             } catch (error) {
@@ -309,7 +356,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   />
                   <ErrorMessage
                     name="nombre"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </Col>
@@ -328,7 +375,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   />
                   <ErrorMessage
                     name="horarioApertura"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </Col>
@@ -347,7 +394,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   />
                   <ErrorMessage
                     name="horarioCierre"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </Col>
@@ -355,17 +402,17 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
               <Row>
                 {/* Segunda columna */}
                 <Col md={4} className="mb-4">
-                  <label htmlFor="paisId">País:</label>
+                  <label htmlFor="pais">País:</label>
                   <Field
-                    name="paisId"
+                    name="pais"
                     as="select"
                     className="form-control mt-2"
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       const value = Number(e.target.value);
                       setSelectedPais(value);
-                      setFieldValue("paisId", value);
-                      setFieldValue("provinciaId", ""); // Resetea el campo de provincia
-                      setFieldValue("localidadId", ""); // Resetea el campo de localidad
+                      setFieldValue("pais", value);
+                      setFieldValue("provincia", ""); // Resetea el campo de provincia
+                      setFieldValue("localidad", ""); // Resetea el campo de localidad
                     }}
                     value={
                       selectedPais ||
@@ -381,19 +428,24 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                       </option>
                     ))}
                   </Field>
+                  <ErrorMessage
+                    name="pais"
+                    className="error-message text-danger"
+                    component="div"
+                  />
                 </Col>
                 {/* Tercera columna */}
                 <Col md={4} className="mb-4">
-                  <label htmlFor="provinciaId">Provincia:</label>
+                  <label htmlFor="provincia">Provincia:</label>
                   <Field
-                    name="provinciaId"
+                    name="provincia"
                     as="select"
                     className="form-control mt-2"
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       const value = Number(e.target.value);
                       setSelectedProvincia(value);
-                      setFieldValue("provinciaId", value);
-                      setFieldValue("localidadId", ""); // Resetea el campo de localidad
+                      setFieldValue("provincia", value);
+                      setFieldValue("localidad", ""); // Resetea el campo de localidad
                     }}
                     disabled={!selectedPais}
                     value={
@@ -410,20 +462,27 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                       </option>
                     ))}
                   </Field>
+                  <ErrorMessage
+                    name="provincia"
+                    className="error-message text-danger"
+                    component="div"
+                  />
                 </Col>
                 {/* Cuarta columna */}
                 <Col md={4} className="mb-4">
-                  <label htmlFor="localidadId">Localidad:</label>
+                  <label htmlFor="localidad">Localidad:</label>
                   <Field
-                    name="localidadId"
+                    name="localidad"
                     as="select"
                     className="form-control mt-2"
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       const value = Number(e.target.value);
-                      setFieldValue("localidadId", value);
+                      setSelectedLocalidad(value);
+                      setFieldValue("localidad", value);
                     }}
                     disabled={!selectedProvincia || !selectedPais} // Deshabilita el selector si no se ha seleccionado una provincia
                     value={
+                      selectedLocalidad ||
                       initialValues.domicilio.localidad.id
                     }
                   >
@@ -436,6 +495,11 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                       </option>
                     ))}
                   </Field>
+                  <ErrorMessage
+                    name="localidad"
+                    className="error-message text-danger"
+                    component="div"
+                  />
                 </Col>
               </Row>
               <Row>
@@ -450,7 +514,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   />
                   <ErrorMessage
                     name="domicilio.calle"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </Col>
@@ -465,7 +529,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   />
                   <ErrorMessage
                     name="domicilio.cp"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </Col>
@@ -486,7 +550,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                     <option value="true">Sí</option>
                   </Field>
                   {(empresaTieneCasaMatriz && !sucursalToEdit?.esCasaMatriz) && ( // Muestra el mensaje solo si empresaTieneCasaMatriz es true
-                    <div className="error-message">
+                    <div className="error-message text-danger">
                       La empresa ya posee casa matriz
                     </div>
                   )}
@@ -498,16 +562,27 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   <label htmlFor="logo">Logo:</label>
                   <br />
                   <input
+                    name="imagenes"
                     type="file"
-                    onChange={handleFileChange}
+                    className="form-control my-2"
+                    onChange={(event) => handleFileChange(event, setFieldValue, values.imagenes)}
+                    multiple
+                  />
+                   <ErrorMessage
+                    name="imagenes"
+                    className="error-message text-danger"
+                    component="div"
                   />
                 </Col>
-              </Row>
-              {values.imagenes.length > 0 && (
-                  <div className="mb-4">
-                    <ImageSlider images={values.imagenes} urlParteVariable="empresa" />
+                {values.imagenes.length > 0 && (
+                  <div className="col-md-6 mb-4">
+                    <ImageSlider images={values.imagenes} urlParteVariable="sucursal" 
+                      onDeleteImage={(images) => handleDeleteImage(images, setFieldValue)}
+                    />
                   </div>
                 )}
+              </Row>
+
               <div className="d-flex justify-content-end">
                 <Button
                   variant="outline-success"

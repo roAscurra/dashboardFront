@@ -12,9 +12,10 @@ interface Image {
 interface ImageSliderProps {
   images: Image[];
   urlParteVariable: string; // Nueva prop para la parte variable de la URL
+  onDeleteImage: (images: Image[]) => Promise<void>; // Asegúrate de que onDeleteImage acepte un array de imágenes
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ images: initialImages, urlParteVariable }) => {
+const ImageSlider: React.FC<ImageSliderProps> = ({ images: initialImages, urlParteVariable, onDeleteImage }) => {
   const [sliderImages, setSliderImages] = useState<Image[]>(initialImages);
   const [isLoading, setIsLoading] = useState<boolean>(false); // Estado para controlar la carga
   const imagenService = new ImagenArticuloService();
@@ -53,6 +54,8 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images: initialImages, urlPar
       const updatedImages = sliderImages.filter((image) => image.id !== imagenId);
       setSliderImages(updatedImages);
       console.log('Imagen eliminada correctamente.');
+      console.log(updatedImages)
+      onDeleteImage(updatedImages);
     } catch (error) {
       console.error('Error al eliminar la imagen:', error);
     } finally {
@@ -71,8 +74,8 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images: initialImages, urlPar
         prevIcon={<span className="carousel-control-prev-icon" />}
         nextIcon={<span className="carousel-control-next-icon" />}
       >
-        {sliderImages.map((image) => (
-          <Carousel.Item key={image.url}>
+        {sliderImages.map((image, index) => (
+          <Carousel.Item key={index}>
             <div className="d-flex justify-content-center align-items-center" style={{ height: '150px' }}>
               <img
                 className="img-fluid"

@@ -124,11 +124,13 @@ const ModalProducto: React.FC<ModalProductProps> = ({
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
-    setDetalles([])
+    setFiles([]);
+    setDetalles([]);
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>, setFieldValue: any, existingImages: ImagenArticulo[]) => {
+    console.log(existingImages)
     if (e.target.files && e.target.files.length > 0) {
       const newFilesArray = Array.from(e.target.files).map((file) => ({
         file,
@@ -222,8 +224,23 @@ const ModalProducto: React.FC<ModalProductProps> = ({
       } catch (error) {
         console.error("Error uploading files:", error);
       }
+      getProducts();
     } else {
       console.log("No files or articuloId not set.");
+    }
+  };
+  const handleDeleteImage = async (images: any[], setFieldValue: any) => {
+    try {
+      console.log(images);
+      // Lógica para eliminar la imagen, por ejemplo, llamando a un servicio
+      console.log('Eliminar imagen con publicId');
+      // Actualizar values.imagenes eliminando la imagen correspondiente
+      // Llamar a setFieldValue para actualizar el estado con las imágenes actualizadas
+      setFieldValue("imagenes", images);
+      getProducts(); 
+      console.log('Imagen eliminada correctamente.');
+    } catch (error) {
+      console.error('Error al eliminar la imagen:', error);
     }
   };
   return (
@@ -275,6 +292,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   const sucursalIdNumber = parseInt(sucursalId);
                   values.sucursal.id = sucursalIdNumber;
                 }
+                values.imagenes = [];
                 const response = await productoService.post(
                   url + "articuloManufacturado",
                   values, await getAccessTokenSilently({})
@@ -458,7 +476,9 @@ const ModalProducto: React.FC<ModalProductProps> = ({
               </Row>
               {values.imagenes.length > 0 && (
                 <Row>
-                  <ImageSlider images={values.imagenes} urlParteVariable="articuloManufacturado" />
+                  <ImageSlider images={values.imagenes} urlParteVariable="articuloManufacturado" 
+                  onDeleteImage={(images) => handleDeleteImage(images, setFieldValue)}
+                  />                
                 </Row>
               )}
               <ModalInsumo

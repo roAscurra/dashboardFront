@@ -20,8 +20,7 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
   const empresaService = new EmpresaService();
   const url = import.meta.env.VITE_API_URL;
   const { getAccessTokenSilently } = useAuth0();
-  const [file, setFile] = useState<File | null>(null);
-console.log(empresaToEdit)
+  const [files, setFiles] = useState<File[]>([]);
 
   const initialValues: Empresa = {
     id: empresaToEdit ? empresaToEdit.id : 0,
@@ -45,11 +44,58 @@ console.log(empresaToEdit)
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
+    setFiles([])
     dispatch(toggleModal({ modalName: "modal" }));
   };
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>, setFieldValue: any, existingImages: Imagen[]) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      const newFilesArray = Array.from(e.target.files).map((file) => ({
+        file: file,
+        name: file.name, // Agregar el nombre del archivo
+        preview: URL.createObjectURL(file),
+      }));
+  
+      // Combinar imágenes existentes con las nuevas imágenes seleccionadas
+      const combinedImages = [...existingImages, ...newFilesArray];
+      setFieldValue("imagenes", combinedImages);
+      setFiles(Array.from(e.target.files));
+    }
+  };
+  const handleUpload = async (articuloId: string) => {
+    if (files.length > 0 && articuloId) {
+      try {
+        const accessToken = await getAccessTokenSilently({});
+        const uploadPromises = files.map(file =>
+          empresaService.uploadFile(
+            `${url}empresa/uploads`,
+            file,
+            articuloId,
+            accessToken
+          )
+        );
+        const responses = await Promise.all(uploadPromises);
+        console.log("Upload successful:", responses);
+      } catch (error) {
+        console.error("Error uploading files:", error);
+      }
+      getEmpresa(); 
+    } else {
+      console.log("No files or articuloId not set.");
+    }
+  };
+  const handleDeleteImage = async (images: any[], setFieldValue: any) => {
+    try {
+      console.log(images);
+      // Lógica para eliminar la imagen, por ejemplo, llamando a un servicio
+      console.log('Eliminar imagen con publicId');
+      // Actualizar values.imagenes eliminando la imagen correspondiente
+      // Llamar a setFieldValue para actualizar el estado con las imágenes actualizadas
+      setFieldValue("imagenes", images);
+      console.log(images)
+      getEmpresa(); 
+      console.log('Imagen eliminada correctamente.');
+    } catch (error) {
+      console.error('Error al eliminar la imagen:', error);
     }
   };
   return (
@@ -70,7 +116,8 @@ console.log(empresaToEdit)
           validationSchema={Yup.object({
             nombre: Yup.string().required("Campo requerido"),
             razonSocial: Yup.string().required("Campo requerido"),
-            cuil: Yup.number().required("Campo requerido")
+            cuil: Yup.number().required("Campo requerido"),
+            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")
           })}
           initialValues={initialValues}
           onSubmit={async (values: Empresa) => {
@@ -79,21 +126,28 @@ console.log(empresaToEdit)
               let newCompanyId: string | null = null; // Cambiado de const a let
 
               if (empresaToEdit) {
-                await empresaService.put(url + "empresa", values.id.toString(), values, await getAccessTokenSilently({}));
-                console.log("Se ha actualizado correctamente.");
-                newCompanyId = values.id.toString();
+                // Actualizar empresa 
+                await empresaService.put(
+                  url + "empresa",
+                  values.id.toString(),
+                  values, await getAccessTokenSilently({})
+                );
+                newCompanyId = empresaToEdit.id.toString();
+                if (files.length > 0 && newCompanyId) {
+                  handleUpload(newCompanyId);
+                } 
               } else {
-                const response = await empresaService.post(url + "empresa", values, await getAccessTokenSilently({}));
-                console.log("Se ha agregado correctamente.");
-          
-                // Obtener el id de la nueva empresa desde la respuesta
-                newCompanyId = response.id.toString(); // Convertir a string
-              }
-          
-              // Verificar si hay un archivo seleccionado para cargar
-              if (file && newCompanyId) {
-                const response = await empresaService.uploadFile(url + 'empresa/uploads', file, newCompanyId, await getAccessTokenSilently({}));
-                console.log('Upload successful:', response);
+                
+                values.imagenes = [];
+                const response = await empresaService.post(
+                  url + "empresa",
+                  values, await getAccessTokenSilently({})
+                );
+
+                newCompanyId = response.id.toString();
+                if (files.length > 0 && newCompanyId) {
+                  handleUpload(newCompanyId);
+                } 
               }
           
               getEmpresa(); 
@@ -104,7 +158,7 @@ console.log(empresaToEdit)
           }}
           
         >
-          {({values}) => (
+          {({values, setFieldValue}) => (
             <>
               <Form autoComplete="off">
                 <div className="mb-4">
@@ -117,7 +171,7 @@ console.log(empresaToEdit)
                   />
                   <ErrorMessage
                     name="nombre"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -131,7 +185,7 @@ console.log(empresaToEdit)
                   />
                   <ErrorMessage
                     name="razonSocial"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
@@ -144,21 +198,31 @@ console.log(empresaToEdit)
                   />
                   <ErrorMessage
                     name="cuil"
-                    className="error-message"
+                    className="error-message text-danger"
                     component="div"
                   />
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="logo">Logo:</label>
+                  <label htmlFor="imagenes">Logo:</label>
                   <br />
                   <input
+                    name="imagenes"
                     type="file"
-                    onChange={handleFileChange}
+                    className="form-control my-2"
+                    onChange={(event) => handleFileChange(event, setFieldValue, values.imagenes)}
+                    multiple
+                  />
+                   <ErrorMessage
+                    name="imagenes"
+                    className="error-message text-danger"
+                    component="div"
                   />
                 </div>
                 {values.imagenes.length > 0 && (
                   <div className="mb-4">
-                    <ImageSlider images={values.imagenes} urlParteVariable="empresa" />
+                    <ImageSlider images={values.imagenes} urlParteVariable="empresa" 
+                    onDeleteImage={(images) => handleDeleteImage(images, setFieldValue)}
+                    />
                   </div>
                 )}
                 <div className="d-flex justify-content-end">

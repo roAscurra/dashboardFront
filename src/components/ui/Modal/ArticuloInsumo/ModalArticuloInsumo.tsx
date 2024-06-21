@@ -96,13 +96,15 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
+    setFiles([])
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>, setFieldValue: any, existingImages: ImagenArticulo[]) => {
     if (e.target.files && e.target.files.length > 0) {
       const newFilesArray = Array.from(e.target.files).map((file) => ({
-        file,
+        file: file,
+        name: file.name, // Agregar el nombre del archivo
         preview: URL.createObjectURL(file),
       }));
   
@@ -112,6 +114,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       setFiles(Array.from(e.target.files));
     }
   };
+  
   
   const fetchCategorias = async () => {
     try {
@@ -155,10 +158,26 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       } catch (error) {
         console.error("Error uploading files:", error);
       }
+      getArticulosInsumo(); 
     } else {
       console.log("No files or articuloId not set.");
     }
   };
+  const handleDeleteImage = async (images: any[], setFieldValue: any) => {
+    try {
+      console.log(images);
+      // Lógica para eliminar la imagen, por ejemplo, llamando a un servicio
+      console.log('Eliminar imagen con publicId');
+      // Actualizar values.imagenes eliminando la imagen correspondiente
+      // Llamar a setFieldValue para actualizar el estado con las imágenes actualizadas
+      setFieldValue("imagenes", images);
+      getArticulosInsumo(); 
+      console.log('Imagen eliminada correctamente.');
+    } catch (error) {
+      console.error('Error al eliminar la imagen:', error);
+    }
+  };
+  
   return (
     <Modal
       id={"modal"}
@@ -189,10 +208,12 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
           })}
           initialValues={initialValues}
           onSubmit={async (values: ArticuloInsumo) => {
+            console.log(values)
             try {
               let articuloId: string | null = null;
               
               if (articuloToEdit) {
+                console.log(values.imagenes)
                 if (files.length === 0 && values.imagenes.length === 0) {
                   // Si no hay archivos adjuntos (imágenes) nuevos y el artículo no tiene imágenes existentes, mostrar un mensaje de error
                   alert("Debe agregar al menos una imagen.");
@@ -203,6 +224,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   if (files.length > 0 && articuloId) {
                     handleUpload(articuloId);
                   } 
+                  console.log(values)
                   // Llamar al servicio put y capturar la respuesta
                   await articuloInsumoService.put(
                     url + "articuloInsumo",
@@ -217,10 +239,13 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                   const sucursalIdNumber = parseInt(sucursalId);
                   values.sucursal.id = sucursalIdNumber;
                 }
+                values.imagenes = [];
                 const response = await articuloInsumoService.post(
                   url + "articuloInsumo",
                   values, await getAccessTokenSilently({})
                 );
+                console.log(values)
+                console.log(response)
                 articuloId = response.id.toString();
                 if (files.length > 0 && articuloId) {
                   handleUpload(articuloId);
@@ -396,7 +421,9 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
               </Row>
               {values.imagenes.length > 0 && (
                 <Row>
-                  <ImageSlider images={values.imagenes} urlParteVariable="articuloInsumo" />
+                  <ImageSlider images={values.imagenes} urlParteVariable="articuloInsumo" 
+                  onDeleteImage={(images) => handleDeleteImage(images, setFieldValue)}
+                  />
                 </Row>
               )}
               <Row className="mt-4">
