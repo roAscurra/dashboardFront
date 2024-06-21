@@ -39,10 +39,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [showInsumoModal, setShowInsumoModal] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
-  const [articuloManufacturadoDetalles, setArticuloManufacturadoDetalles] =
-    useState<ArticuloManufacturadoDetalle[]>(
-      productToEdit?.articuloManufacturadoDetalles || []
-    );
   const url = import.meta.env.VITE_API_URL;
   const { getAccessTokenSilently } = useAuth0();
   const [modalColor, setModalColor] = useState<string>(""); // Estado para controlar el color de fondo de la modal
@@ -124,16 +120,24 @@ const ModalProducto: React.FC<ModalProductProps> = ({
     },
   };
   
-
   const modal = useAppSelector((state: any) => state.modal.modal);
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
+    setDetalles([])
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>, setFieldValue: any, existingImages: ImagenArticulo[]) => {
     if (e.target.files && e.target.files.length > 0) {
+      const newFilesArray = Array.from(e.target.files).map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+      }));
+  
+      // Combinar imágenes existentes con las nuevas imágenes seleccionadas
+      const combinedImages = [...existingImages, ...newFilesArray];
+      setFieldValue("imagenes", combinedImages);
       setFiles(Array.from(e.target.files));
     }
   };
@@ -193,9 +197,10 @@ const ModalProducto: React.FC<ModalProductProps> = ({
   }, [showInsumoModal]);
 
   const handleAddInsumo = (detalles: ArticuloManufacturadoDetalle[]) => {
-    setArticuloManufacturadoDetalles(detalles);
+    // Establecer los detalles en el estado si son válidos
     setDetalles(detalles); // Guardar los detalles en el estado
   };
+  
   useEffect(() => {
     setDetalles(productToEdit?.articuloManufacturadoDetalles || []);
   }, [productToEdit]);
@@ -244,15 +249,15 @@ const ModalProducto: React.FC<ModalProductProps> = ({
             descripcion: Yup.string().required("Campo requerido"),
             preparacion: Yup.string().required("Campo requerido"),
             tiempoEstimadoMinutos: Yup.number().required("Campo requerido"),
-            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")
+            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")  ,     
           })}
+          
           initialValues={initialValues}
           onSubmit={async (values: ArticuloManufacturado) => {
             try {
               let productoId: string | null = null;
 
               if (productToEdit) {
-
                 values.articuloManufacturadoDetalles = detalles;
                 // Actualizar el producto 
                 await productoService.put(
@@ -430,11 +435,11 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     name="imagen"
                     type="file"
                     className="form-control my-2"
-                    onChange={handleFileChange}
+                    onChange={(event) => handleFileChange(event, setFieldValue, values.imagenes)}
                     multiple
                   />
                   <ErrorMessage
-                    name="imagen"
+                    name="imagenes"
                     className="error-message text-danger"
                     component="div"
                   />
@@ -464,11 +469,15 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                 initialDetalles={
                   productToEdit
                     ? productToEdit.articuloManufacturadoDetalles
-                    : articuloManufacturadoDetalles || []
+                    : []
                 }
               />
               <div className="text-end">
-                <Button type="submit" className="btn btn-primary mt-3" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  className="btn btn-primary mt-3"
+                  disabled={isSubmitting || detalles.length === 0}
+                >
                   {isSubmitting ? "Enviando..." : "Enviar"}
                 </Button>
               </div>

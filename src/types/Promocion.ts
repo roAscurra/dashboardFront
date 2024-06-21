@@ -6,8 +6,8 @@ import { TipoPromocion } from "./enums/TipoPromocion";
 
 interface Promocion extends DataModel<Promocion>{
   denominacion: string,
-  fechaDesde: Date,
-  fechaHasta: Date,
+  fechaDesde: string,
+  fechaHasta: string,
   horaDesde: string,
   horaHasta: string,
   descripcionDescuento: string,
