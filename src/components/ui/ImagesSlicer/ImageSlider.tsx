@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Carousel, Spinner } from 'react-bootstrap';
 import ImagenArticuloService from '../../../services/ImagenArticuloService';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -6,6 +6,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 interface Image {
   id: number;
   url: string;
+  preview?: string; // Agregar una propiedad opcional para la previsualización
 }
 
 interface ImageSliderProps {
@@ -13,12 +14,17 @@ interface ImageSliderProps {
   urlParteVariable: string; // Nueva prop para la parte variable de la URL
 }
 
-const ImageSlider: React.FC<ImageSliderProps> = ({ images, urlParteVariable }) => {
-  const [sliderImages, setSliderImages] = useState<Image[]>(images);
+const ImageSlider: React.FC<ImageSliderProps> = ({ images: initialImages, urlParteVariable }) => {
+  const [sliderImages, setSliderImages] = useState<Image[]>(initialImages);
   const [isLoading, setIsLoading] = useState<boolean>(false); // Estado para controlar la carga
   const imagenService = new ImagenArticuloService();
   const { getAccessTokenSilently } = useAuth0();
   const url = import.meta.env.VITE_API_URL;
+
+  // Actualizar el estado local cuando cambian las imágenes
+  useEffect(() => {
+    setSliderImages(initialImages);
+  }, [initialImages]);
 
   const handleDeleteImage = async (publicId: string, imagenId: number) => {
     // Verificar si queda una sola imagen antes de eliminarla
@@ -54,7 +60,6 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, urlParteVariable }) =
     }
   };
   
-  console.log(images)
   return (
     <>
       {isLoading && (
@@ -63,35 +68,36 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images, urlParteVariable }) =
         </div>
       )}
       <Carousel 
-      prevIcon={<span className="carousel-control-prev-icon" />}
-      nextIcon={<span className="carousel-control-next-icon" />}>
+        prevIcon={<span className="carousel-control-prev-icon" />}
+        nextIcon={<span className="carousel-control-next-icon" />}
+      >
         {sliderImages.map((image) => (
           <Carousel.Item key={image.url}>
             <div className="d-flex justify-content-center align-items-center" style={{ height: '150px' }}>
               <img
                 className="img-fluid"
-                src={image.url}
+                src={image.preview || image.url} // Utiliza la URL de previsualización si está disponible
                 alt="Imagen"
                 style={{ maxWidth: '100%', maxHeight: '80%', objectFit: 'contain' }}
               />
             </div>
             <br />
-            <Carousel.Caption>
-              <Button
-                variant="danger"
-                className='text-light'
-                size="sm"
-                onClick={() => handleDeleteImage(image.url, image.id)}
-              >
-                Eliminar
-              </Button>
-            </Carousel.Caption>
+            {!image.preview && ( // No mostrar el botón de eliminar si es una URL de previsualización
+              <Carousel.Caption>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => handleDeleteImage(image.url, image.id)}
+                >
+                  Eliminar
+                </Button>
+              </Carousel.Caption>
+            )}
           </Carousel.Item>
         ))}
       </Carousel>
     </>
   );
 };
-
 
 export default ImageSlider;

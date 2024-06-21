@@ -92,18 +92,27 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
       },
   };
   const { sucursalId } = useParams();
-  const modal = useAppSelector((state) => state.modal.modal);
+  const modal = useAppSelector((state: any) => state.modal.modal);
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>, setFieldValue: any, existingImages: ImagenArticulo[]) => {
     if (e.target.files && e.target.files.length > 0) {
+      const newFilesArray = Array.from(e.target.files).map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+      }));
+  
+      // Combinar imágenes existentes con las nuevas imágenes seleccionadas
+      const combinedImages = [...existingImages, ...newFilesArray];
+      setFieldValue("imagenes", combinedImages);
       setFiles(Array.from(e.target.files));
     }
   };
+  
   const fetchCategorias = async () => {
     try {
       if (sucursalId) {
@@ -184,7 +193,6 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
               let articuloId: string | null = null;
               
               if (articuloToEdit) {
-                console.log( values.imagenes.length)
                 if (files.length === 0 && values.imagenes.length === 0) {
                   // Si no hay archivos adjuntos (imágenes) nuevos y el artículo no tiene imágenes existentes, mostrar un mensaje de error
                   alert("Debe agregar al menos una imagen.");
@@ -376,7 +384,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                     name="imagen"
                     type="file"
                     className="form-control my-2"
-                    onChange={handleFileChange}
+                    onChange={(event) => handleFileChange(event, setFieldValue, values.imagenes)}
                     multiple
                   />
                   <ErrorMessage

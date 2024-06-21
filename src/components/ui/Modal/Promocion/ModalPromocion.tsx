@@ -38,7 +38,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const [detalles, setDetalles] = useState<PromocionDetalle[]>([]);
   const url = import.meta.env.VITE_API_URL;
   const { getAccessTokenSilently } = useAuth0();
-  const today = new Date();
+  // const today = new Date();
   const { sucursalId } = useParams();
   const sucursalService = new SucursalShortDtoService();
   const [sucursales, setSucursales] = useState<SucursalShorDto[]>([]);
@@ -50,13 +50,13 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   // const [articuloInsumo, setArticuloInsumo] = useState<IArticuloInsumo[]>([]);
   // const [articuloManufacturado, setArticuloManufacturado] = useState<IArticuloManufacturado[]>([]);
   const [productos, setProductos] = useState<ArticuloDto[]>([]);
-  console.log(promocionToEdit)
+
   const initialValues: Promocion = {
     id: promocionToEdit ? promocionToEdit.id : 0,
     eliminado: promocionToEdit ? promocionToEdit.eliminado : false,
     denominacion: promocionToEdit ? promocionToEdit.denominacion : "",
-    fechaDesde: promocionToEdit ? promocionToEdit.fechaDesde : today,
-    fechaHasta: promocionToEdit ? promocionToEdit.fechaHasta : today,
+    fechaDesde: promocionToEdit ? promocionToEdit.fechaDesde : "",
+    fechaHasta: promocionToEdit ? promocionToEdit.fechaHasta : "",
     horaDesde: promocionToEdit ? promocionToEdit.horaDesde : "",
     horaHasta: promocionToEdit ? promocionToEdit.horaHasta : "",
     descripcionDescuento: promocionToEdit
@@ -125,6 +125,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
       : [],
   };
   const handleClose = () => {
+    setDetalles([])
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
@@ -208,10 +209,17 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
     console.log(totalPrecioPromocional)
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>, setFieldValue: any, existingImages: Imagen[]) => {
     if (e.target.files && e.target.files.length > 0) {
+      const newFilesArray = Array.from(e.target.files).map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+      }));
+  
+      // Combinar imágenes existentes con las nuevas imágenes seleccionadas
+      const combinedImages = [...existingImages, ...newFilesArray];
+      setFieldValue("imagenes", combinedImages);
       setFiles(Array.from(e.target.files));
-      console.log(files);
     }
   };
   
@@ -261,46 +269,25 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
             denominacion: Yup.string().required("Campo requerido"),
             fechaDesde: Yup.date().required("Campo requerido"),
             fechaHasta: Yup.date().required("Campo requerido"),
+            horaDesde: Yup.string().required('Campo requerido'),
+            horaHasta: Yup.string().required('Campo requerido'),
             descripcionDescuento: Yup.string().required("Campo requerido"),
             precioPromocional: Yup.number().required("Campo requerido"),
-            // imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")
+            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido"),
+            sucursales: Yup.array()
+            .of(Yup.object().shape({
+              id: Yup.number().required(),
+              nombre: Yup.string().required(),
+            }))
+            .min(1, 'Debe seleccionar al menos una sucursal'),
           })}
           initialValues={initialValues}
           onSubmit={async (values) => {
             try {
               let promocion = undefined;
-              console.log(values)
+
               if (promocionToEdit) {
-                // const respuestas = await Promise.all(
-                //   detalles.map(async (detalle) => {
-                //     try {
-                //       // Verificar si el detalle ya existe
-                //       if (detalle.id) {
-                //         // Si el detalle tiene un ID, intenta actualizarlo
-                //         const respuesta2 = await promocionDetalleService.put(
-                //           url + "promocionDetalle",
-                //           detalle.id.toString(),
-                //           detalle, await getAccessTokenSilently({})
-                //         );
-                //         console.log("Detalle actualizado:", respuesta2);
-                //         return respuesta2; // Devolver la respuesta para procesamiento adicional
-                //       } else {
-                //         // Si el detalle no tiene un ID, insertarlo como nuevo
-                //         const respuesta2 = await promocionDetalleService.post(
-                //           url + "promocionDetalle",
-                //           detalle, await getAccessTokenSilently({})
-                //         );
-                //         console.log("Nuevo detalle insertado:", respuesta2);
-                //         return respuesta2; // Devolver la respuesta para procesamiento adicional
-                //       }
-                //     } catch (error) {
-                //       console.error("Error en articuloDetalleService:", error);
-                //       throw error; // Volver a lanzar el error para asegurar que Promise.all() falle
-                //     }
-                //   })
-                // );
-                // values.promocionDetalle = respuestas;
-                
+                                
                 const sucursalesSeleccionadas = values.sucursales;
                 values.promocionDetalle = detalles;
                 // añadimos todas las sucursales seleccionadas al array de sucursales en values
@@ -317,7 +304,6 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                 }
               } else {
                 console.log(files)
-                console.log(values.imagenes)
                 // Realizar todas las solicitudes 'post' de manera concurrente y recolectar sus respuestas
                 const sucursalesSeleccionadas = values.sucursales;
                 // Ahora, en lugar de agregar una sola sucursal (como la de ID 1),
@@ -461,7 +447,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     className="form-control mt-2"
                   >
                     <option value={TipoPromocion.HAPPY_HOUR}>HAPPY_HOUR</option>
-                    <option value={TipoPromocion.PROMOCION}>PROMOCIóN</option>
+                    <option value={TipoPromocion.PROMOCION}>PROMOCIÓN</option>
                   </Field>
                   <ErrorMessage
                     name="tipoPromocion"
@@ -475,7 +461,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     name="imagen"
                     type="file"
                     className="form-control my-2"
-                    onChange={handleFileChange}
+                    onChange={(event) => handleFileChange(event, setFieldValue, values.imagenes)}
                     multiple
                   />
                    <ErrorMessage
@@ -528,6 +514,11 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                       </div>
                     ))}
                   </div>
+                  <ErrorMessage
+                    name="sucursales"
+                    className="error-message text-danger"
+                    component="div"
+                  />
                 </div>
 
                 <div className="col-md-4 mb-4">
@@ -547,10 +538,9 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
               </div>
               <div className="d-flex justify-content-end">
                 <Button
-                  variant="outline-success"
                   type="submit"
-                  className="custom-button"
-                  disabled={isSubmitting}
+                  className="btn btn-primary mt-3"
+                  disabled={isSubmitting || detalles.length === 0}
                 >
                   {isSubmitting ? "Enviando..." : "Enviar"}
                 </Button>
