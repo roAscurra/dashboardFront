@@ -556,11 +556,18 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
               </div>
               <div className="d-flex justify-content-end">
                 <Button
+                  variant="secondary"
+                  onClick={handleClose}
+                  className="me-2"
+                >
+                  Cancelar
+                </Button>
+                <Button
                   type="submit"
-                  className="btn btn-primary mt-3"
+                  variant="primary"
                   disabled={isSubmitting || detalles.length === 0}
                 >
-                  {isSubmitting ? "Enviando..." : "Enviar"}
+                  {isSubmitting ? "Guardando..." : "Guardar"}
                 </Button>
               </div>
               <ModalPromocionDetalle

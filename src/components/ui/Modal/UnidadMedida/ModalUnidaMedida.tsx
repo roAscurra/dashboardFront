@@ -92,12 +92,18 @@ const ModalUnidadMedida: React.FC<ModalUnidadMedidaProps> = ({ modalName, getUni
               </div>
               <div className="d-flex justify-content-end">
                 <Button
-                  variant="outline-success"
+                  variant="secondary"
+                  onClick={handleClose}
+                  className="me-2"
+                >
+                  Cancelar
+                </Button>
+                <Button
                   type="submit"
-                  className="custom-button"
+                  variant="primary"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Enviando..." : "Enviar"}
+                  {isSubmitting ? "Guardando..." : "Guardar"}
                 </Button>
               </div>
             </Form>

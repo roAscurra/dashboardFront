@@ -494,11 +494,18 @@ const ModalProducto: React.FC<ModalProductProps> = ({
               />
               <div className="text-end">
                 <Button
+                  variant="secondary"
+                  onClick={handleClose}
+                  className="me-2"
+                >
+                  Cancelar
+                </Button>
+                <Button
                   type="submit"
-                  className="btn btn-primary mt-3"
+                  variant="primary"
                   disabled={isSubmitting || detalles.length === 0}
                 >
-                  {isSubmitting ? "Enviando..." : "Enviar"}
+                  {isSubmitting ? "Guardando..." : "Guardar"}
                 </Button>
               </div>
             </Form>

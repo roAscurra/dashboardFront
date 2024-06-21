@@ -239,6 +239,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
       setFieldValue("imagenes", images);
       console.log(images)
       getSucursal(); 
+      console.log(images)
       console.log('Imagen eliminada correctamente.');
     } catch (error) {
       console.error('Error al eliminar la imagen:', error);
@@ -287,12 +288,16 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   values.domicilio, await getAccessTokenSilently({})
                 );
                 values.domicilio = domicilio;
+                console.log(values.imagenes);
                 // Update branch details
-                await sucursalService.put(
-                  url + "sucursal",
-                  values.id.toString(),
-                  values, await getAccessTokenSilently({})
+                const response = await sucursalService.put(
+                    url + "sucursal",
+                    values.id.toString(),
+                    values,
+                    await getAccessTokenSilently({})
                 );
+                console.log(response); // Imprimir la respuesta en la consola
+
                 newCompanyId = values.id.toString(); //asigno el id de la sucursal
                 if (files.length > 0 && newCompanyId) {
                   handleUpload(newCompanyId);
@@ -559,7 +564,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
               <Row>
                 {/* Novena columna */}
                 <Col md={4} className="mb-4">
-                  <label htmlFor="logo">Logo:</label>
+                  <label htmlFor="imagenes">Logo:</label>
                   <br />
                   <input
                     name="imagenes"
@@ -585,12 +590,18 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
               <div className="d-flex justify-content-end">
                 <Button
-                  variant="outline-success"
+                  variant="secondary"
+                  onClick={handleClose}
+                  className="me-2"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  variant="primary"
                   type="submit"
-                  className="custom-button"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Enviando..." : "Enviar"}
+                  {isSubmitting ? "Guardando..." : "Guardar"}
                 </Button>
               </div>
             </Form>

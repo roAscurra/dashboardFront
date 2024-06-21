@@ -136,7 +136,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
             }
           }}
         >
-          {({ values, setFieldValue }) => (
+          {({ values, setFieldValue, isSubmitting }) => (
             <Form autoComplete="off">
               <div className="mb-4">
                 <label htmlFor="denominacion">Nombre:</label>
@@ -222,15 +222,19 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
               </div>
 
               <div className="d-flex justify-content-end">
-                <Button
+              <Button
                   variant="secondary"
                   onClick={handleClose}
-                  className="mr-2"
+                  className="me-2"
                 >
                   Cancelar
                 </Button>
-                <Button variant="primary" type="submit">
-                  Guardar
+                <Button
+                  type="submit"
+                  variant="primary"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Guardando..." : "Guardar"}
                 </Button>
               </div>
             </Form>
