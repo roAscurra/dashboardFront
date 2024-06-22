@@ -3,6 +3,7 @@ import { Modal, Button, FormControl } from "react-bootstrap";
 import { TablePagination } from "@mui/material";
 import ArticuloInsumoShortDto from "../../../../types/dto/ArticuloInsumoShortDto.ts";
 import ArticuloManufacturadoDetalle from "../../../../types/ArticuloManufacturadoDetalle.ts";
+import { useFormikContext } from "formik";
 
 interface ModalInsumoProps {
   insumos: ArticuloInsumoShortDto[];
@@ -27,8 +28,8 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
   const [currentPage, setCurrentPage] = useState<number>(0); // Empezar desde la página 0
   const itemsPerPage = 5;
   const [filteredInsumos, setFilteredInsumos] = useState<ArticuloInsumoShortDto[]>(insumos);
-
   const [selectedInsumos, setSelectedInsumos] = useState<ArticuloInsumoShortDto[]>([]);
+  const { setFieldValue } = useFormikContext();
 
   useEffect(() => {
     const updatedFilteredInsumos = insumos.filter((insumo) =>
@@ -81,7 +82,9 @@ const ModalInsumo: React.FC<ModalInsumoProps> = ({
         ? { ...detalle, cantidad }
         : detalle
     );
+    console.log(cantidad)
     setDetalles(updatedDetalles);
+    setFieldValue('detalles', updatedDetalles);
   };
 
   const handleGuardarInsumo = () => {

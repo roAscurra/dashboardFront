@@ -43,12 +43,13 @@ const ModalProducto: React.FC<ModalProductProps> = ({
   const { getAccessTokenSilently } = useAuth0();
   const [modalColor, setModalColor] = useState<string>(""); // Estado para controlar el color de fondo de la modal
   const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
+  const [totalPrecioVenta, setTotalPrecioVenta] = useState<number>(0);
 
   const initialValues: ArticuloManufacturado = {
     id: productToEdit ? productToEdit.id : 0,
     eliminado: productToEdit ? productToEdit.eliminado : false,
     denominacion: productToEdit?.denominacion || "",
-    precioVenta: productToEdit?.precioVenta || 0,
+    precioVenta: productToEdit?.precioVenta || totalPrecioVenta,
     imagenes: productToEdit ? productToEdit.imagenes.map(
       (imagen: any) =>
         ({
@@ -126,6 +127,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
   const handleClose = () => {
     setFiles([]);
     setDetalles([]);
+    setTotalPrecioVenta(0);
     dispatch(toggleModal({ modalName: "modal" }));
   };
 
@@ -200,11 +202,20 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 
   const handleAddInsumo = (detalles: ArticuloManufacturadoDetalle[]) => {
     // Establecer los detalles en el estado si son válidos
+    setTotalPrecioVenta(0);
     setDetalles(detalles); // Guardar los detalles en el estado
+    const sumaPrecios = detalles.map((detalle: any) =>
+      detalle.cantidad * detalle.articuloInsumo.precioVenta
+    ).reduce((total: number, precioVenta: number) => total + precioVenta, 0);  
+    console.log(sumaPrecios)  
+    setTotalPrecioVenta(sumaPrecios);
   };
   
   useEffect(() => {
     setDetalles(productToEdit?.articuloManufacturadoDetalles || []);
+    if (productToEdit) {
+      setTotalPrecioVenta(productToEdit.precioVenta);
+    }  
   }, [productToEdit]);
 
   const handleUpload = async (articuloId: string) => {
@@ -243,6 +254,13 @@ const ModalProducto: React.FC<ModalProductProps> = ({
       console.error('Error al eliminar la imagen:', error);
     }
   };
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>, setFieldValue: any) => {
+    const newValue = parseFloat(event.target.value); // Convertir el valor a número
+    setTotalPrecioVenta(newValue);
+    setFieldValue('precioVenta', newValue);
+    console.log(newValue)
+  };
+
   return (
     <Modal
       id={"modal"}
@@ -262,11 +280,15 @@ const ModalProducto: React.FC<ModalProductProps> = ({
         <Formik
           validationSchema={Yup.object({
             denominacion: Yup.string().required("Campo requerido"),
-            precioVenta: Yup.number().required("Campo requerido"),
+            precioVenta: Yup.number()
+            .required('Campo requerido')
+            .typeError('Debe ser un número válido')
+            .test('is-not-nan', 'El valor no puede ser NaN', value => !isNaN(value)),             
             descripcion: Yup.string().required("Campo requerido"),
             preparacion: Yup.string().required("Campo requerido"),
             tiempoEstimadoMinutos: Yup.number().required("Campo requerido"),
-            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")  ,     
+            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido"),
+           
           })}
           
           initialValues={initialValues}
@@ -276,6 +298,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
 
               if (productToEdit) {
                 values.articuloManufacturadoDetalles = detalles;
+                values.precioVenta = totalPrecioVenta;
                 // Actualizar el producto 
                 await productoService.put(
                   url + "articuloManufacturado",
@@ -287,6 +310,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   handleUpload(productoId);
                 } 
               } else {
+                values.precioVenta = totalPrecioVenta;
                 values.articuloManufacturadoDetalles = detalles;
                 if(sucursalId){
                   const sucursalIdNumber = parseInt(sucursalId);
@@ -335,6 +359,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     type="number"
                     placeholder="Precio de Venta"
                     className="form-control my-2"
+                    value={totalPrecioVenta}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event, setFieldValue)}
                   />
                   <ErrorMessage
                     name="precioVenta"
