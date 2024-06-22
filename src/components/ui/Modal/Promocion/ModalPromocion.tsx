@@ -33,12 +33,9 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const [files, setFiles] = useState<File[]>([]);
   const [showInsumoModal, setShowInsumoModal] = useState(false);
   const [modalColor, setModalColor] = useState<string>(""); // Estado para controlar el color de fondo de la modal
-  // const [articulosManufacturados, setArticulosManufacturados] = useState<ArticuloManufacturadoShorDto[]>([]);
-  // const articuloManufacturadoService = new ArticuloManufacturadoShorDtoService();
   const [detalles, setDetalles] = useState<PromocionDetalle[]>([]);
   const url = import.meta.env.VITE_API_URL;
   const { getAccessTokenSilently } = useAuth0();
-  // const today = new Date();
   const { sucursalId } = useParams();
   const sucursalService = new SucursalShortDtoService();
   const [sucursales, setSucursales] = useState<SucursalShorDto[]>([]);
@@ -47,8 +44,6 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const [totalPrecioPromocional, setTotalPrecioPromocional] = useState<number>(0);
   const productoService = new ArticuloManufacturadoService();
   const articuloInsumoService = new ArticuloInsumoService();
-  // const [articuloInsumo, setArticuloInsumo] = useState<IArticuloInsumo[]>([]);
-  // const [articuloManufacturado, setArticuloManufacturado] = useState<IArticuloManufacturado[]>([]);
   const [productos, setProductos] = useState<ArticuloDto[]>([]);
 
   const initialValues: Promocion = {
@@ -62,7 +57,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
     descripcionDescuento: promocionToEdit
       ? promocionToEdit.descripcionDescuento
       : "",
-    precioPromocional: promocionToEdit ? promocionToEdit.precioPromocional : 0,
+    precioPromocional: promocionToEdit ? promocionToEdit.precioPromocional : totalPrecioPromocional,
     tipoPromocion: promocionToEdit ? promocionToEdit.tipoPromocion : TipoPromocion.PROMOCION,
     sucursales: promocionToEdit
       ? promocionToEdit.sucursales.map((sucursal: any) => ({
@@ -126,6 +121,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   };
   const handleClose = () => {
     setFiles([]);
+    setTotalPrecioPromocional(0);
     setDetalles([]);
     dispatch(toggleModal({ modalName: "modal" }));
   };
@@ -201,11 +197,12 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   const handelAddArticulosManufacturados = (detalles: PromocionDetalle[]) => {
     console.log("Detalles a guardar:", detalles);
     // setPromocionDetalles(detalles);
-
+    setTotalPrecioPromocional(0);
     setDetalles(detalles); // Guardar los detalles en el estado
     const sumaPrecios = detalles.map((detalle: any) =>
       detalle.cantidad * detalle.articulo.precioVenta
-    ).reduce((total: number, precioPromocional: number) => total + precioPromocional, 0);    
+    ).reduce((total: number, precioPromocional: number) => total + precioPromocional, 0);  
+    // console.log(sumaPrecios)  
     setTotalPrecioPromocional(sumaPrecios);
     console.log(totalPrecioPromocional)
   };
@@ -226,6 +223,9 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
   
   useEffect(() => {
     setDetalles(promocionToEdit?.promocionDetalle || []);
+    if (promocionToEdit) {
+      setTotalPrecioPromocional(promocionToEdit.precioPromocional);
+    }  
   }, [promocionToEdit]);
 
   const handleUpload = async (articuloId: string) => {
@@ -264,6 +264,14 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
       console.error('Error al eliminar la imagen:', error);
     }
   };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>, setFieldValue: any) => {
+    const newValue = parseFloat(event.target.value); // Convertir el valor a número
+    setTotalPrecioPromocional(newValue);
+    setFieldValue('precioPromocional', newValue);
+    console.log(newValue)
+  };
+  
   return (
     <Modal
       id="modal"
@@ -288,7 +296,10 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
             horaDesde: Yup.string().required('Campo requerido'),
             horaHasta: Yup.string().required('Campo requerido'),
             descripcionDescuento: Yup.string().required("Campo requerido"),
-            precioPromocional: Yup.number().required("Campo requerido"),
+            precioPromocional: Yup.number()
+            .required('Campo requerido')
+            .typeError('Debe ser un número válido')
+            .test('is-not-nan', 'El valor no puede ser NaN', value => !isNaN(value)),            
             imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido"),
             sucursales: Yup.array()
             .of(Yup.object().shape({
@@ -306,6 +317,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                                 
                 const sucursalesSeleccionadas = values.sucursales;
                 values.promocionDetalle = detalles;
+                values.precioPromocional = totalPrecioPromocional
                 // añadimos todas las sucursales seleccionadas al array de sucursales en values
                 values.sucursales = sucursalesSeleccionadas;
                 promocion = await promocionService.put(
@@ -319,16 +331,13 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                   handleUpload(promocionId);
                 }
               } else {
-                console.log(files)
                 // Realizar todas las solicitudes 'post' de manera concurrente y recolectar sus respuestas
                 const sucursalesSeleccionadas = values.sucursales;
                 // Ahora, en lugar de agregar una sola sucursal (como la de ID 1),
                 // añadimos todas las sucursales seleccionadas al array de sucursales en values
                 values.sucursales = sucursalesSeleccionadas;
-                // Una vez que se recolectan todas las respuestas, actualizar el objeto 'values'
                 values.promocionDetalle = detalles;
-                console.log("Valores actualizados:", values);
-
+                values.precioPromocional = totalPrecioPromocional
                 promocion = await promocionService.post(url + "promocion", values, await getAccessTokenSilently({}));
 
                 const promocionId = promocion.id.toString();
@@ -441,6 +450,7 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     component="div"
                   />
                 </div>
+                
                 <div className="col-md-4 mb-4">
                   <label htmlFor="precioPromocional">Precio Promocional:</label>
                   <Field
@@ -448,7 +458,9 @@ const ModalPromocion: React.FC<ModalPromocionProps> = ({
                     type="number"
                     placeholder="Precio promocional"
                     className="form-control mt-2"
-                    />
+                    value={totalPrecioPromocional}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleChange(event, setFieldValue)}
+                  />
                   <ErrorMessage
                     name="precioPromocional"
                     className="error-message text-danger"

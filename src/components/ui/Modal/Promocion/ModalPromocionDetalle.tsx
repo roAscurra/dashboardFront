@@ -3,6 +3,7 @@ import { Modal, Button, FormControl } from "react-bootstrap";
 import { TablePagination } from "@mui/material";
 import PromocionDetalle from "../../../../types/PromocionDetalle";
 import ArticuloDto from "../../../../types/dto/ArticuloDto";
+import { useFormikContext } from "formik";
 
 interface ModalPromocionDetalleProps {
   articulos: ArticuloDto[];
@@ -26,6 +27,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [filteredInsumos, setFilteredInsumos] = useState<ArticuloDto[]>(articulos);
   const [selectedInsumos, setSelectedInsumos] = useState<ArticuloDto[]>([]);
+  const { setFieldValue } = useFormikContext();
 
   useEffect(() => {
     const updatedFilteredInsumos = articulos.filter((insumo) =>
@@ -77,6 +79,7 @@ const ModalPromocionDetalle: React.FC<ModalPromocionDetalleProps> = ({
       index === detalleIndex ? { ...detalle, cantidad } : detalle
     );
     setDetalles(updatedDetalles);
+    setFieldValue('detalles', updatedDetalles);
   };
 
   const handleGuardarInsumo = () => {
