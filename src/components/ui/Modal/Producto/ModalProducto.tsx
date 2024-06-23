@@ -177,7 +177,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
     try {
       if (sucursalId) {
         const parsedSucursalId = parseInt(sucursalId, 10);
-        const categorias = await categoriaService.categoriaSucursal(url, parsedSucursalId, await getAccessTokenSilently({}));
+        const categorias = await categoriaService.categoriaManufacturadoSucursal(url, parsedSucursalId, await getAccessTokenSilently({}));
         setCategorias(categorias);
       }
     } catch (error) {

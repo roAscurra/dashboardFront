@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Row } from "react-bootstrap";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Categoria from "../../../../types/Categoria";
@@ -108,6 +108,12 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
         <Formik
           validationSchema={Yup.object({
             denominacion: Yup.string().required("Campo requerido"),
+            sucursales: Yup.array()
+            .of(Yup.object().shape({
+              id: Yup.number().required(),
+              nombre: Yup.string().required(),
+            }))
+            .min(1, 'Debe seleccionar al menos una sucursal'),
           })}
           initialValues={initialValues}
           onSubmit={async (values) => {
@@ -138,20 +144,33 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
         >
           {({ values, setFieldValue, isSubmitting }) => (
             <Form autoComplete="off">
-              <div className="mb-4">
-                <label htmlFor="denominacion">Nombre:</label>
-                <Field
-                  name="denominacion"
-                  type="text"
-                  placeholder="Nombre de la Categoría"
-                  className="form-control mt-2"
-                />
-                <ErrorMessage
-                  name="denominacion"
-                  className="error-message"
-                  component="div"
-                />
-              </div>
+              <Row className="mb-4">
+                <div className="col-md-10 d-flex flex-column justify-content-center">
+                  <label htmlFor="denominacion">Nombre:</label>
+                  <Field
+                    name="denominacion"
+                    type="text"
+                    placeholder="Nombre de la Categoría"
+                    className="form-control mt-2"
+                  />
+                  <ErrorMessage
+                    name="denominacion"
+                    className="error-message text-danger"
+                    component="div"
+                  />
+                </div>
+                <div className="col-md-2 d-flex flex-column justify-content-center">
+                  <label htmlFor="esInsumo">Es insumo:</label>
+                  <Field
+                    name="esInsumo"
+                    as="select"
+                    className="form-control mt-2"
+                  >
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                  </Field>
+                </div>
+              </Row>
               {categoryToEdit &&
                 categoryToEdit.subCategorias &&
                 categoryToEdit.subCategorias.length > 0 && (
@@ -177,7 +196,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
                             <ErrorMessage
                               name={`subCategorias.${index}.denominacion`}
                               component="div"
-                              className="error-message"
+                              className="error-message text-danger"
                             />
                           </div>
                         ))}
@@ -219,6 +238,11 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({
                     </label>
                   </div>
                 ))}
+                <ErrorMessage
+                    name="sucursales"
+                    className="error-message text-danger"
+                    component="div"
+                  />
               </div>
 
               <div className="d-flex justify-content-end">
