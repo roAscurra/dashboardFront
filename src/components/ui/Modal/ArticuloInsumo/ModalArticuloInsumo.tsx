@@ -120,7 +120,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
     try {
       if (sucursalId) {
         const parsedSucursalId = parseInt(sucursalId, 10); 
-        const categorias = await categoriaService.categoriaSucursal(url, parsedSucursalId, await getAccessTokenSilently({}));
+        const categorias = await categoriaService.categoriaInsumoSucursal(url, parsedSucursalId, await getAccessTokenSilently({}));
         setCategorias(categorias);
       }
     } catch (error) {
@@ -213,7 +213,6 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
               let articuloId: string | null = null;
               
               if (articuloToEdit) {
-                console.log(values.imagenes)
                 if (files.length === 0 && values.imagenes.length === 0) {
                   // Si no hay archivos adjuntos (imágenes) nuevos y el artículo no tiene imágenes existentes, mostrar un mensaje de error
                   alert("Debe agregar al menos una imagen.");
@@ -308,8 +307,8 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                     as="select" // Utiliza "as" para especificar que este campo es un select
                     className="form-control"
                   >
-                    <option value="true">Sí</option> {/* Opción "Sí" */}
-                    <option value="false">No</option> {/* Opción "No" */}
+                    <option value="true">Sí</option> 
+                    <option value="false">No</option>
                   </Field>
                   <ErrorMessage
                     name="esParaElaborar"
