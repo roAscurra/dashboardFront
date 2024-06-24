@@ -11,9 +11,6 @@ import ModalEliminarUsuario from "../../ui/Modal/Usuario/ModalEliminarUsuario.ts
 import Usuario from "../../../types/Usuario.ts";
 import { toggleModal } from "../../../redux/slices/Modal";
 import {handleSearch} from "../../../utils.ts/utils.ts";
-import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
-import { CCol, CContainer, CRow } from "@coreui/react";
-import Sidebar from "../../ui/Sider/SideBar.tsx";
 import {useAuth0} from "@auth0/auth0-react";
 import {useParams} from "react-router-dom";
 

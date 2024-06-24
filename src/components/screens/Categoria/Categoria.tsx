@@ -10,9 +10,6 @@ import ICategoria from "../../../types/Categoria";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { setCategoria } from "../../../redux/slices/Categoria";
 import { handleSearch } from "../../../utils.ts/utils.ts";
-import { CCol, CContainer, CRow } from "@coreui/react";
-import Sidebar from "../../ui/Sider/SideBar.tsx";
-import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import { useParams } from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
 

@@ -26,11 +26,11 @@ const AppRouter = () => {
         <Route path="/categorias/:sucursalId" element={<AuthenticationGuard component={Categoria} />} />
         <Route path='/unidadMedida/:sucursalId' element={<AuthenticationGuard component={UnidadMedida}/>}/>
         <Route path="/promociones/lista/:sucursalId" element={<AuthenticationGuard component={ListaPromocion} />} />
+        <Route path="/reportes/:sucursalId" element={<AuthenticationGuard component={Reporte} />}/>
       </Route>
       <Route path="/" element={<AuthenticationGuard component={ListaEmpresa} />} />
       
       <Route path="/sucursal/:empresaId" element={<AuthenticationGuard component={ListaSucursal} />} />
-      <Route path="/reportes/:sucursalId" element={<AuthenticationGuard component={Reporte} />}/>
     </Routes>
   );
 };

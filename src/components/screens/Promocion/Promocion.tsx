@@ -11,9 +11,6 @@ import TableComponent from "../../ui/Table/Table.tsx";
 import ModalEliminarPromocion from "../../ui/Modal/Promocion/ModalEliminarPromocion.tsx";
 import ModalPromocion from "../../ui/Modal/Promocion/ModalPromocion.tsx";
 import { handleSearch } from "../../../utils.ts/utils.ts";
-import { CCol, CContainer, CRow } from "@coreui/react";
-import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
-import Sidebar from "../../ui/Sider/SideBar.tsx";
 import { useParams } from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
 

@@ -12,9 +12,6 @@ import ArticuloInsumo from "../../../types/ArticuloInsumoType";
 import {handleSearch} from "../../../utils.ts/utils.ts";
 import { setArticuloInsumo } from "../../../redux/slices/ArticuloInsumo.ts";
 import UnidadMedida from "../../../types/UnidadMedida.ts";
-import Sidebar from "../../ui/Sider/SideBar.tsx";
-import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
-import { CContainer, CRow, CCol } from "@coreui/react";
 import { useParams } from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
 

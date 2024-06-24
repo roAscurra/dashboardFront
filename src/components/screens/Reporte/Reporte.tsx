@@ -1,9 +1,7 @@
-import {BaseNavBar} from "../../ui/common/BaseNavBar.tsx";
 import {Col, Row, Form} from "react-bootstrap";
 import {useState} from "react";
 import {useParams} from "react-router-dom";
 import {Graphs} from "../../ui/Graphs/Graphs.tsx";
-import Sidebar from "../../ui/Sider/SideBar.tsx";
 
 export const Reporte = () => {
 
