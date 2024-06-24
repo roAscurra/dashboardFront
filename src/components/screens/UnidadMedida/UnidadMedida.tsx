@@ -7,9 +7,6 @@ import SearchBar from "../../ui/SearchBar/SearchBar";
 import UnidadMedidaService from "../../../services/UnidadMedidaService";
 import { toggleModal } from "../../../redux/slices/Modal";
 import { handleSearch } from "../../../utils.ts/utils.ts";
-import { BaseNavBar } from "../../ui/common/BaseNavBar";
-import { CCol, CContainer, CRow } from "@coreui/react";
-import Sidebar from "../../ui/Sider/SideBar";
 import ModalUnidadMedida from "../../ui/Modal/UnidadMedida/ModalUnidaMedida.tsx";
 import ModalEliminarUnidadMedida from "../../ui/Modal/UnidadMedida/ModalEliminarUnidaMedida.tsx";
 import UnidadMedida from "../../../types/UnidadMedida.ts";
@@ -105,43 +102,33 @@ export const ListaUnidadesMedida = () => {
 
   return (
     <React.Fragment>
-      <BaseNavBar title="" />
-      <CContainer fluid style={{backgroundColor: "#fff"}}>
-        <CRow>
-          <CCol xs="auto" className="sidebar">
-            <Sidebar />
-          </CCol>
-          <CCol>
-            <Box component="main" sx={{ flexGrow: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", my: 2 }}>
-              <Container maxWidth="lg">
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                  <Typography variant="h5" gutterBottom>
-                    Unidades de Medida
-                  </Typography>
-                  <Button sx={{ bgcolor: "#9c27b0", "&:hover": { bgcolor: "#9c27b0" } }} variant="contained" startIcon={<Add />} onClick={handleAddUnidad}>
-                    Unidad de Medida
-                  </Button>
-                </Box>
+      <Box component="main" sx={{ flexGrow: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", my: 2 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+            <Typography variant="h5" gutterBottom>
+              Unidades de Medida
+            </Typography>
+            <Button sx={{ bgcolor: "#9c27b0", "&:hover": { bgcolor: "#9c27b0" } }} variant="contained" startIcon={<Add />} onClick={handleAddUnidad}>
+              Unidad de Medida
+            </Button>
+          </Box>
 
-                <Box sx={{ mb: 2 }}>
-                  <SearchBar onSearch={onSearch} />
-                </Box>
-                {loading ? (
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <CircularProgress />
-                  </Box>
-                ) : (
-                  <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} handleOpenDeleteModal={handleOpenDeleteModal} isListaPedidos={false}/>
-                )}
-
-                <ModalUnidadMedida getUnidades={fetchUnidades} unidadToEdit={unidadToEdit !== null ? unidadToEdit : undefined} modalName="modal" />
-
-                <ModalEliminarUnidadMedida show={deleteModalOpen} onHide={handleCloseDeleteModal} unidad={unidadToEdit} onDelete={handleDeleteUnidad} />
-              </Container>
+          <Box sx={{ mb: 2 }}>
+            <SearchBar onSearch={onSearch} />
+          </Box>
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <CircularProgress />
             </Box>
-          </CCol>
-        </CRow>
-      </CContainer>
+          ) : (
+            <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} handleOpenDeleteModal={handleOpenDeleteModal} isListaPedidos={false}/>
+          )}
+
+          <ModalUnidadMedida getUnidades={fetchUnidades} unidadToEdit={unidadToEdit !== null ? unidadToEdit : undefined} modalName="modal" />
+
+          <ModalEliminarUnidadMedida show={deleteModalOpen} onHide={handleCloseDeleteModal} unidad={unidadToEdit} onDelete={handleDeleteUnidad} />
+        </Container>
+      </Box>
     </React.Fragment>
   );
 }

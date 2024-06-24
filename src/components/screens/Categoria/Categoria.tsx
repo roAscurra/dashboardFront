@@ -10,9 +10,6 @@ import ICategoria from "../../../types/Categoria";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { setCategoria } from "../../../redux/slices/Categoria";
 import { handleSearch } from "../../../utils.ts/utils.ts";
-import { CCol, CContainer, CRow } from "@coreui/react";
-import Sidebar from "../../ui/Sider/SideBar.tsx";
-import { BaseNavBar } from "../../ui/common/BaseNavBar.tsx";
 import { useParams } from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
 
@@ -109,69 +106,58 @@ const Categoria = () => {
 
   return (
     <React.Fragment>
-      <BaseNavBar title="" />
-      <CContainer fluid style={{backgroundColor: "#fff"}}>
-        <CRow>
-          {/* Sidebar */}
-          <CCol xs="auto" className="sidebar">
-            <Sidebar />
-          </CCol>
-          <CCol>
-            <Box component="main" sx={{ flexGrow: 1, my: 2 }}>
-              <Container>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    my: 1,
-                  }}
-                >
-                  <Typography variant="h5" gutterBottom>
-                    Categorías
-                  </Typography>
-                  <Button
-                    sx={{
-                      bgcolor: "#9c27b0",
-                      "&:hover": {
-                        bgcolor: "#9c27b0",
-                      },
-                    }}
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={handleAgregarCategoria}
-                  >
-                    Categoría
-                  </Button>
-                </Box>
-                <Box sx={{ mt: 2 }}>
-                  <SearchBar onSearch={onSearch} />
-                </Box>
-                <CategoriaLista
-                  categorias={filteredData}
-                  onEditar={handleEditarCategoria}
-                  onDelete={handleEliminarCategoria}
-                  onAddSubCategoria={handleAgregarSubCategoria}
-                  getCategories={() => fetchCategorias()}
-                />
-                <ModalCategoria
-                  open={modalOpen}
-                  onClose={handleCloseModal}
-                  getCategories={() => fetchCategorias()}
-                  categoryToEdit={selectedCategoria}
-                />
-                <ModalEliminarCategoria
-                  show={eliminarModalOpen}
-                  categoria={selectedCategoria}
-                  onDelete={handleEliminar} 
-                  getCategories={() => fetchCategorias()}
-                  onClose={() => setEliminarModalOpen(false)}
-                />
-              </Container>
-            </Box>
-          </CCol>
-        </CRow>
-      </CContainer>
+      <Box component="main" sx={{ flexGrow: 1, my: 2 }}>
+        <Container>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              my: 1,
+            }}
+          >
+            <Typography variant="h5" gutterBottom>
+              Categorías
+            </Typography>
+            <Button
+              sx={{
+                bgcolor: "#9c27b0",
+                "&:hover": {
+                  bgcolor: "#9c27b0",
+                },
+              }}
+              variant="contained"
+              startIcon={<Add />}
+              onClick={handleAgregarCategoria}
+            >
+              Categoría
+            </Button>
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <SearchBar onSearch={onSearch} />
+          </Box>
+          <CategoriaLista
+            categorias={filteredData}
+            onEditar={handleEditarCategoria}
+            onDelete={handleEliminarCategoria}
+            onAddSubCategoria={handleAgregarSubCategoria}
+            getCategories={() => fetchCategorias()}
+          />
+          <ModalCategoria
+            open={modalOpen}
+            onClose={handleCloseModal}
+            getCategories={() => fetchCategorias()}
+            categoryToEdit={selectedCategoria}
+          />
+          <ModalEliminarCategoria
+            show={eliminarModalOpen}
+            categoria={selectedCategoria}
+            onDelete={handleEliminar} 
+            getCategories={() => fetchCategorias()}
+            onClose={() => setEliminarModalOpen(false)}
+          />
+        </Container>
+      </Box>
     </React.Fragment>
   );
 };
