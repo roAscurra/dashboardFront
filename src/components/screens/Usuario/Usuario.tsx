@@ -135,78 +135,67 @@ export const ListaUsuarios = () => {
 
   return (
     <React.Fragment>
-    <BaseNavBar title="" />
-    <CContainer fluid style={{backgroundColor: "#fff"}}>
-      <CRow>
-        {/* Sidebar */}
-        <CCol xs="auto" className="sidebar">
-          <Sidebar />
-        </CCol>
-        <CCol>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          my: 2,
+        }}
+      >
+        <Container maxWidth="lg">
           <Box
-            component="main"
             sx={{
-              flexGrow: 1,
               display: "flex",
-              flexDirection: "column",
+              justifyContent: "space-between",
               alignItems: "center",
-              justifyContent: "center",
-              my: 2,
+              mb: 2,
             }}
           >
-            <Container maxWidth="lg">
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  Usuarios
-                </Typography>
-                <Button
-                  sx={{
-                    bgcolor: "#9c27b0",
-                    "&:hover": {
-                      bgcolor: "#9c27b0",
-                    },
-                  }}
-                  variant="contained"
-                  startIcon={<Add />}
-                  onClick={handleAddUsuario}
-                >
-                  Usuario
-                </Button>
-              </Box>
-
-              {/* Barra de búsqueda */}
-              <Box sx={{ mb: 2 }}>
-                <SearchBar onSearch={onSearch} />
-              </Box>
-
-              {/* Tabla de usuarios */}
-              {loading ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <CircularProgress />
-                </Box>
-              ) : (
-                <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} handleOpenDeleteModal={handleOpenDeleteModal} isListaPedidos={false}/>
-              )}
-
-              
-              {/* Modal de Usuario */}
-              <ModalUsuario surcursalId={+(sucursalId || 0)} getUsuarios={fetchUsuarios} usuarioToEdit={usuarioToEdit !== null ? usuarioToEdit : undefined} />
-
-              {/* Modal de Eliminar Usuario */}
-              <ModalEliminarUsuario show={deleteModalOpen} onHide={handleCloseDeleteModal} usuario={usuarioToEdit} onDelete={handleDeleteUsuario} />
-            </Container>
+            <Typography variant="h5" gutterBottom>
+              Usuarios
+            </Typography>
+            <Button
+              sx={{
+                bgcolor: "#9c27b0",
+                "&:hover": {
+                  bgcolor: "#9c27b0",
+                },
+              }}
+              variant="contained"
+              startIcon={<Add />}
+              onClick={handleAddUsuario}
+            >
+              Usuario
+            </Button>
           </Box>
-        </CCol>
-      </CRow>
-    </CContainer>
-  </React.Fragment>
+
+          {/* Barra de búsqueda */}
+          <Box sx={{ mb: 2 }}>
+            <SearchBar onSearch={onSearch} />
+          </Box>
+
+          {/* Tabla de usuarios */}
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <TableComponent data={filterData} columns={columns} handleOpenEditModal={handleOpenEditModal} handleOpenDeleteModal={handleOpenDeleteModal} isListaPedidos={false}/>
+          )}
+
+          
+          {/* Modal de Usuario */}
+          <ModalUsuario surcursalId={+(sucursalId || 0)} getUsuarios={fetchUsuarios} usuarioToEdit={usuarioToEdit !== null ? usuarioToEdit : undefined} />
+
+          {/* Modal de Eliminar Usuario */}
+          <ModalEliminarUsuario show={deleteModalOpen} onHide={handleCloseDeleteModal} usuario={usuarioToEdit} onDelete={handleDeleteUsuario} />
+        </Container>
+      </Box>
+    </React.Fragment>
   );
 }
 

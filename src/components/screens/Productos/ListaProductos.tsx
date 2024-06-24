@@ -188,67 +188,56 @@ export const ListaProductos = () => {
 
   return (
   <React.Fragment>
-    <BaseNavBar title="" />
-    <CContainer fluid style={{backgroundColor: "#fff"}}>
-      <CRow>
-        {/* Sidebar */}
-        <CCol xs="auto" className="sidebar">
-          <Sidebar />
-        </CCol>
-        <CCol>
+    <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          my: 2,
+        }}
+      >
+        <Container maxWidth="lg">
           <Box
-            component="main"
             sx={{
-              flexGrow: 1,
               display: "flex",
-              flexDirection: "column",
+              justifyContent: "space-between",
               alignItems: "center",
-              justifyContent: "center",
-              my: 2,
+              my: 1,
             }}
           >
-            <Container maxWidth="lg">
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  my: 1,
-                }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  Productos
-                </Typography>
-                <Button
-                  sx={{
-                    bgcolor: "#9c27b0", // Terracota
-                    "&:hover": {
-                      bgcolor: "#9c27b0", // Terracota más oscuro al pasar el mouse
-                    },
-                  }}
-                  variant="contained"
-                  startIcon={<Add />}
-                  onClick={handleAddProduct}
-                >
-                  Producto
-                </Button>
-              </Box>
-              {/* Barra de búsqueda */}
-              <Box sx={{ mt: 2 }}>
-                <SearchBar onSearch={onSearch} />
-              </Box>
-              {/* Componente de tabla para mostrar los artículos manufacturados */}
-              <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} isListaPedidos={false} />
-
-              {/* Llamando a ModalCupon con la prop fetchCupones y cuponToEdit */}
-              <ModalProducto getProducts={fetchProductos} productToEdit={productToEdit !== null ? productToEdit : undefined} />
-
-              <ModalEliminarProducto show={deleteModalOpen} onHide={handleCloseDeleteModal} product={productToEdit} onDelete={handleDelete} />
-            </Container>
+            <Typography variant="h5" gutterBottom>
+              Productos
+            </Typography>
+            <Button
+              sx={{
+                bgcolor: "#9c27b0", // Terracota
+                "&:hover": {
+                  bgcolor: "#9c27b0", // Terracota más oscuro al pasar el mouse
+                },
+              }}
+              variant="contained"
+              startIcon={<Add />}
+              onClick={handleAddProduct}
+            >
+              Producto
+            </Button>
           </Box>
-        </CCol>
-      </CRow>
-      </CContainer>
+          {/* Barra de búsqueda */}
+          <Box sx={{ mt: 2 }}>
+            <SearchBar onSearch={onSearch} />
+          </Box>
+          {/* Componente de tabla para mostrar los artículos manufacturados */}
+          <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} isListaPedidos={false} />
+
+          {/* Llamando a ModalCupon con la prop fetchCupones y cuponToEdit */}
+          <ModalProducto getProducts={fetchProductos} productToEdit={productToEdit !== null ? productToEdit : undefined} />
+
+          <ModalEliminarProducto show={deleteModalOpen} onHide={handleCloseDeleteModal} product={productToEdit} onDelete={handleDelete} />
+        </Container>
+      </Box>
       </React.Fragment>
 
   );

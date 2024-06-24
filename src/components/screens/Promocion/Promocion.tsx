@@ -150,70 +150,59 @@ const onSearch = (query: string) => {
 
   return (
   <React.Fragment>
-    <BaseNavBar title="" />
-    <CContainer fluid style={{backgroundColor: "#fff"}}>
-      <CRow>
-        {/* Sidebar */}
-        <CCol xs="auto" className="sidebar">
-          <Sidebar />
-        </CCol>
-        <CCol>
-          <Box
-            component="main"
+    <Box
+      component="main"
+      sx={{
+        flexGrow: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        my: 2,
+      }}
+    >
+      <Container maxWidth="lg">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            my: 1,
+          }}
+        >
+          <Typography variant="h5" gutterBottom>
+            Promociones
+          </Typography>
+          <Button
             sx={{
-              flexGrow: 1,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              my: 2,
+              bgcolor: "#9c27b0",
+              "&:hover": {
+                bgcolor: "#9c27b0",
+              },
             }}
+            variant="contained"
+            startIcon={<Add />}
+            onClick={handleAddPromocion}
           >
-            <Container maxWidth="lg">
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  my: 1,
-                }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  Promociones
-                </Typography>
-                <Button
-                  sx={{
-                    bgcolor: "#9c27b0",
-                    "&:hover": {
-                      bgcolor: "#9c27b0",
-                    },
-                  }}
-                  variant="contained"
-                  startIcon={<Add />}
-                  onClick={handleAddPromocion}
-                >
-                  Promocion
-                </Button>
-              </Box>
-              <Box sx={{ mt: 2 }}>
-                <SearchBar onSearch={onSearch} />
-              </Box> 
-              <TableComponent
-                data={filterData}
-                columns={columns}
-                handleOpenEditModal={handleOpenEditModal}
-                handleOpenDeleteModal={handleOpenDeleteModal} // Pasa la función para abrir la modal de eliminación
-                isListaPedidos={false}
-                
-              />
-              <ModalEliminarPromocion show={deleteModalOpen} onHide={handleCloseDeleteModal} promocion={promocionToEdit} onDelete={handleDelete} />
-              {/* Llamando a ModalPromocion con la prop fetchPromocion y promocionToEdit */}
-              <ModalPromocion getPromocion={fetchPromocion} promocionToEdit={promocionToEdit !== null ? promocionToEdit : undefined} />
-            </Container>
-          </Box>
-        </CCol>
-      </CRow>
-    </CContainer>
+            Promocion
+          </Button>
+        </Box>
+        <Box sx={{ mt: 2 }}>
+          <SearchBar onSearch={onSearch} />
+        </Box> 
+        <TableComponent
+          data={filterData}
+          columns={columns}
+          handleOpenEditModal={handleOpenEditModal}
+          handleOpenDeleteModal={handleOpenDeleteModal} // Pasa la función para abrir la modal de eliminación
+          isListaPedidos={false}
+          
+        />
+        <ModalEliminarPromocion show={deleteModalOpen} onHide={handleCloseDeleteModal} promocion={promocionToEdit} onDelete={handleDelete} />
+        {/* Llamando a ModalPromocion con la prop fetchPromocion y promocionToEdit */}
+        <ModalPromocion getPromocion={fetchPromocion} promocionToEdit={promocionToEdit !== null ? promocionToEdit : undefined} />
+      </Container>
+    </Box>
   </React.Fragment>
   );
 }

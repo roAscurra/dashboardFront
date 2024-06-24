@@ -146,77 +146,65 @@ export const ListaArticulosInsumo = () => {
 
   return (
     <React.Fragment>
-      <BaseNavBar title="" />
-      <CContainer fluid style={{backgroundColor: "#fff"}}>
-        <CRow>
-          {/* Sidebar */}
-          <CCol xs="auto" className="sidebar">
-            <Sidebar />
-          </CCol>
-          {/* Contenido principal */}
-          <CCol>
-            <Box
-              component="main"
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          my: 2,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              my: 1,
+            }}
+          >
+            <Typography variant="h5" gutterBottom>
+              Artículos de Insumo
+            </Typography>
+            <Button
               sx={{
-                flexGrow: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                my: 2,
+                bgcolor: "#9c27b0",
+                "&:hover": {
+                  bgcolor: "#9c27b0",
+                },
               }}
+              variant="contained"
+              startIcon={<Add />}
+              onClick={handleAddArticuloInsumo}
             >
-              <Container maxWidth="lg">
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    my: 1,
-                  }}
-                >
-                  <Typography variant="h5" gutterBottom>
-                    Artículos de Insumo
-                  </Typography>
-                  <Button
-                    sx={{
-                      bgcolor: "#9c27b0",
-                      "&:hover": {
-                        bgcolor: "#9c27b0",
-                      },
-                    }}
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={handleAddArticuloInsumo}
-                  >
-                    Nuevo Artículo
-                  </Button>
-                </Box>
-                <Box sx={{ mt: 2 }}>
-                  <SearchBar onSearch={onSearch} /> 
-                </Box>
-                <TableComponent
-                  data={filterData}
-                  columns={columns}
-                  handleOpenEditModal={handleOpenEditModal}
-                  handleOpenDeleteModal={handleOpenDeleteModal}
-                  isListaPedidos={false}
-                />
-                <ModalEliminarArticuloInsumo
-                  show={deleteModalOpen}
-                  onHide={handleCloseDeleteModal}
-                  articuloInsumo={articuloToEdit}
-                //onDelete={handleDelete}
-                />
-                <ModalArticuloInsumo
-                  getArticulosInsumo={fetchArticulosInsumo}
-                  articuloToEdit={articuloToEdit !== null ? articuloToEdit : undefined}
-                />
-              </Container>
-            </Box>
-          </CCol>
-        </CRow>
-      </CContainer>
+              Nuevo Artículo
+            </Button>
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <SearchBar onSearch={onSearch} /> 
+          </Box>
+          <TableComponent
+            data={filterData}
+            columns={columns}
+            handleOpenEditModal={handleOpenEditModal}
+            handleOpenDeleteModal={handleOpenDeleteModal}
+            isListaPedidos={false}
+          />
+          <ModalEliminarArticuloInsumo
+            show={deleteModalOpen}
+            onHide={handleCloseDeleteModal}
+            articuloInsumo={articuloToEdit}
+          //onDelete={handleDelete}
+          />
+          <ModalArticuloInsumo
+            getArticulosInsumo={fetchArticulosInsumo}
+            articuloToEdit={articuloToEdit !== null ? articuloToEdit : undefined}
+          />
+        </Container>
+      </Box>
     </React.Fragment>
 
   );

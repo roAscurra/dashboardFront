@@ -240,54 +240,44 @@ export const ListaPedidos = () => {
 
   return (
     <React.Fragment>
-      <BaseNavBar title="" />
-      <CContainer fluid style={{ backgroundColor: "#fff" }}>
-        <CRow>
-          <CCol xs="auto" className="sidebar">
-            <Sidebar />
-          </CCol>
-          <CCol>
-            <Box
-              component="main"
-              sx={{
-                flexGrow: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                my: 2,
-              }}
-            >
-              <Container maxWidth="lg">
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    my: 1,
-                  }}
-                >
-                  <Typography variant="h5" gutterBottom>
-                    Pedidos
-                  </Typography>
-                </Box>
-                <Box sx={{ mt: 2 }}>
-                  <SearchBar onSearch={onSearch} />
-                </Box>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          my: 2,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              my: 1,
+            }}
+          >
+            <Typography variant="h5" gutterBottom>
+              Pedidos
+            </Typography>
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <SearchBar onSearch={onSearch} />
+          </Box>
 
-                <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenEditModal} handleOpenEditModal={handleOpenEditModal} isListaPedidos={true} />
-                <ModalDetallePedido
-                  show={showModal}
-                  handleClose={handleClose}
-                  detallePedidos={currentDetallePedidos}
-                  orderDate={orderDate}
-                  cliente={cliente}
-                />
-              </Container>
-            </Box>
-          </CCol>
-        </CRow>
-      </CContainer>
+          <TableComponent data={filteredData} columns={columns} handleOpenDeleteModal={handleOpenEditModal} handleOpenEditModal={handleOpenEditModal} isListaPedidos={true} />
+          <ModalDetallePedido
+            show={showModal}
+            handleClose={handleClose}
+            detallePedidos={currentDetallePedidos}
+            orderDate={orderDate}
+            cliente={cliente}
+          />
+        </Container>
+      </Box>
 
       <ModalPedido
         open={editModalOpen}
