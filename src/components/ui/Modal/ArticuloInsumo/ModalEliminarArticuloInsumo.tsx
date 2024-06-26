@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import ArticuloInsumoService from '../../../../services/ArticuloInsumoService';
 import ArticuloInsumo from '../../../../types/ArticuloInsumoType';
@@ -14,7 +14,16 @@ const ModalEliminarArticuloInsumo: React.FC<ModalEliminarArticuloInsumoProps> = 
     const articuloInsumoService = new ArticuloInsumoService();
     const url = import.meta.env.VITE_API_URL;
     const { getAccessTokenSilently } = useAuth0();
+    const [isDeleting, setIsDeleting] = useState(false);
 
+    const handleDeleteClick = async () => {
+      setIsDeleting(true);
+      try {
+        await handleDelete();
+      } finally {
+        setIsDeleting(false);
+      }
+    };
     const handleDelete = async () => {
       try {
         if (articuloInsumo && articuloInsumo.id) {
@@ -41,8 +50,8 @@ const ModalEliminarArticuloInsumo: React.FC<ModalEliminarArticuloInsumoProps> = 
           <Button variant="secondary" onClick={onHide}>
             Cancelar
           </Button>
-          <Button variant="danger" onClick={handleDelete}>
-            Eliminar
+          <Button className='text-light' variant="danger" onClick={handleDeleteClick} disabled={isDeleting}>
+            {isDeleting ? 'Eliminando...' : 'Eliminar'}
           </Button>
         </Modal.Footer>
       </Modal>

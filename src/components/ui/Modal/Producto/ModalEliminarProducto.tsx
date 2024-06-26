@@ -2,6 +2,7 @@ import { Button, Modal } from 'react-bootstrap';
 import ArticuloManufacturadoService from '../../../../services/ArticuloManufacturadoService';
 import ArticuloManufacturado from '../../../../types/ArticuloManufacturado';
 import {useAuth0} from "@auth0/auth0-react";
+import { useState } from 'react';
 
 interface ModalDeleteProductsProps {
     show: boolean;
@@ -14,7 +15,16 @@ const ModalEliminarProducto: React.FC<ModalDeleteProductsProps> = ({ show, onHid
     const productService = new ArticuloManufacturadoService();
     const url = import.meta.env.VITE_API_URL;
     const { getAccessTokenSilently } = useAuth0();
+    const [isDeleting, setIsDeleting] = useState(false);
 
+    const handleDeleteClick = async () => {
+      setIsDeleting(true);
+      try {
+        await handleDelete();
+      } finally {
+        setIsDeleting(false);
+      }
+    };
     const handleDelete = async () => {
 
         try {
@@ -47,8 +57,8 @@ const ModalEliminarProducto: React.FC<ModalDeleteProductsProps> = ({ show, onHid
                 <Button variant="secondary" onClick={onHide}>
                     Cancelar
                 </Button>
-                <Button variant="danger" onClick={handleDelete}>
-                    Eliminar
+                <Button className='text-light' variant="danger" onClick={handleDeleteClick} disabled={isDeleting}>
+                    {isDeleting ? 'Eliminando...' : 'Eliminar'}
                 </Button>
             </Modal.Footer>
         </Modal>
