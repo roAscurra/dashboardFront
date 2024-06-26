@@ -68,6 +68,7 @@ const ModalSubCategoria: React.FC<AgregarSubcategoriaModalProps> = ({
                   url + "categoria",
                   categoria.id.toString(), await getAccessTokenSilently({})
                 );
+                console.log(response)
                 // la categoria que traemos se la asignamos a la categoria que recibe la modal
                 categoria = response;
                 //le asigno las mismas sucursales que la categoria padre
@@ -76,12 +77,13 @@ const ModalSubCategoria: React.FC<AgregarSubcategoriaModalProps> = ({
               // Procesar el formulario
               const nombreSubcategoria = values.denominacion.trim();
               if (nombreSubcategoria && categoria) {
+                values.eliminado = false;
                 // Enviar la subcategoría
                 const subCategoria = await categoriaShortService.post(
                   url + "categoria",
                   values, await getAccessTokenSilently({})
                 );
-
+                console.log(subCategoria)
                 // Agregar la subcategoría a la categoría actual
                 if (categoria) {
                   categoria.subCategorias.push(subCategoria);
