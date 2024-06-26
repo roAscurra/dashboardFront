@@ -279,15 +279,16 @@ export const ListaSucursal = () => {
                   >
                     {sucursal.imagenes && sucursal.imagenes.length > 0 && sucursal.imagenes[0].url !== "" && (
                         <CardMedia
-                            component="img"
-                            alt={sucursal.nombre}
-                            height="140"
-                            image={sucursal.imagenes[0].url}
-                            sx={{
-                                objectFit: "cover",
-                                borderRadius: "16px 16px 0 0",
-                                maxHeight: 140,
-                            }}
+                          component="img"
+                          alt={sucursal.nombre}
+                          height="140"
+                          image={sucursal.imagenes[sucursal.imagenes.length - 1].url} // Mostrar la última imagen
+                          sx={{
+                              objectFit: "contain",
+                              borderRadius: "16px 16px 0 0",
+                              maxHeight: 140,
+                              width: "100%", // Asegura que la imagen tome el ancho completo del contenedor
+                          }}
                         />
                     )}
                     <CardContent
