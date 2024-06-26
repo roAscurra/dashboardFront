@@ -116,7 +116,10 @@ const ModalEmpresa: React.FC<ModalEmpresaProps> = ({ modalName, getEmpresa, empr
           validationSchema={Yup.object({
             nombre: Yup.string().required("Campo requerido"),
             razonSocial: Yup.string().required("Campo requerido"),
-            cuil: Yup.number().required("Campo requerido"),
+            cuil: Yup.number()
+            .typeError("Debe ser un número")
+            .required("Campo requerido")
+            .test('len', 'Debe ser de 11 dígitos', val => val.toString().length === 11),            
             imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")
           })}
           initialValues={initialValues}
