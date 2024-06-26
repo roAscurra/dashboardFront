@@ -5,13 +5,14 @@ import SucursalService from '../../../../services/SucursalService';
 import {useAuth0} from "@auth0/auth0-react";
 
 interface ModalEliminarSucursalProps {
+  getSucursal: () => void;
   show: boolean;
   onHide: () => void;
   sucursal: Sucursal | null;
   onDelete: () => void;
 }
 
-const ModalEliminarSucursal: React.FC<ModalEliminarSucursalProps> = ({ show, onHide, sucursal }) => {
+const ModalEliminarSucursal: React.FC<ModalEliminarSucursalProps> = ({ getSucursal, show, onHide, sucursal }) => {
     const sucursalService = new SucursalService();
     const url = import.meta.env.VITE_API_URL;
     const { getAccessTokenSilently } = useAuth0();
@@ -28,8 +29,9 @@ const ModalEliminarSucursal: React.FC<ModalEliminarSucursalProps> = ({ show, onH
     const handleDelete = async () => {
       try {
         if (sucursal && sucursal.id) {
-          await sucursalService.delete(url + 'sucursales', sucursal.id.toString(), await getAccessTokenSilently({}));
+          await sucursalService.delete(url + 'sucursal', sucursal.id.toString(), await getAccessTokenSilently({}));
           console.log('Se ha eliminado correctamente.');
+          getSucursal();
           onHide(); // Cerramos el modal
         } else {
           console.error('No se puede eliminar la sucursal porque no se proporcionó un ID válido.');
@@ -38,16 +40,14 @@ const ModalEliminarSucursal: React.FC<ModalEliminarSucursalProps> = ({ show, onH
         console.error('Error al eliminar la sucursal:', error);
       }
     };
-
-    
-  
+      
     return (
       <Modal show={show} onHide={onHide}>
         <Modal.Header closeButton>
           <Modal.Title>Eliminar Sucursal</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>¿Estás seguro de que deseas eliminar la sucursal "{sucursal?.denominacion}"?</p>
+          <p>¿Estás seguro de que deseas eliminar la sucursal "{sucursal?.nombre}"?</p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={onHide}>

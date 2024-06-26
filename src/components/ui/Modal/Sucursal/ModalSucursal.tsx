@@ -50,75 +50,63 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
   const [selectedProvincia, setSelectedProvincia] = useState<number | null>(
     null
   );
-  const [selectedLocalidad, setSelectedLocalidad] = useState<number | null>(null);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
-
-  const initialValues: Sucursal = {
-    id: sucursalToEdit ? sucursalToEdit.id : 0,
-    eliminado: sucursalToEdit ? sucursalToEdit.eliminado : false,
-    nombre: sucursalToEdit ? sucursalToEdit.nombre : "",
-    horarioApertura: sucursalToEdit ? sucursalToEdit.horarioApertura : formatTime(new Date()),
-    horarioCierre: sucursalToEdit ? sucursalToEdit.horarioCierre : formatTime(new Date()),
-    esCasaMatriz: sucursalToEdit ? sucursalToEdit.esCasaMatriz : false,
-    imagenes: sucursalToEdit ? (sucursalToEdit.imagenes.map(
-      (imagen: any): Imagen => ({
-        id: imagen.id,
-        eliminado: imagen.eliminado,
-        url: imagen.url,
-        name: "image",
-      })
-    ) || []) : [],
-    domicilio: {
-      id: sucursalToEdit ? sucursalToEdit.domicilio.id : 0,
-      eliminado: sucursalToEdit ? sucursalToEdit.domicilio.eliminado : false,
-      calle: sucursalToEdit ? sucursalToEdit.domicilio.calle : "",
-      numero: sucursalToEdit ? sucursalToEdit.domicilio.numero : 0,
-      cp: sucursalToEdit ? sucursalToEdit.domicilio.cp : 0,
-      piso: sucursalToEdit ? sucursalToEdit.domicilio.piso : 0,
-      nroDpto: sucursalToEdit ? sucursalToEdit.domicilio.nroDpto : 0,
-      localidad: {
-        id: sucursalToEdit ? sucursalToEdit.domicilio.localidad.id : 0,
-        eliminado: sucursalToEdit ? sucursalToEdit.domicilio.localidad.eliminado : false,
-        nombre: sucursalToEdit ? sucursalToEdit.domicilio.localidad.nombre : "",
-        provincia: {
-          id: sucursalToEdit ? sucursalToEdit.domicilio.localidad.provincia.id : 0,
-          eliminado: sucursalToEdit ? sucursalToEdit.domicilio.localidad.provincia.eliminado : false,
-          nombre: sucursalToEdit ? sucursalToEdit.domicilio.localidad.provincia.nombre : "",
-          pais: {
-            id: sucursalToEdit ? sucursalToEdit.domicilio.localidad.provincia.pais.id : 0,
-            eliminado: sucursalToEdit ? sucursalToEdit.domicilio.localidad.provincia.pais.eliminado : false,
-            nombre: sucursalToEdit ? sucursalToEdit.domicilio.localidad.provincia.pais.nombre : "",
+  const initialValues: Sucursal = sucursalToEdit
+    ? {
+      ...sucursalToEdit,
+      localidadId: sucursalToEdit.domicilio.localidad.id,
+    }
+    : {
+      id: 0,
+      eliminado: false,
+      nombre: "",
+      horarioApertura: formatTime(new Date()),
+      horarioCierre: formatTime(new Date()),
+      esCasaMatriz: false,
+      localidadId: 0, // Assuming localidadId is part of Sucursal
+      imagenes: [],
+      domicilio: {
+        id: 0,
+        eliminado: false,
+        calle: "",
+        numero: 0,
+        cp: 0,
+        piso: 0,
+        nroDpto: 0,
+        localidad: {
+          id: 0,
+          eliminado: false,
+          nombre: "",
+          provincia: {
+            id: 0,
+            eliminado: false,
+            nombre: "",
+            pais: {
+              id: 0,
+              eliminado: false,
+              nombre: "",
+            },
           },
         },
       },
-    },
-    empresa: {
-      id: sucursalToEdit ? sucursalToEdit.empresa.id : 0,
-      eliminado: sucursalToEdit ? sucursalToEdit.empresa.eliminado : false,
-      nombre: sucursalToEdit ? sucursalToEdit.empresa.nombre : "",
-      razonSocial: sucursalToEdit ? sucursalToEdit.empresa.razonSocial : "",
-      cuil: sucursalToEdit ? sucursalToEdit.empresa.cuil : 0,
-      imagenes: sucursalToEdit ? (sucursalToEdit.empresa.imagenes.map(
-        (imagen: any): Imagen => ({
-          id: imagen.id,
-          eliminado: imagen.eliminado,
-          url: imagen.url,
-          name: "image",
-        })
-      ) || []) : [],
-    },
-  };
-  
-  
+      empresa: {
+        id: 0,
+        eliminado: false,
+        nombre: "",
+        razonSocial: "",
+        cuil: 0,
+        imagenes: [],
+      },
+    };
+
 
   const modal = useAppSelector((state: any) => state.modal[modalName]);
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
-    setFiles([]);
     dispatch(toggleModal({ modalName }));
   };
 
@@ -245,6 +233,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
       console.error('Error al eliminar la imagen:', error);
     }
   };
+
   return (
     <Modal
       id={"modal"}
@@ -267,6 +256,15 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
             horarioApertura: Yup.string().required("Campo requerido"),
             horarioCierre: Yup.string().required("Campo requerido"),
             domicilio: Yup.object().shape({calle: Yup.string().required('Campo requerido')}),
+            paisId: Yup.number()
+            .required('Este campo es obligatorio')
+            .notOneOf([0], 'Este campo es obligatorio'),
+            provinciaId: Yup.number()
+            .required('Este campo es obligatorio')
+            .notOneOf([0], 'Este campo es obligatorio'),
+            localidadId: Yup.number()
+            .required('Este campo es obligatorio')
+            .notOneOf([0], 'Este campo es obligatorio'),
             imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")
           })}
           initialValues={initialValues}
@@ -278,7 +276,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
               if (sucursalToEdit) {
                 const localidad = await localidadService.get(
                   url + "localidad",
-                  values.domicilio.localidad.id.toString(), await getAccessTokenSilently({})
+                  values.localidadId, await getAccessTokenSilently({})
                 );
                 values.domicilio.localidad = localidad;
                 // Update address (domicilio)
@@ -312,7 +310,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
 
                   const localidad = await localidadService.get(
                     url + "localidad",
-                    values.domicilio.localidad.id.toString(), await getAccessTokenSilently({})
+                    values.localidadId, await getAccessTokenSilently({})
                   );
                   values.domicilio.localidad = localidad;
 
@@ -347,7 +345,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
             }
           }}
         >
-          {({ values, setFieldValue, isSubmitting }) => (
+          {({values, setFieldValue, isSubmitting }) => (
             <Form autoComplete="off">
               <Row>
                 {/* Primera columna */}
@@ -407,17 +405,17 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
               <Row>
                 {/* Segunda columna */}
                 <Col md={4} className="mb-4">
-                  <label htmlFor="pais">País:</label>
+                  <label htmlFor="paisId">País:</label>
                   <Field
-                    name="pais"
+                    name="paisId"
                     as="select"
                     className="form-control mt-2"
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       const value = Number(e.target.value);
                       setSelectedPais(value);
-                      setFieldValue("pais", value);
-                      setFieldValue("provincia", ""); // Resetea el campo de provincia
-                      setFieldValue("localidad", ""); // Resetea el campo de localidad
+                      setFieldValue("paisId", value);
+                      setFieldValue("provinciaId", ""); // Resetea el campo de provincia
+                      setFieldValue("localidadId", ""); // Resetea el campo de localidad
                     }}
                     value={
                       selectedPais ||
@@ -434,23 +432,23 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                     ))}
                   </Field>
                   <ErrorMessage
-                    name="pais"
+                    name="paisId"
                     className="error-message text-danger"
                     component="div"
                   />
                 </Col>
                 {/* Tercera columna */}
                 <Col md={4} className="mb-4">
-                  <label htmlFor="provincia">Provincia:</label>
+                  <label htmlFor="provinciaId">Provincia:</label>
                   <Field
-                    name="provincia"
+                    name="provinciaId"
                     as="select"
                     className="form-control mt-2"
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       const value = Number(e.target.value);
                       setSelectedProvincia(value);
-                      setFieldValue("provincia", value);
-                      setFieldValue("localidad", ""); // Resetea el campo de localidad
+                      setFieldValue("provinciaId", value);
+                      setFieldValue("localidadId", ""); // Resetea el campo de localidad
                     }}
                     disabled={!selectedPais}
                     value={
@@ -468,28 +466,23 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                     ))}
                   </Field>
                   <ErrorMessage
-                    name="provincia"
+                    name="provinciaId"
                     className="error-message text-danger"
                     component="div"
                   />
                 </Col>
                 {/* Cuarta columna */}
                 <Col md={4} className="mb-4">
-                  <label htmlFor="localidad">Localidad:</label>
+                  <label htmlFor="localidadId">Localidad:</label>
                   <Field
-                    name="localidad"
+                    name="localidadId"
                     as="select"
                     className="form-control mt-2"
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       const value = Number(e.target.value);
-                      setSelectedLocalidad(value);
-                      setFieldValue("localidad", value);
+                      setFieldValue("localidadId", value);
                     }}
                     disabled={!selectedProvincia || !selectedPais} // Deshabilita el selector si no se ha seleccionado una provincia
-                    value={
-                      selectedLocalidad ||
-                      initialValues.domicilio.localidad.id
-                    }
                   >
                     <option value="">
                       Seleccione una localidad
@@ -501,7 +494,7 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                     ))}
                   </Field>
                   <ErrorMessage
-                    name="localidad"
+                    name="localidadId"
                     className="error-message text-danger"
                     component="div"
                   />
@@ -587,7 +580,6 @@ const ModalSucursal: React.FC<ModalSucursalProps> = ({
                   </div>
                 )}
               </Row>
-
               <div className="d-flex justify-content-end">
                 <Button
                   variant="secondary"

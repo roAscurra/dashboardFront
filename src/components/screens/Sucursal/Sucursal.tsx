@@ -346,6 +346,7 @@ export const ListaSucursal = () => {
               ))}
             </Grid>
             <ModalEliminarSucursal
+              getSucursal={fetchSucursal}
               show={deleteModalOpen}
               onHide={handleCloseDeleteModal}
               sucursal={sucursalToEdit}
