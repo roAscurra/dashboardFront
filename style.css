@@ -3,3 +3,11 @@ html,
 #root {
     background-color: #ffff;
 }
+.btn-primary{
+    background-color: #9c27b0 !important;
+    border-color: #9c27b0 !important;
+}
+.btn-primary:hover{
+    background-color: #9e27b3c3 !important;
+    border-color: #9e27b3c3 !important;
+}
