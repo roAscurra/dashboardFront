@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import Categoria from '../../../../types/Categoria';
 import CategoriaService from '../../../../services/CategoriaService';
@@ -18,8 +18,17 @@ const ModalEliminarCategoria: React.FC<ModalEliminarCategoriaProps> = ({ show, c
     const url = import.meta.env.VITE_API_URL;
     const { getAccessTokenSilently } = useAuth0();
     const categoriaShortService = new CategoriaShorService();
+    const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleEliminar = async () => {
+    const handleDeleteClick = async () => {
+      setIsDeleting(true);
+      try {
+        await handleDelete();
+      } finally {
+        setIsDeleting(false);
+      }
+    };
+    const handleDelete = async () => {
         try {
             if (categoria && categoria.id) {
                 // Elimino las subcategorias de la categoria que elimino
@@ -52,8 +61,8 @@ const ModalEliminarCategoria: React.FC<ModalEliminarCategoriaProps> = ({ show, c
                 <Button variant="secondary" onClick={onClose}>
                     Cancelar
                 </Button>
-                <Button variant="danger" onClick={handleEliminar}>
-                    Eliminar
+                <Button className='text-light' variant="danger" onClick={handleDeleteClick} disabled={isDeleting}>
+                    {isDeleting ? 'Eliminando...' : 'Eliminar'}
                 </Button>
             </Modal.Footer>
         </Modal>
