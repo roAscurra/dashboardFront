@@ -204,11 +204,25 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
             stockActual: Yup.number().required("Campo requerido"),
             stockMaximo: Yup.number().required("Campo requerido"),
             esParaElaborar: Yup.boolean().required("Campo requerido"),
-            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido")
+            imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido"),
+            categoria: Yup.object().shape({
+              id: Yup.number()
+                .typeError('Debe ser un número')
+                .min(1, 'Debe seleccionar una categoría')
+                .required('Seleccione una categoría')
+                .test('is-not-zero', 'El ID de categoría no puede ser cero', value => value !== 0),
+            }),
+            unidadMedida: Yup.object().shape({
+              id: Yup.number()
+                .typeError('Debe ser un número')
+                .min(1, 'Debe seleccionar una unidad de medida')
+                .required('Seleccione una unidad de medida')
+                .test('is-not-zero', 'El ID de categoría no puede ser cero', value => value !== 0),
+            }),
           })}
+          
           initialValues={initialValues}
           onSubmit={async (values: ArticuloInsumo) => {
-            console.log(values)
             try {
               let articuloId: string | null = null;
               
@@ -320,26 +334,24 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                     name="categoria"
                     as="select"
                     className="form-control"
-                    onChange={(event: { target: { value: string } }) => {
-                      const categoriaSelect = parseInt(event.target.value);
-                      const selectedCategoria = categorias.find(
-                        (categoria) => categoria.id === categoriaSelect
-                      );
-
-                      if (selectedCategoria) {
-                        setFieldValue("categoria", selectedCategoria);
-                      } else {
-                        console.error("No se encontró la categoria seleccionada");
-                      }
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      const selectedCategoria = categorias.find(categoria => categoria.id === Number(e.target.value));
+                      setFieldValue("categoria", selectedCategoria || initialValues.categoria);
                     }}
-                    value={values.categoria ? values.categoria.id : ""}
+                    value={values.categoria.id}
                   >
-                    {categorias.map((categoria) => (
-                      <option key={categoria.id} value={categoria.id}>
+                    <option value="0">Seleccione una categoría</option>
+                    {categorias.map((categoria, index) => (
+                      <option key={index} value={categoria.id}>
                         {categoria.denominacion}
                       </option>
                     ))}
                   </Field>
+                  <ErrorMessage
+                    name="categoria.id"
+                    className="error-message text-danger"
+                    component="div"
+                  />
                 </Col>
                 <Col>
                   <label htmlFor="stockActual">Stock Actual:</label>
@@ -397,12 +409,18 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({
                     }}
                     value={values.unidadMedida ? values.unidadMedida.id : ""}
                   >
+                    <option value="0">Seleccione una unidad de medida</option>
                     {unidadesMedida.map((unidad) => (
                       <option key={unidad.id} value={unidad.id}>
                         {unidad.denominacion}
                       </option>
                     ))}
                   </Field>
+                  <ErrorMessage
+                    name="unidadMedida.id"
+                    className="error-message text-danger"
+                    component="div"
+                  />
                   <label htmlFor="imagenes">Imágenes:</label>
                   <input
                     name="imagen"

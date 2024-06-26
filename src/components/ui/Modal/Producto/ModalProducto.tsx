@@ -288,7 +288,20 @@ const ModalProducto: React.FC<ModalProductProps> = ({
             preparacion: Yup.string().required("Campo requerido"),
             tiempoEstimadoMinutos: Yup.number().required("Campo requerido"),
             imagenes: Yup.array().min(1, "Debe agregar al menos una imagen").required("Campo requerido"),
-           
+            categoria: Yup.object().shape({
+              id: Yup.number()
+                .typeError('Debe ser un número')
+                .min(1, 'Debe seleccionar una categoría')
+                .required('Seleccione una categoría')
+                .test('is-not-zero', 'El ID de categoría no puede ser cero', value => value !== 0),
+            }),
+            unidadMedida: Yup.object().shape({
+              id: Yup.number()
+                .typeError('Debe ser un número')
+                .min(1, 'Debe seleccionar una unidad de medida')
+                .required('Seleccione una unidad de medida')
+                .test('is-not-zero', 'El ID de categoría no puede ser cero', value => value !== 0),
+            }),
           })}
           
           initialValues={initialValues}
@@ -386,22 +399,13 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     name="categoria"
                     as="select"
                     className="form-control"
-                    onChange={(event: { target: { value: string } }) => {
-                      const categoriaSelect = parseInt(event.target.value);
-                      const selectedCategoria = categorias.find(
-                        (categoria) => categoria.id === categoriaSelect
-                      );
-
-                      if (selectedCategoria) {
-                        setFieldValue("categoria", selectedCategoria);
-                      } else {
-                        console.error(
-                          "No se encontró la categoria seleccionada"
-                        );
-                      }
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      const selectedCategoria = categorias.find(categoria => categoria.id === Number(e.target.value));
+                      setFieldValue("categoria", selectedCategoria || initialValues.categoria);
                     }}
-                    value={values.categoria ? values.categoria.id : ""}
+                    value={values.categoria.id}
                   >
+                    <option value="0">Seleccione una categoría</option>
                     {categorias.map((categoria) => (
                       <option key={categoria.id} value={categoria.id}>
                         {categoria.denominacion}
@@ -409,7 +413,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     ))}
                   </Field>
                   <ErrorMessage
-                    name="categoria"
+                    name="categoria.id"
                     className="error-message text-danger"
                     component="div"
                   />
@@ -462,6 +466,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     }}
                     value={values.unidadMedida ? values.unidadMedida.id : ""}
                   >
+                    <option value="0">Seleccione una unidad de medida</option>
                     {unidadesMedida.map((unidad) => (
                       <option key={unidad.id} value={unidad.id}>
                         {unidad.denominacion}
@@ -470,7 +475,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                   </Field>
 
                   <ErrorMessage
-                    name="unidadMedida"
+                    name="unidadMedida.id"
                     className="error-message text-danger"
                     component="div"
                   />
