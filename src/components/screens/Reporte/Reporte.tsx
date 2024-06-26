@@ -65,21 +65,21 @@ export const Reporte = () => {
                 </Row>
                 <Row className={"p-3"}>
                     <Col>
-                        <a style={{ width: "100%", backgroundColor: "#9c27b0" }} className="btn text-light"
+                        <a className="btn btn-primary text-light col-md-12"
                             onClick={() => generarExcel(sucursalId, desde, hasta, 'ranking/insumos/excel')}>Descargar ranking productos</a>
                     </Col>
                     <Col>
-                        <a style={{ width: "100%", backgroundColor: "#9c27b0" }} className="btn text-light"
+                        <a className="btn btn-primary text-light col-md-12"
                             onClick={() => generarExcel(sucursalId, desde, hasta, 'ranking/pedidos/cliente/excel')}>Descargar pedidos por cliente</a>
                     </Col>
                 </Row>
                 <Row className={"p-3"}>
                     <Col>
-                        <a style={{ width: "100%", backgroundColor: "#9c27b0" }} className="btn text-light"
+                        <a className="btn btn-primary text-light col-md-12"
                             onClick={() => generarExcel(sucursalId, desde, hasta, 'ranking/ingresos/excel')}>Descargar ingresos</a>
                     </Col>
                     <Col>
-                        <a style={{ width: "100%", backgroundColor: "#9c27b0" }} className="btn text-light"
+                        <a className="btn btn-primary text-light col-md-12"
                             onClick={() => generarExcel(sucursalId, desde, hasta, 'ranking/ganancias/excel')}>Descargar ganancias</a>
                     </Col>
                 </Row>

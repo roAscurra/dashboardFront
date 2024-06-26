@@ -167,12 +167,7 @@ export const ListaArticulosInsumo = () => {
               Artículos de Insumo
             </Typography>
             <Button
-              sx={{
-                bgcolor: "#9c27b0",
-                "&:hover": {
-                  bgcolor: "#9c27b0",
-                },
-              }}
+              className="btn-primary"
               variant="contained"
               startIcon={<Add />}
               onClick={handleAddArticuloInsumo}

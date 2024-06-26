@@ -207,12 +207,7 @@ export const ListaProductos = () => {
               Productos
             </Typography>
             <Button
-              sx={{
-                bgcolor: "#9c27b0", // Terracota
-                "&:hover": {
-                  bgcolor: "#9c27b0", // Terracota más oscuro al pasar el mouse
-                },
-              }}
+              className="btn-primary"
               variant="contained"
               startIcon={<Add />}
               onClick={handleAddProduct}

@@ -100,12 +100,12 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, surcursalId, u
                 <div className="mb-4">
                   <label htmlFor="username">Usuario:</label>
                   <Field name="username" type="text" className="form-control mt-2"/>
-                  <ErrorMessage name="username" className="error-message" component="div"/>
+                  <ErrorMessage name="username" className="error-message text-danger" component="div"/>
                 </div>
                 <div className="mb-4">
                   <label htmlFor="email">Email:</label>
                   <Field name="email" type="text" className="form-control mt-2"/>
-                  <ErrorMessage name="email" className="error-message" component="div"/>
+                  <ErrorMessage name="email" className="error-message text-danger" component="div"/>
                 </div>
                 <div className="mb-4">
                   <label htmlFor="rol">Rol:</label>
@@ -116,7 +116,7 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({ getUsuarios, surcursalId, u
                     <option value="ADMIN">Admin</option>
                     <option value="SUPERADMIN">Super admin</option>
                   </Field>
-                  <ErrorMessage name="rol" className="error-message" component="div"/>
+                  <ErrorMessage name="rol" className="error-message text-danger" component="div"/>
                 </div>
                 <div className="d-flex justify-content-end">
                   <Button

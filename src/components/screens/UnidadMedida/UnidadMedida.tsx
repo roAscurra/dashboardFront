@@ -108,7 +108,7 @@ export const ListaUnidadesMedida = () => {
             <Typography variant="h5" gutterBottom>
               Unidades de Medida
             </Typography>
-            <Button sx={{ bgcolor: "#9c27b0", "&:hover": { bgcolor: "#9c27b0" } }} variant="contained" startIcon={<Add />} onClick={handleAddUnidad}>
+            <Button className="btn-primary" variant="contained" startIcon={<Add />} onClick={handleAddUnidad}>
               Unidad de Medida
             </Button>
           </Box>
