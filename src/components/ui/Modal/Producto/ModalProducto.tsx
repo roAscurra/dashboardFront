@@ -399,21 +399,11 @@ const ModalProducto: React.FC<ModalProductProps> = ({
                     name="categoria"
                     as="select"
                     className="form-control"
-                    onChange={(event: { target: { value: string } }) => {
-                      const categoriaSelect = parseInt(event.target.value);
-                      const selectedCategoria = categorias.find(
-                        (categoria) => categoria.id === categoriaSelect
-                      );
-
-                      if (selectedCategoria) {
-                        setFieldValue("categoria", selectedCategoria);
-                      } else {
-                        console.error(
-                          "No se encontró la categoria seleccionada"
-                        );
-                      }
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      const selectedCategoria = categorias.find(categoria => categoria.id === Number(e.target.value));
+                      setFieldValue("categoria", selectedCategoria || initialValues.categoria);
                     }}
-                    value={values.categoria ? values.categoria.id : ""}
+                    value={values.categoria.id}
                   >
                     <option value="0">Seleccione una categoría</option>
                     {categorias.map((categoria) => (
